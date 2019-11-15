@@ -6,7 +6,8 @@ export const colors = {
   border: "#595f62",
   card: '#202930',
   background: '#152128',
-  green: '#1abc9c'
+  green: '#1abc9c',
+  red: '#ed4337'
 };
 
 const customTheme =  {
@@ -25,7 +26,7 @@ const customTheme =  {
   },
   typography: {
     body1: {
-      fontSize: '14px',
+      fontSize: '16px',
       fontWeight: '300',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
@@ -57,7 +58,7 @@ const customTheme =  {
     },
     h3: {
       letterSpacing: '1px',
-      fontSize: '18px',
+      fontSize: '19px',
       fontWeight: '300',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
@@ -78,6 +79,7 @@ const customTheme =  {
         borderRadius: '0px'
       },
       contained: {
+        boxShadow: 'none',
         backgroundColor: colors.white
       },
       outlined: {
@@ -88,12 +90,14 @@ const customTheme =  {
         textTransform: 'none',
         letterSpacing: '0.5px',
         color: colors.white,
-        fontWeight: 400
+        fontWeight: 400,
+        whiteSpace: 'nowrap',
+        overflowX: 'hidden'
       },
       sizeLarge: {
         fontSize: '16px',
         minWidth: '300px',
-        padding: '12px 50px'
+        padding: '12px 24px'
       },
       sizeSmall: {
         fontSize: '12px',

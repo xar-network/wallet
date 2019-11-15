@@ -1,31 +1,40 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography } from '@material-ui/core'
+import { Grid, Typography, Menu, MenuItem } from '@material-ui/core'
 import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined';
 import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { lockAccount } from '../../../store/service';
 
 const styles = theme => ({
   container: {
     borderLeft: '1px solid '+colors.border,
     width: '100%',
-    height: '100%',
-    alignContent: 'flex-start'
+    minHeight: '100%',
+    alignContent: 'flex-start',
+    backgroundColor: colors.background,
+    paddingBottom: '32px'
   },
   header: {
     padding: '30px',
     backgroundColor: '#202930',
     margin: '0 auto',
-    borderBottom: '1px solid '+colors.border
+    borderBottom: '1px solid '+colors.border,
+    borderTop: '1px solid '+colors.border
   },
   balancesContainer: {
-    backgroundColor: colors.background,
   },
   pricesContainer: {
-    padding: '24px',
-    backgroundColor: colors.background
+    padding: '30px 0px',
+    backgroundColor: colors.background,
+    borderBottom: '1px solid '+colors.border
+  },
+  globalContainer: {
+    padding: '30px 0px',
+    backgroundColor: colors.background,
+    borderBottom: '1px solid '+colors.border
   },
   inputContainer: {
     width: '100%'
@@ -56,10 +65,11 @@ const styles = theme => ({
     padding: '24px'
   },
   pricePair: {
-    padding: '16px 24px'
+    paddingBottom: '32px'
   },
   pricePrice: {
-    padding: '16px 6px'
+    paddingBottom: '32px',
+    paddingRight: '6px'
   },
   priceHeader: {
     marginBottom: '30px'
@@ -69,6 +79,7 @@ const styles = theme => ({
     backgroundColor: colors.background,
     borderBottom: '1px solid '+colors.border,
     borderTop: '1px solid '+colors.border,
+    margin: '0 auto'
   },
   dot: {
     height: '10px',
@@ -76,22 +87,81 @@ const styles = theme => ({
     backgroundColor: colors.green,
     borderRadius: '50%',
     display: 'inline-block',
+    marginRight: '6px'
   },
   inline: {
     display: 'inline-block'
+  },
+  percent: {
+    color: colors.lightGray,
+    display: 'inline-block'
+  },
+  csdtInfoHeader: {
+    marginBottom: '6px'
+  },
+  csdtInfoValue: {
+    marginBottom: '30px'
   }
 });
 
 class AccountUnlocked extends Component {
 
+  constructor(props) {
+    super();
+
+    if(!props.account) {
+      props.history.push('/');
+    }
+
+    this.state = {
+      account: props.account,
+      walletMenuOpen: false,
+      walletMenuAnchorEl: null
+    };
+
+    this.onWalletOptionsClicked = this.onWalletOptionsClicked.bind(this)
+    this.handleWalletOptionsClose = this.handleWalletOptionsClose.bind(this)
+    this.handleLogout = this.handleLogout.bind(this)
+  };
+
+  componentDidUpdate(prevProps) {
+    if (!this.props.account || !this.props.account.privateKey) {
+      this.nextPath('/');
+    }
+  }
+
+  nextPath(path) {
+    this.props.history.push(path);
+  }
+
+  handleWalletOptionsClose() {
+    this.setState({ walletMenuOpen: false })
+  };
+
+  onWalletOptionsClicked(event) {
+    this.setState({
+      walletMenuOpen: !this.state.walletMenuOpen,
+      walletMenuAnchorEl: event.currentTarget
+    })
+  };
+
+  handleLogout() {
+    lockAccount()
+  };
+
   render() {
-    const { classes } = this.props;
+    const { classes, account } = this.props;
+    const { walletMenuOpen, walletMenuAnchorEl } = this.state
+
+    if(!account) {
+      return null
+    }
 
     return (
       <Grid
         container
         direction="row"
-        justify="flex-start"
+        justify="center"
         alignItems="flex-start"
         className={classes.container}>
         <Grid item xs={12} className={classes.header}>
@@ -101,8 +171,17 @@ class AccountUnlocked extends Component {
             justify="flex-start"
             alignItems="center">
             <Grid item xs={12}>
-              <Typography variant="h2" noWrap className={classes.walletAddress}>zar18nt8l824c36rh9ppuh3e9c469xkrekyuj5t3ur</Typography>
-              <AccountBalanceWalletOutlinedIcon className={classes.walletIcon} />
+              <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
+              <AccountBalanceWalletOutlinedIcon className={classes.walletIcon} onClick={ this.onWalletOptionsClicked } />
+              <Menu
+                id="simple-menu"
+                anchorEl={walletMenuAnchorEl}
+                keepMounted
+                open={walletMenuOpen}
+                onClose={this.handleWalletOptionsClose}
+              >
+                <MenuItem key='logout' onClick={this.handleLogout}>Logout</MenuItem>
+              </Menu>
             </Grid>
           </Grid>
         </Grid>
@@ -116,11 +195,11 @@ class AccountUnlocked extends Component {
             { this.renderAssets() }
           </Grid>
         </Grid>
-        <Grid item xs={12} className={classes.network}>
+        <Grid item xs={12} className={classes.network} align={ 'center' }>
           <div className={ classes.dot }> </div>
           <Typography variant="body2" align={ "center" } className={ classes.inline }>Fantom Mainnet ZAR</Typography>
         </Grid>
-        <Grid item xs={12} className={classes.pricesContainer}>
+        <Grid item xs={10} className={classes.pricesContainer}>
           <Grid
             container
             direction="row"
@@ -130,7 +209,48 @@ class AccountUnlocked extends Component {
             { this.renderPrices() }
           </Grid>
         </Grid>
+        <Grid item xs={10} className={classes.globalContainer}>
+          <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="center">
+            { this.renderGlobalHeader() }
+            { this.renderGlobalInfo() }
+          </Grid>
+        </Grid>
       </Grid>
+    )
+  }
+
+  renderGlobalHeader() {
+    const { classes } = this.props
+    return (
+      <Grid item xs={12} className={ classes.priceHeader }>
+        <Typography variant={ 'h4' }>Global CSDT Info</Typography>
+      </Grid>
+    )
+  }
+
+  renderGlobalInfo() {
+    const { classes } = this.props
+    return (
+      <React.Fragment>
+        <Grid item xs={12} className={ classes.csdtInfoHeader }>
+          <Typography variant={ 'body1' }>Global CSDT Collateralization</Typography>
+        </Grid>
+        <Grid item xs={12} className={ classes.csdtInfoValue }>
+          <Typography variant={ 'h3' } className={ classes.inline }>{ '344.35%' }</Typography>
+          <Typography variant={ 'h3' } className={ classes.percent }>{ '%' }</Typography>
+        </Grid>
+        <Grid item xs={12} className={ classes.csdtInfoHeader }>
+          <Typography variant={ 'body1' }>Maximum Global FTM Available</Typography>
+        </Grid>
+        <Grid item xs={12} className={ classes.csdtInfoValue }>
+          <Typography variant={ 'h3' } className={ classes.inline }>{ '90 805 411' }</Typography>
+          <Typography variant={ 'h3' } className={ classes.percent }>{ '$' }</Typography>
+        </Grid>
+      </React.Fragment>
     )
   }
 
@@ -212,7 +332,7 @@ class AccountUnlocked extends Component {
           <Typography variant={ 'h3' }>{ asset.name }</Typography>
         </Grid>
         <Grid item xs={5} className={ classes['tableBody' + alternating] }>
-        <Typography variant={ 'h3' }>{ asset.balance + ' ' + asset.denom }</Typography>
+        <Typography variant={ 'h3' } noWrap>{ asset.balance + ' ' + asset.denom }</Typography>
         </Grid>
       </React.Fragment>
     )
@@ -223,4 +343,11 @@ AccountUnlocked.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(AccountUnlocked)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    account: accounts.account,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(AccountUnlocked)))

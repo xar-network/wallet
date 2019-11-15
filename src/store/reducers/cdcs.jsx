@@ -1,7 +1,7 @@
 import {
   GET_CDCS,
   CREATE_CDC
-} from '../constants'
+} from '../../constants'
 
 const cdcs = (state = [], action) => {
   switch (action.type) {

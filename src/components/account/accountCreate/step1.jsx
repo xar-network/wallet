@@ -4,6 +4,7 @@ import { Grid, Typography, Button, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { createAccount } from '../../../store/service';
 
 const styles = theme => ({
   instruction: {
@@ -20,12 +21,67 @@ const styles = theme => ({
 
 class Step1 extends Component {
 
+  constructor(props) {
+    super();
+    this.state = {
+      error: null,
+      password: '',
+      confirmPassword: '',
+      keystore: null
+    };
+
+    this.onChange = this.onChange.bind(this)
+  }
+
   nextPath(path) {
     this.props.history.push(path);
   }
 
+  async downloadKeystoreFile() {
+    const {
+      password,
+      confirmPassword
+    } = this.state
+
+    if(!password || !confirmPassword) {
+      return false
+    }
+
+    if(password != confirmPassword) {
+      this.setState({ error: 'Passwords do not match' })
+      return false
+    }
+
+    const response = await createAccount({ password, confirmPassword })
+
+    //add error checking
+    this.download(response.account.keystore.id+'_keystore.json', JSON.stringify(response.account.keystore))
+
+    this.nextPath('/home/create/2')
+  }
+
+  download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  onChange(e, val) {
+    let st = {}
+    st[e.target.id] = e.target.value
+    this.setState(st)
+  }
+
   render() {
     const { classes } = this.props;
+    const { password, confirmPassword } = this.state
 
     return (
       <Grid
@@ -39,6 +95,7 @@ class Step1 extends Component {
         <Grid item xs={12} className={classes.inputContainer}>
           <TextField
             fullWidth
+            id="password"
             label="Password"
             className={classes.textField}
             type="password"
@@ -46,11 +103,14 @@ class Step1 extends Component {
             margin="normal"
             variant="outlined"
             color="secondary"
+            value={ password }
+            onChange={ this.onChange }
           />
         </Grid>
         <Grid item xs={12} className={classes.inputContainer}>
           <TextField
             fullWidth
+            id="confirmPassword"
             label="Confirm Password"
             className={classes.textField}
             type="password"
@@ -58,11 +118,13 @@ class Step1 extends Component {
             margin="normal"
             variant="outlined"
             color="secondary"
+            value={ confirmPassword }
+            onChange={ this.onChange }
           />
         </Grid>
         <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
           <Button
-            onClick={() => this.nextPath('/home/create/2') }
+            onClick={() => this.downloadKeystoreFile() }
             variant="outlined"
             size='large'
             >
@@ -76,6 +138,14 @@ class Step1 extends Component {
 
 Step1.propTypes = {
   classes: PropTypes.object.isRequired,
+  accounts: PropTypes.object
 };
 
-export default withRouter(connect()(withStyles(styles)(Step1)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    accounts: accounts
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Step1)))

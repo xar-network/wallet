@@ -4,6 +4,7 @@ import { Grid, Typography, Button, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { colors } from '../../theme';
 
 const styles = theme => ({
   instruction: {
@@ -15,17 +16,73 @@ const styles = theme => ({
   buttonContainer: {
     width: '100%',
     marginTop: '16px'
+  },
+  error: {
+    color: colors.red
   }
 });
 
-class Step1 extends Component {
+class Step3 extends Component {
+
+  constructor(props) {
+    super();
+
+    if(!props.account) {
+      props.history.push('/');
+    }
+
+    this.state = {
+      error: false,
+      account: props.account
+    };
+
+    this.onChange = this.onChange.bind(this)
+    this.validateMnemonic = this.validateMnemonic.bind(this)
+  }
 
   nextPath(path) {
     this.props.history.push(path);
   }
 
+  validateMnemonic() {
+    const { account } = this.props
+    const {
+      first,
+      second,
+      third
+    } = this.state
+
+    if(!account) {
+      return null
+    }
+
+    const words = account.mnemonic.split(' ')
+
+    if(words[8] !== first) {
+      this.setState({ error: 'Mnemonic is invalid' })
+      return false
+    }
+    if(words[15] !== second) {
+      this.setState({ error: 'Mnemonic is invalid' })
+      return false
+    }
+    if(words[17] !== third) {
+      this.setState({ error: 'Mnemonic is invalid' })
+      return false
+    }
+
+    this.nextPath('/home/create/4')
+  }
+
+  onChange(e, val) {
+    let st = {}
+    st[e.target.id] = e.target.value
+    this.setState(st)
+  }
+
   render() {
     const { classes } = this.props;
+    const { first, second, third, error } = this.state
 
     return (
       <Grid
@@ -45,6 +102,9 @@ class Step1 extends Component {
             margin="normal"
             variant="outlined"
             color="secondary"
+            id="first"
+            value={ first }
+            onChange={ this.onChange }
           />
         </Grid>
         <Grid item xs={4} className={classes.inputContainer}>
@@ -55,6 +115,9 @@ class Step1 extends Component {
             margin="normal"
             variant="outlined"
             color="secondary"
+            id="second"
+            value={ second }
+            onChange={ this.onChange }
           />
         </Grid>
         <Grid item xs={4} className={classes.inputContainer}>
@@ -65,24 +128,37 @@ class Step1 extends Component {
             margin="normal"
             variant="outlined"
             color="secondary"
+            id="third"
+            value={ third }
+            onChange={ this.onChange }
           />
         </Grid>
         <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
           <Button
-            onClick={() => this.nextPath('/home/create/4') }
+            onClick={ this.validateMnemonic }
             variant="outlined"
             size='large'
             >
               Confirm
             </Button>
         </Grid>
+        <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+          <Typography className={ classes.error }>{ error }</Typography>
+        </Grid>
       </Grid>
     )
   }
 }
 
-Step1.propTypes = {
+Step3.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Step1)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    account: accounts.createdAccount,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Step3)))

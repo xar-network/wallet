@@ -5,7 +5,8 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { colors } from '../theme'
-import Summary from '../summary'
+import NoCSDTs from './noCSDTs'
+import OpenCSDT from './openCSDT'
 import Account from '../account'
 
 const styles = theme => ({
@@ -22,7 +23,7 @@ const styles = theme => ({
 class Cdp extends Component {
 
   render() {
-    const { classes } = this.props;
+    const { classes, match } = this.props;
 
     return (
       <Grid
@@ -33,7 +34,7 @@ class Cdp extends Component {
         alignItems="flex-start"
       >
         <Grid item xs={12} md={9} className={classes.maxHeight}>
-          <Summary />
+          { this.renderScreen(match.params.view) }
         </Grid>
         <Grid item xs={12} md={3} className={classes.maxHeight}>
           <Account action={ 'unlocked' } />
@@ -41,10 +42,27 @@ class Cdp extends Component {
       </Grid>
     )
   }
+
+  renderScreen(view) {
+    switch (view) {
+      case 'open':
+        return <OpenCSDT />
+      default:
+        return <NoCSDTs />
+    }
+  }
 }
 
 Cdp.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Cdp)))
+const mapStateToProps = state => {
+  console.log(state)
+  const { accounts } = state;
+  return {
+    accounts: accounts
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Cdp)))

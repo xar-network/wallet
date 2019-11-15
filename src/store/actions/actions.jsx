@@ -5,7 +5,7 @@ import {
   GET_CDCS,
   CREATE_CDC,
   GET_PRICES
-} from '../constants'
+} from '../../constants'
 
 
 /* ACCOUNTS */

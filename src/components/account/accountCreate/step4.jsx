@@ -18,7 +18,7 @@ const styles = theme => ({
   }
 });
 
-class Step1 extends Component {
+class Step4 extends Component {
 
   nextPath(path) {
     this.props.history.push(path);
@@ -38,7 +38,7 @@ class Step1 extends Component {
           <Typography variant="body1" align="center">You are all set</Typography>
         </Grid>
         <Grid item xs={12} className={classes.instruction}>
-          <Typography variant="body1" align="center">Your account is set up, you can now unlock it to use the CDP portal</Typography>
+          <Typography variant="body1" align="center">Your account is set up, you can now unlock it to use the CSDT portal</Typography>
         </Grid>
         <Grid item xs={12} className={classes.buttonContainer} align={'center'}>
           <Button
@@ -54,8 +54,15 @@ class Step1 extends Component {
   }
 }
 
-Step1.propTypes = {
+Step4.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Step1)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    account: accounts.createdAccount,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Step4)))

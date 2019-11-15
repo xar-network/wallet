@@ -33,6 +33,9 @@ const styles = theme => ({
 });
 
 class AccountCreate extends Component {
+  constructor(props) {
+    super(props);
+  }
 
   render() {
     const { classes, match } = this.props;
@@ -90,4 +93,12 @@ AccountCreate.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(AccountCreate)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    accounts: accounts
+  };
+};
+
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(AccountCreate)))

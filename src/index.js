@@ -1,10 +1,10 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { createStore } from 'redux'
-import rootReducer from './reducers'
+import store from './store'
 import App from './components'
 
-const store = createStore(rootReducer)
+const unsubscribe = store.subscribe(() => console.log(store.getState()))
 
 render(
   <App store={store} />,

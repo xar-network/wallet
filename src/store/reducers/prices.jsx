@@ -1,6 +1,6 @@
 import {
   GET_PRICES
-} from '../constants'
+} from '../../constants'
 
 const prices = (state = [], action) => {
   switch (action.type) {

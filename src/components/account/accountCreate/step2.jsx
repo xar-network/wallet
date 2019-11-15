@@ -25,6 +25,18 @@ const styles = theme => ({
 
 class Step2 extends Component {
 
+  constructor(props) {
+    super();
+
+    if(!props.account) {
+      props.history.push('/');
+    }
+
+    this.state = {
+      account: props.account
+    };
+  }
+
   nextPath(path) {
     this.props.history.push(path);
   }
@@ -58,7 +70,14 @@ class Step2 extends Component {
   }
 
   renderWords() {
-    const words = ['Oblong', 'Offensive', 'Octopuses', 'Tasered', 'Terrible', 'Amoebas', 'For', 'Voluptuous', 'Geeks', 'Vilified', 'Aladdin', 'Humanely', 'Offensive', 'Otters', 'Overstressed', 'Till', 'Thick', 'Ancient', 'Fairies', 'Videotaped', 'Gritty', 'Voluptuous', 'Attorneys', 'Hostilely']
+
+    const { account } = this.props
+
+    if(!account) {
+      return null
+    }
+
+    const words = account.mnemonic.split(' ')
 
     return words.map((word) => {
       return this.renderWord(word)
@@ -83,4 +102,11 @@ Step2.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Step2)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    account: accounts.createdAccount,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Step2)))

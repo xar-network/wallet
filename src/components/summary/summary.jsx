@@ -27,7 +27,7 @@ const Summary = () => {
       alignItems="center"
       className={classes.container}>
       <Grid item xs={12} className={classes.header}>
-        <Typography variant="h1">Welcome to the <br/>Collateralized Debt Position Portal</Typography>
+        <Typography variant="h1">Welcome to the <br/>Collateralized Debt Portal</Typography>
       </Grid>
     </Grid>
   )
