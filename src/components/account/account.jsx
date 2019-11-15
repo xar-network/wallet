@@ -8,9 +8,6 @@ import AccountUnlocked from './accountUnlocked'
 
 
 class Account extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   render () {
     const { action } = this.props

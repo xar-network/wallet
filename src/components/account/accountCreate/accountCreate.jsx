@@ -33,9 +33,6 @@ const styles = theme => ({
 });
 
 class AccountCreate extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     const { classes, match } = this.props;

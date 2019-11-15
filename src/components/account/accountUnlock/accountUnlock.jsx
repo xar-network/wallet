@@ -70,7 +70,7 @@ class AccountUnlock extends Component {
     if (file) {
 
       if(!file.type === 'application/json') {
-        that.setState({ err: 'Invalid file' });
+        this.setState({ err: 'Invalid file' });
         return false
       }
 
@@ -124,7 +124,7 @@ class AccountUnlock extends Component {
 
   render() {
     const { classes } = this.props;
-    const { password, keystore, fileName, error } = this.state
+    const { password, fileName, error } = this.state
 
     return (
       <Grid

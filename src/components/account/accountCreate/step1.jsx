@@ -47,7 +47,7 @@ class Step1 extends Component {
       return false
     }
 
-    if(password != confirmPassword) {
+    if(password !== confirmPassword) {
       this.setState({ error: 'Passwords do not match' })
       return false
     }
