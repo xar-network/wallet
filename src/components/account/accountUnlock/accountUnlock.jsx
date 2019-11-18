@@ -102,6 +102,16 @@ class AccountUnlock extends Component {
       const response = await unlockAccount({ password, keystore })
 
       if(response.account != null && response.account.privateKey) {
+
+        //TODO: I don't like storing this in sessionStorage. This si dodgy but it is what Binance DEX does. So can' be that bad.
+        // We will then just request the password every time that they want to interact with the chain. So only save the keystore.
+        const obj = {
+          address: response.account.address,
+          keystore: keystore
+        }
+
+        sessionStorage.setItem('xar-csdt-user', JSON.stringify(obj))
+
         this.nextPath('/csdt')
       }
 

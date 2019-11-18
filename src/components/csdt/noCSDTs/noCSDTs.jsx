@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 
 const styles = theme => ({
   container: {
-    borderLeft: '1px solid '+colors.border,
     width: '100%',
     minHeight: '100%',
     alignContent: 'flex-start'

@@ -4,10 +4,22 @@ import config from '../../config';
 import ZarClient from '@zar-network/javascript-sdk';
 import { crypto } from '@zar-network/javascript-sdk';
 
+export const getBalance = async params => {
+  try {
+    const client = new ZarClient(config.zarApi)
+    await client.initChain()
+
+    const balances = await client.getBalance(params.address)
+
+    return store.dispatch(actions.setBalances(balances))
+
+  } catch (err) {
+    throw err;
+  }
+}
+
 export const unlockAccount = async params => {
   try {
-    console.log(params)
-
     const client = new ZarClient(config.zarApi)
     await client.initChain()
 

@@ -2,9 +2,10 @@ import {
   UNLOCK_ACCOUNT,
   LOCK_ACCOUNT,
   CREATE_ACCOUNT,
+  SET_BALANCES,
   GET_CDCS,
   CREATE_CDC,
-  GET_PRICES
+  GET_PRICES,
 } from '../../constants'
 
 
@@ -23,6 +24,12 @@ export const createAccount = account => ({
   type: CREATE_ACCOUNT,
   account
 })
+
+export const setBalances = balances => ({
+  type: SET_BALANCES,
+  balances
+})
+
 
 
 /* CDCS */

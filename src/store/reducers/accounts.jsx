@@ -1,7 +1,8 @@
 import {
   UNLOCK_ACCOUNT,
   LOCK_ACCOUNT,
-  CREATE_ACCOUNT
+  CREATE_ACCOUNT,
+  SET_BALANCES
 } from '../../constants'
 
 const initialState = {
@@ -22,6 +23,10 @@ const accounts = (state = initialState, action) => {
     case CREATE_ACCOUNT:
       return Object.assign({}, state, {
         createdAccount: action.account
+      });
+    case SET_BALANCES:
+      return Object.assign({}, state, {
+        balances: action.balances
       });
     default:
       return state

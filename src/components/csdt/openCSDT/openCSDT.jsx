@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 
 const styles = theme => ({
   container: {
-    borderLeft: '1px solid '+colors.border,
     width: '100%',
     minHeight: '100%',
     alignContent: 'flex-start'
@@ -26,27 +25,29 @@ const styles = theme => ({
   openCSDT: {
     marginTop: '32px'
   },
+  back: {
+    marginTop: '32px',
+    marginRight: '12px'
+  },
   heading: {
     marginBottom: '42px'
   },
   infoContainer: {
     marginTop: '48px',
-    padding: '36px 0px',
+    padding: '28px 0px',
     borderTop: '1px solid '+colors.border,
     borderBottom: '1px solid '+colors.border
   },
   infoContainerRight: {
     marginTop: '48px',
-    padding: '36px 0px',
+    padding: '28px 0px',
     borderTop: '1px solid '+colors.border,
     borderBottom: '1px solid '+colors.border,
     borderLeft: '1px solid '+colors.border
   },
   pricePair: {
-    paddingBottom: '8px'
   },
   pricePrice: {
-    paddingBottom: '8px'
   },
   smaller: {
     fontSize: '14px'
@@ -55,12 +56,125 @@ const styles = theme => ({
 
 class OpenCSDT extends Component {
 
+  constructor(props) {
+    super();
+    this.state = {
+      collateral: 0,
+      collateralError: false,
+      generated: 0,
+      generatedError: false,
+      minCollateral: 0.5,
+      maxGenerated: 0,
+      collateralizationRatio: 0,
+      minimumCollateralizationRatio: 150,
+      conversionRatio: 2 //FTM / CSDT
+    };
+
+    this.onChange = this.onChange.bind(this)
+    this.validateCollateral = this.validateCollateral.bind(this)
+    this.validateGenerated = this.validateGenerated.bind(this)
+  }
+
+  onChange(e) {
+
+    const {
+      conversionRatio,
+      minimumCollateralizationRatio
+    } = this.state
+
+    if(e.target.id === 'collateral') {
+      if(!this.validateCollateral(e.target.value))  {
+        return false
+      }
+
+      const maxGenerated = (e.target.value * (1/conversionRatio) * 100 / minimumCollateralizationRatio).toFixed(2)
+      if(this.state.generated > 0) {
+        const collateralizationRatio = e.target.value * (1/conversionRatio) * 100 / this.state.generated
+        this.setState({ maxGenerated: maxGenerated, collateralizationRatio: collateralizationRatio })
+      } else {
+        this.setState({ maxGenerated: maxGenerated, collateralizationRatio: 0 })
+      }
+    }
+
+    if(e.target.id === 'generated') {
+      if(!this.validateGenerated(e.target.value))  {
+        return false
+      }
+
+      if(e.target.value > 0) {
+        const collateralizationRatio = this.state.collateral * (1/conversionRatio) * 100 / e.target.value
+        this.setState({ collateralizationRatio: collateralizationRatio })
+      }
+    }
+
+    let st = {}
+    st[e.target.id] = e.target.value
+    this.setState(st)
+  };
+
+  validateCollateral(val) {
+    const {
+      collateral,
+      minCollateral
+    } = this.state
+
+    if(!val) {
+      val = collateral
+    }
+
+    if(isNaN(val)) {
+      return false
+    }
+
+    this.setState({ collateralError: false })
+
+    if(val < minCollateral) {
+      this.setState({ collateralError: 'Amount is less than minimum collateral' })
+    }
+
+    return true
+  }
+
+  validateGenerated(val) {
+    const {
+      collateral,
+      generated,
+      conversionRatio,
+      minimumCollateralizationRatio
+    } = this.state
+
+    if(!val) {
+      val = generated
+    }
+
+    if(isNaN(val)) {
+      return false
+    }
+    this.setState({ generatedError: false })
+
+    if(val > (collateral * (1/conversionRatio) * 100 / minimumCollateralizationRatio)) {
+      this.setState({ generatedError: 'Amount exceeds maximum generated CSDT' })
+    }
+
+    return true
+  }
+
   nextPath(path) {
     this.props.history.push(path);
   }
 
   render() {
     const { classes } = this.props;
+    const {
+      collateral,
+      collateralError,
+      generated,
+      generatedError,
+      minCollateral,
+      maxGenerated,
+      collateralizationRatio,
+      minimumCollateralizationRatio
+    } = this.state
 
     return (
       <Grid
@@ -84,10 +198,14 @@ class OpenCSDT extends Component {
                 margin="normal"
                 variant="outlined"
                 color="secondary"
+                onChange={ this.onChange }
+                value={ collateral }
+                id="collateral"
+                error={ collateralError }
                 InputProps={{
                   endAdornment: <InputAdornment position="end">FTM</InputAdornment>,
                 }}
-                helperText="Min. FTM required: 0.03 FTM"
+                helperText={"Min. FTM required: "+minCollateral+" FTM"}
               />
             </Grid>
             <Grid item xs={6}>
@@ -97,10 +215,14 @@ class OpenCSDT extends Component {
                 margin="normal"
                 variant="outlined"
                 color="secondary"
+                onChange={ this.onChange }
+                value={ generated }
+                id="generated"
+                error={ generatedError }
                 InputProps={{
-                  endAdornment: <InputAdornment position="end">FTM</InputAdornment>,
+                  endAdornment: <InputAdornment position="end">CSDT</InputAdornment>,
                 }}
-                helperText="Max ZAR available to generate: 1.32 FTM"
+                helperText={"Max CSDT available to generate: "+maxGenerated+" CSDT"}
               />
             </Grid>
             <Grid
@@ -134,20 +256,29 @@ class OpenCSDT extends Component {
               className={ classes.infoContainerRight }>
               <Grid container justify="flex-end" alignItems="flex-start">
                 <Grid item xs={7} className={ classes.pricePair }>
-                  <Typography variant={ 'body1' }>Collateralization ration</Typography>
+                  <Typography variant={ 'body1' }>Collateralization ratio</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                  <Typography variant={ 'h3' }>325.45%</Typography>
+                  <Typography variant={ 'h3' }>{ collateralizationRatio+'%'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' } className={ classes.smaller }>Minimum ratio</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>150.000%</Typography>
+                  <Typography variant={ 'h3' } className={ classes.smaller }>{minimumCollateralizationRatio+'%'}</Typography>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
+              <Button
+                className={ classes.back }
+                onClick={() => this.nextPath('/csdt')}
+                variant="contained"
+                size='medium'
+                color='secondary'
+                >
+                  Back
+              </Button>
               <Button
                 className={ classes.openCSDT }
                 onClick={() => this.nextPath('/csdt/confirm')}

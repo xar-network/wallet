@@ -6,6 +6,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import customTheme from '../theme';
 import Home from '../home'
 import CSDT from '../csdt'
+import Terms from '../terms'
 
 const App = ({ store }) => (
   <MuiThemeProvider theme={ createMuiTheme(customTheme) }>
@@ -16,6 +17,8 @@ const App = ({ store }) => (
         <Route path="/home/:action/:step" component={Home} />
         <Route exact path="/csdt" component={CSDT} />
         <Route exact path="/csdt/:view" component={CSDT} />
+        <Route exact path="/csdt/:view/:action" component={CSDT} />
+        <Route exact path="/terms" component={Terms} />
       </Router>
     </Provider>
   </MuiThemeProvider>

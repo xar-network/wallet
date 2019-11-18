@@ -17,7 +17,7 @@ const customTheme =  {
       main: colors.blue
     },
     secondary: {
-      main: colors.lightGray
+      main: colors.background
     },
     text: {
       primary: colors.lightGray,
@@ -41,7 +41,7 @@ const customTheme =  {
     },
     h1: {
       letterSpacing: '1px',
-      fontSize: '42px',
+      fontSize: '36px',
       fontWeight: '100',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
@@ -76,7 +76,10 @@ const customTheme =  {
   overrides: {
     MuiButton: {
       root: {
-        borderRadius: '0px'
+        borderRadius: '0px',
+        fontSize: '16px',
+        minWidth: '150px',
+        padding: '10px 16px'
       },
       contained: {
         boxShadow: 'none',

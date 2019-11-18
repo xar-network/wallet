@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { colors } from '../theme'
 import NoCSDTs from './noCSDTs'
 import OpenCSDT from './openCSDT'
+import ConfirmCSDT from './confirmCSDT'
+import MyCSDT from './myCSDT'
 import Account from '../account'
 
 const styles = theme => ({
@@ -17,10 +19,13 @@ const styles = theme => ({
   },
   maxHeight: {
     height: '100%'
+  },
+  minHeight: {
+    minHeight: '100%'
   }
 });
 
-class Cdp extends Component {
+class CSDT extends Component {
 
   render() {
     const { classes, match } = this.props;
@@ -33,7 +38,7 @@ class Cdp extends Component {
         justify="flex-start"
         alignItems="flex-start"
       >
-        <Grid item xs={12} md={9} className={classes.maxHeight}>
+        <Grid item xs={12} md={9} className={classes.minHeight}>
           { this.renderScreen(match.params.view) }
         </Grid>
         <Grid item xs={12} md={3} className={classes.maxHeight}>
@@ -47,22 +52,25 @@ class Cdp extends Component {
     switch (view) {
       case 'open':
         return <OpenCSDT />
+      case 'confirm':
+        return <ConfirmCSDT />
+      case 'mycsdt':
+        return <MyCSDT />
       default:
         return <NoCSDTs />
     }
   }
 }
 
-Cdp.propTypes = {
+CSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => {
-  console.log(state)
   const { accounts } = state;
   return {
     accounts: accounts
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(Cdp)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(CSDT)))

@@ -109,10 +109,6 @@ class AccountUnlocked extends Component {
   constructor(props) {
     super();
 
-    if(!props.account) {
-      props.history.push('/');
-    }
-
     this.state = {
       account: props.account,
       walletMenuOpen: false,
@@ -125,9 +121,9 @@ class AccountUnlocked extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (!this.props.account || !this.props.account.privateKey) {
-      this.nextPath('/');
-    }
+    // if (!this.props.account || !this.props.account.privateKey) {
+    //   this.nextPath('/');
+    // }
   }
 
   nextPath(path) {
@@ -147,6 +143,8 @@ class AccountUnlocked extends Component {
 
   handleLogout() {
     lockAccount()
+    sessionStorage.removeItem('xar-csdt-user')
+    this.nextPath('/')
   };
 
   render() {
@@ -265,10 +263,10 @@ class AccountUnlocked extends Component {
 
   renderPrices() {
     const prices = [
-      { denom: 'USD', pair: 'ETH/USD', price: '160.932' },
-      { denom: 'ETH', pair: 'PETH/ETH', price: '1.046' },
-      { denom: 'USD', pair: 'DAI/USD', price: '1.000' },
-      { denom: 'USD', pair: 'MKR/USD', price: '457.226' }
+      { denom: 'USD', pair: 'USD/FTM', price: '1.932' },
+      { denom: 'ETH', pair: 'CSDT/ETH', price: '16.046' },
+      { denom: 'USD', pair: 'USD/BTC', price: '10014.000' },
+      { denom: 'USD', pair: 'USD/ETH', price: '182.226' }
     ]
 
     return prices.map((price) => {
@@ -310,10 +308,23 @@ class AccountUnlocked extends Component {
   }
 
   renderAssets() {
-    const assets = [
-      { denom: 'ftm', name: 'Fantom', balance: '10203.503' },
-      { denom: 'zar', name: 'ZAR Token', balance: '826.45' }
-    ]
+    // const assets = [
+    //   { denom: 'ftm', name: 'Fantom', balance: '10203.503' },
+    //   { denom: 'csdt', name: 'CSDT', balance: '152.02' },
+    //   { denom: 'zar', name: 'ZAR Token', balance: '826.45' }
+    // ]
+    const {
+      classes,
+      balances
+    } = this.props;
+
+    const assets = balances
+
+    if(!assets || assets.length === 0) {
+      return <Grid item xs={12} className={ classes['tableBody1'] }>
+        <Typography variant={ 'h3' }>There are no assets in this wallet</Typography>
+      </Grid>
+    }
 
     let index = 0
     return assets.map((asset) => {
@@ -347,6 +358,7 @@ const mapStateToProps = state => {
   const { accounts } = state;
   return {
     account: accounts.account,
+    balances: accounts.balances
   };
 };
 
