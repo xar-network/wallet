@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment, FormControlLabel, Checkbox } from '@material-ui/core'
+import { Grid, Typography, Button, FormControlLabel, Checkbox } from '@material-ui/core'
 import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+
+import PasswordModal from '../../passwordModal'
 
 const styles = theme => ({
   container: {
@@ -63,6 +65,9 @@ class OpenCSDT extends Component {
     };
 
     this.onChange = this.onChange.bind(this)
+    this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
+    this.submitPrivateKey = this.submitPrivateKey.bind(this)
+    this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
   }
 
   nextPath(path) {
@@ -81,7 +86,7 @@ class OpenCSDT extends Component {
 
   render() {
     const { classes } = this.props;
-    const { termsAccepted } = this.state
+    const { termsAccepted, privateKeyModalOpen } = this.state
 
     return (
       <Grid
@@ -152,7 +157,7 @@ class OpenCSDT extends Component {
                     color="primary"
                   />
                 }
-                label={<span>I accept the <a onClick={ this.termsClicked }>Terms and Conditions</a></span>}
+                label={<span>I accept the <a href="" onClick={ this.termsClicked }>Terms and Conditions</a></span>}
               />
             </Grid>
             <Grid item xs={12}>
@@ -167,7 +172,7 @@ class OpenCSDT extends Component {
               </Button>
               <Button
                 className={ classes.openCSDT }
-                onClick={() => this.nextPath('/csdt/mycsdt')}
+                onClick={() => this.showPrivateKeyModal()}
                 variant="contained"
                 size='medium'
                 color='primary'
@@ -177,8 +182,26 @@ class OpenCSDT extends Component {
             </Grid>
           </Grid>
         </Grid>
+        { privateKeyModalOpen ? this.renderPrivateKeyModal() : null }
       </Grid>
     )
+  }
+
+  showPrivateKeyModal() {
+    this.setState({ privateKeyModalOpen: true })
+  }
+
+  submitPrivateKey() {
+    this.setState({ privateKeyModalOpen: false })
+    this.nextPath('/csdt/mycsdt')
+  }
+
+  closePrivateKeyModal() {
+    this.setState({ privateKeyModalOpen: false })
+  }
+
+  renderPrivateKeyModal() {
+    return <PasswordModal onSubmit={ this.submitPrivateKey } onClose={ this.closePrivateKeyModal } />
   }
 }
 

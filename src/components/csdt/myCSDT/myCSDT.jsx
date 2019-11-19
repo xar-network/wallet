@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment, Paper, Slide } from '@material-ui/core'
+import { Grid, Typography, Button, Paper, Slide } from '@material-ui/core'
 import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
@@ -12,6 +12,7 @@ import GenerateCSDT from '../generateCSDT'
 import PaybackCSDT from '../paybackCSDT'
 import WithdrawCSDT from '../withdrawCSDT'
 import CloseCSDT from '../closeCSDT'
+import PasswordModal from '../../passwordModal'
 
 const styles = theme => ({
   container: {
@@ -95,13 +96,17 @@ class MyCSDT extends Component {
       maxGenerated: 0,
       collateralizationRatio: 0,
       minimumCollateralizationRatio: 150,
-      conversionRatio: 2 //FTM / CSDT
+      conversionRatio: 2, //FTM / CSDT
+      privateKeyModalOpen: false,
     };
 
     this.onChange = this.onChange.bind(this)
     this.validateCollateral = this.validateCollateral.bind(this)
     this.validateGenerated = this.validateGenerated.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
+    this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
+    this.submitPrivateKey = this.submitPrivateKey.bind(this)
+    this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
   }
 
   onChange(e) {
@@ -195,14 +200,9 @@ class MyCSDT extends Component {
   render() {
     const { classes, match, width } = this.props;
     const {
-      collateral,
-      collateralError,
-      generated,
-      generatedError,
-      minCollateral,
-      maxGenerated,
       collateralizationRatio,
-      minimumCollateralizationRatio
+      minimumCollateralizationRatio,
+      privateKeyModalOpen
     } = this.state
 
     return (
@@ -387,6 +387,7 @@ class MyCSDT extends Component {
           </Grid>
         </Grid>
         { match.params.action ? this.renderModal(match.params.action) : null }
+        { privateKeyModalOpen ? this.renderPrivateKeyModal() : null }
       </React.Fragment>
     )
   }
@@ -419,6 +420,23 @@ class MyCSDT extends Component {
     this.nextPath('/csdt/mycsdt')
   }
 
+  showPrivateKeyModal() {
+    this.setState({ privateKeyModalOpen: true })
+  }
+
+  submitPrivateKey() {
+    this.setState({ privateKeyModalOpen: false })
+    this.toggleModal()
+  }
+
+  closePrivateKeyModal() {
+    this.setState({ privateKeyModalOpen: false })
+  }
+
+  renderPrivateKeyModal() {
+    return <PasswordModal onSubmit={ this.submitPrivateKey } onClose={ this.closePrivateKeyModal } />
+  }
+
   renderModal(action) {
 
     const { classes } = this.props
@@ -427,19 +445,19 @@ class MyCSDT extends Component {
 
     switch (action) {
       case 'deposit':
-        content = <DepositCSDT onClose={this.toggleModal} />
+        content = <DepositCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       case 'generate':
-        content = <GenerateCSDT onClose={this.toggleModal} />
+        content = <GenerateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       case 'payback':
-        content = <PaybackCSDT onClose={this.toggleModal} />
+        content = <PaybackCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       case 'withdraw':
-        content = <WithdrawCSDT onClose={this.toggleModal} />
+        content = <WithdrawCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       case 'close':
-        content = <CloseCSDT onClose={this.toggleModal} />
+        content = <CloseCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       default:
 

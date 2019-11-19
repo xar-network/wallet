@@ -130,6 +130,11 @@ const customTheme =  {
       root: {
         borderRadius: '0px'
       }
+    },
+    MuiDialog: {
+      paper: {
+        backgroundColor: colors.background
+      }
     }
     /*,
     MuiList: {

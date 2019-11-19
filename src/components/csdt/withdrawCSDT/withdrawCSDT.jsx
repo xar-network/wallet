@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment, FormControlLabel, Checkbox } from '@material-ui/core'
+import { Grid, Typography, Button, TextField, InputAdornment } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close';
-import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -51,7 +50,7 @@ class WithdrawCSDT extends Component {
   };
 
   render() {
-    const { classes, onClose } = this.props;
+    const { classes, onClose, onSubmit } = this.props;
     const {
       collateral,
       collateralError,
@@ -115,7 +114,7 @@ class WithdrawCSDT extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={onClose}
+            onClick={onSubmit}
             >
               Withdraw
           </Button>

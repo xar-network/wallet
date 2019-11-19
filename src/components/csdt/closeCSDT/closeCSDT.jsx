@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment, FormControlLabel, Checkbox, IconButton } from '@material-ui/core'
+import { Grid, Typography, Button } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close';
-import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -35,11 +34,7 @@ class CloseCSDT extends Component {
 
   constructor(props) {
     super();
-    this.state = {
-      collateral: 0,
-      collateralError: false,
-      minCollateral: 0.5,
-    };
+    this.state = { };
 
     this.onChange = this.onChange.bind(this)
   }
@@ -51,12 +46,7 @@ class CloseCSDT extends Component {
   };
 
   render() {
-    const { classes, onClose } = this.props;
-    const {
-      collateral,
-      collateralError,
-      minCollateral
-    } = this.state
+    const { classes, onClose, onSubmit } = this.props;
 
     return (
       <Grid
@@ -103,7 +93,7 @@ class CloseCSDT extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={onClose}
+            onClick={onSubmit}
             >
               Close
           </Button>
