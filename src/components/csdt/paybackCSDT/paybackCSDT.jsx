@@ -35,11 +35,15 @@ class PaybackCSDT extends Component {
   constructor(props) {
     super();
     this.state = {
-      collateral: 0,
-      collateralError: false,
+      generated: 0,
+      generatedError: false,
+      minCollateral: 50,
+      balances: props.balances,
+      minimumCollateralizationRatio: 150
     };
 
     this.onChange = this.onChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
   onChange(e) {
@@ -48,12 +52,26 @@ class PaybackCSDT extends Component {
     this.setState(st)
   };
 
+  onSubmit() {
+    this.props.onSubmit({ generated: this.state.generated })
+  };
+
   render() {
-    const { classes, onClose, onSubmit } = this.props;
+    const { classes, onClose, calculateRatios, csdt, loading } = this.props;
     const {
-      collateral,
-      collateralError
+      generated,
+      generatedError,
+      maxCollateral,
+      minimumCollateralizationRatio
     } = this.state
+
+    const collateral = csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].amount : 0
+    const collateralDenom =  csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].denom : 'Unknown'
+    const currentGenerated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
+    const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
+
+    const currentRatios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated), minimumCollateralizationRatio)
+    const ratios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated) - parseFloat(generated), minimumCollateralizationRatio)
 
     return (
       <Grid
@@ -63,38 +81,37 @@ class PaybackCSDT extends Component {
         alignItems="flex-start"
         className={ classes.container }>
         <Grid item xs={10} className={classes.header}>
-          <Typography variant="h2" className={ classes.title }>Pay Back CSDT</Typography>
+          <Typography variant="h2" className={ classes.title }>Pay Back {generatedDenom}</Typography>
         </Grid>
         <Grid item xs={2} align="right">
           <CloseIcon onClick={onClose} className={ classes.closeButton }/>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
-          <Typography variant="body1">How much CSDT would you like to pay back?</Typography>
+          <Typography variant="body1">How much {generatedDenom} would you like to pay back?</Typography>
           <TextField
             className={classes.textField}
             margin="normal"
             variant="outlined"
             color="secondary"
             onChange={ this.onChange }
-            value={ collateral }
-            id="collateral"
-            error={ collateralError }
+            value={ generated }
+            id="generated"
+            error={ generatedError }
+            disabled={ loading }
             InputProps={{
-              endAdornment: <InputAdornment position="end">CSDT</InputAdornment>,
+              endAdornment: <InputAdornment position="end">{generatedDenom}</InputAdornment>,
             }}
           />
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
           <Typography variant="body1" className={ classes.infoTitle }>Outstanding CSDT generated</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>0.53 CSDT</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Stability fee @5.0%/year in MKR </Typography>
-          <Typography variant="h3" className={ classes.infoValue }>5.00%/year</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Current price information (FTM/USD)</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>183.01 USD</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Projected liquidation price (FTM/USD)</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>0.29 USD</Typography>
+          <Typography variant="h3" className={ classes.infoValue }> { currentGenerated + ' ' + generatedDenom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Current price information ({collateralDenom}/{generatedDenom})</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.currentPrice + ' ' + generatedDenom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Projected liquidation price ({collateralDenom}/{generatedDenom})</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.liquidationPrice + ' ' + generatedDenom }</Typography>
           <Typography variant="body1" className={ classes.infoTitle }>Projected collateralization ratio</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>92,054.03 %</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.collateralizationRatio }%</Typography>
         </Grid>
         <Grid item xs={6} className={ classes.sepperate }>
           <Button
@@ -103,6 +120,7 @@ class PaybackCSDT extends Component {
             size='medium'
             color='secondary'
             onClick={onClose}
+            disabled={loading}
             >
               Cancel
           </Button>
@@ -113,7 +131,8 @@ class PaybackCSDT extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={onSubmit}
+            onClick={this.onSubmit}
+            disabled={loading}
             >
               Pay Back
           </Button>
@@ -127,4 +146,15 @@ PaybackCSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(PaybackCSDT)))
+const mapStateToProps = state => {
+  const { accounts, csdts, prices, loader } = state;
+  return {
+    balances: accounts.balances,
+    csdt: csdts.csdt,
+    csdtParameters: csdts.csdtParameters,
+    loading: loader.loading,
+    csdtPrices: prices.prices,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(PaybackCSDT)))

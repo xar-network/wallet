@@ -14,8 +14,6 @@ export const getPrices = async params => {
       prices.push(price.result)
     }
 
-    console.log(prices)
-
     return store.dispatch(actions.setPrices(prices))
 
   } catch (err) {

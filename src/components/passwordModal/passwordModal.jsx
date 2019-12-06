@@ -18,13 +18,22 @@ class PasswordModal extends Component {
     this.state = {
       password: "",
       passwordError: false,
+      loading: false
     };
 
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.onKeyDown = this.onKeyDown.bind(this)
   }
 
+  onKeyDown(e) {
+    if (e.which === 13) {
+      this.onSubmit();
+    }
+  };
+
   async onSubmit() {
+    this.setState({ loading: true })
     const user = sessionStorage.getItem('xar-csdt-user')
     const userOjb = JSON.parse(user)
     const keyStoreOjb = JSON.parse(userOjb.keystore)
@@ -49,6 +58,7 @@ class PasswordModal extends Component {
     const { classes } = this.props
 
     const {
+      loading,
       password,
       passwordError
     } = this.state
@@ -79,6 +89,8 @@ class PasswordModal extends Component {
                 id="password"
                 type="password"
                 error={ passwordError }
+                onKeyDown={ this.onKeyDown }
+                disabled={ loading }
               />
             </Grid>
           </Grid>
@@ -89,6 +101,7 @@ class PasswordModal extends Component {
             size='medium'
             color='primary'
             onClick={ this.onSubmit }
+            disabled={ loading }
             >
               Submit
           </Button>
@@ -103,4 +116,4 @@ PasswordModal.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(PasswordModal)
+export default (withStyles(styles)(PasswordModal))

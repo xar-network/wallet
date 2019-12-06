@@ -152,7 +152,6 @@ class OpenCSDT extends Component {
           calculationError: 'Your collateral is below the minimum collateralization ratio',
         })
 
-        console.log('calculationError')
         return
       }
       if(collateralizationRatio < minimumCollateralizationRatio + warningCollateralizationRatio) {
@@ -161,7 +160,6 @@ class OpenCSDT extends Component {
           calculationWarning: 'Your collateral is at risk of being put up for auction'
         })
 
-        console.log('calculationWarning')
         return
       }
     }

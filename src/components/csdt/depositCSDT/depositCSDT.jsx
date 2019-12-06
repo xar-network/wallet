@@ -37,10 +37,14 @@ class DepositCSDT extends Component {
     this.state = {
       collateral: 0,
       collateralError: false,
-      minCollateral: 0.5,
+      minCollateral: 50,
+      balances: props.balances,
+      minimumCollateralizationRatio: 150
     };
 
     this.onChange = this.onChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.getBalance = this.getBalance.bind(this)
   }
 
   onChange(e) {
@@ -49,13 +53,38 @@ class DepositCSDT extends Component {
     this.setState(st)
   };
 
+  getBalance(collateralDenom) {
+    const bal = this.props.balances ? this.props.balances.filter((balance) => {
+      return balance.denom === collateralDenom
+    }) : null
+
+    if(bal && bal.length > 0) {
+      return bal[0]
+    } else {
+      return {}
+    }
+  };
+
+  onSubmit() {
+    this.props.onSubmit({ collateral: this.state.collateral })
+  };
+
   render() {
-    const { classes, onClose, onSubmit } = this.props;
+    const { classes, onClose, calculateRatios, csdt, loading } = this.props;
     const {
       collateral,
       collateralError,
-      minCollateral
+      minCollateral,
+      minimumCollateralizationRatio
     } = this.state
+
+    const currentCollateral = csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].amount : 0
+    const collateralDenom =  csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].denom : 'Unknown'
+    const generated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
+    const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
+
+    const ratios = calculateRatios(parseFloat(collateral) + parseFloat(currentCollateral), collateralDenom, generated, minimumCollateralizationRatio)
+    const balance = this.getBalance(collateralDenom)
 
     return (
       <Grid
@@ -71,7 +100,7 @@ class DepositCSDT extends Component {
           <CloseIcon onClick={onClose} className={ classes.closeButton }/>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
-          <Typography variant="body1">How much FTM would you like to deposit?</Typography>
+          <Typography variant="body1">How much {collateralDenom} would you like to deposit?</Typography>
           <TextField
             className={classes.textField}
             margin="normal"
@@ -82,20 +111,20 @@ class DepositCSDT extends Component {
             id="collateral"
             error={ collateralError }
             InputProps={{
-              endAdornment: <InputAdornment position="end">FTM</InputAdornment>,
+              endAdornment: <InputAdornment position="end">{collateralDenom}</InputAdornment>
             }}
-            helperText={"Min. FTM required: "+minCollateral+" FTM"}
+            helperText={"Min. "+collateralDenom+" required: "+minCollateral+" "+collateralDenom}
           />
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
           <Typography variant="body1" className={ classes.infoTitle }>Current account balance</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>0.00 FTM</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Current price information (FTM/USD)</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>183.01 USD</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Projected liquidation price (FTM/USD)</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>0.29 USD</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ balance.amount + ' ' + balance.denom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Current price information ({collateralDenom}/{generatedDenom})</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.currentPrice + ' ' + generatedDenom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Projected liquidation price ({collateralDenom}/{generatedDenom})</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.liquidationPrice + ' ' + generatedDenom }</Typography>
           <Typography variant="body1" className={ classes.infoTitle }>Projected collateralization ratio</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>92,054.03 %</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ ratios.collateralizationRatio }%</Typography>
         </Grid>
         <Grid item xs={6} className={ classes.sepperate }>
           <Button
@@ -104,6 +133,7 @@ class DepositCSDT extends Component {
             size='medium'
             color='secondary'
             onClick={onClose}
+            disabled={loading}
             >
               Cancel
           </Button>
@@ -114,7 +144,8 @@ class DepositCSDT extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={onSubmit}
+            onClick={this.onSubmit}
+            disabled={loading}
             >
               Deposit
           </Button>
@@ -128,4 +159,15 @@ DepositCSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(DepositCSDT)))
+const mapStateToProps = state => {
+  const { accounts, csdts, prices, loader } = state;
+  return {
+    balances: accounts.balances,
+    csdt: csdts.csdt,
+    csdtParameters: csdts.csdtParameters,
+    loading: loader.loading,
+    csdtPrices: prices.prices,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(DepositCSDT)))

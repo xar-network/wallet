@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 import DepositCSDT from '../depositCSDT'
 import GenerateCSDT from '../generateCSDT'
@@ -13,6 +14,8 @@ import PaybackCSDT from '../paybackCSDT'
 import WithdrawCSDT from '../withdrawCSDT'
 import CloseCSDT from '../closeCSDT'
 import PasswordModal from '../../passwordModal'
+
+import { depositCSDT, withdrawCSDT, generateCSDT, paybackCSDT, startLoader, stopLoader, getCSDTParameters, getPrices, getBalance, getCSDT } from '../../../store/service/api';
 
 const styles = theme => ({
   container: {
@@ -80,7 +83,12 @@ const styles = theme => ({
     bottom: '0px',
     width: '480px',
     backgroundColor: colors.background
-  }
+  },
+  refreshButton: {
+    cursor: 'pointer',
+    height: '44px',
+    fill: colors.border
+  },
 });
 
 class MyCSDT extends Component {
@@ -90,12 +98,12 @@ class MyCSDT extends Component {
 
     this.state = {
       csdtParameters: props.csdtParameters,
-      csdtPrices: props.csdtPrices,
       csdt: props.csdt,
       minimumCollateralizationRatio: 150,
       minCollateral: 50,
       warningCollateralizationRatio: 50,
       privateKeyModalOpen: false,
+      actionParams: null
     };
 
     this.onChange = this.onChange.bind(this)
@@ -115,8 +123,20 @@ class MyCSDT extends Component {
     this.props.history.push(path);
   }
 
+  async onRefresh() {
+    const userString = sessionStorage.getItem('xar-csdt-user')
+    const user = JSON.parse(userString || '{}')
+
+    startLoader()
+    getCSDTParameters()
+    getPrices()
+    getBalance({ address: user.address })
+    await getCSDT({ address: user.address, denom: 'uftm' })
+    stopLoader()
+  }
+
   render() {
-    const { classes, match, width, csdt, calculateRatios } = this.props;
+    const { classes, match, width, csdt, calculateRatios, loading } = this.props;
     const {
       minimumCollateralizationRatio,
       warningCollateralizationRatio,
@@ -157,16 +177,7 @@ class MyCSDT extends Component {
             <Typography variant="h1" className={ classes.title }>CSDT Portal</Typography>
           </Grid>
           <Grid item xs={4} className={classes.headerButton} align='right'>
-            <Button
-              className={ classes.ok }
-              onClick={() => this.nextPath('/csdt/mycsdt/close')}
-              variant="contained"
-              size='medium'
-              color='secondary'
-              disabled={true}
-              >
-                Close
-            </Button>
+            <RefreshIcon onClick={ this.onRefresh } className={ classes.refreshButton }/>
           </Grid>
           <Grid item xs={11} className={classes.body}>
             <Grid container>
@@ -244,7 +255,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
-                      disabled={true}
+                      disabled={ loading }
                       >
                         Deposit
                     </Button>
@@ -253,7 +264,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Max available to withdraw</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>2.8 FTM</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ratios.maxWithdraw + ' ' + collateralDenom }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -262,7 +273,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
-                      disabled={true}
+                      disabled={ loading }
                       >
                         Withdraw
                     </Button>
@@ -291,7 +302,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
-                      disabled={true}
+                      disabled={ loading }
                       >
                         Pay Back
                     </Button>
@@ -300,7 +311,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Max available to generate</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>2.8 CSDT</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ratios.maxGenerated + ' ' + generatedDenom }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -309,7 +320,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
-                      disabled={true}
+                      disabled={ loading }
                       >
                         Generate
                     </Button>
@@ -353,13 +364,64 @@ class MyCSDT extends Component {
     this.nextPath('/csdt/mycsdt')
   }
 
-  showPrivateKeyModal() {
-    this.setState({ privateKeyModalOpen: true })
+  showPrivateKeyModal(params) {
+    this.setState({ privateKeyModalOpen: true, actionParams: params })
   }
 
-  submitPrivateKey() {
+  async submitPrivateKey(signingKey) {
     this.setState({ privateKeyModalOpen: false })
-    this.toggleModal()
+
+    const user = sessionStorage.getItem('xar-csdt-user')
+    const userOjb = JSON.parse(user)
+
+    const { match } = this.props
+    const { actionParams } = this.state
+
+
+    startLoader()
+
+    let response = null;
+
+    switch (match.params.action) {
+      case 'deposit':
+        response = await depositCSDT({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          collateralDenom: 'uftm',
+          collateralChange: actionParams.collateral
+        })
+        break;
+      case 'withdraw':
+        response = await withdrawCSDT({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          collateralDenom: 'uftm',
+          collateralChange: actionParams.collateral
+        })
+        break;
+      case 'generate':
+        response = await generateCSDT({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          collateralDenom: 'uftm',
+          debtChange: actionParams.generated
+        })
+        break;
+      case 'payback':
+        response = await paybackCSDT({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          collateralDenom: 'uftm',
+          debtChange: actionParams.generated
+        })
+        break;
+      case 'close':
+        //ignore
+        break;
+    }
+
+    stopLoader()
+    this.nextPath('/csdt/mycsdt')
   }
 
   closePrivateKeyModal() {
@@ -372,25 +434,25 @@ class MyCSDT extends Component {
 
   renderModal(action) {
 
-    const { classes } = this.props
+    const { classes, calculateRatios } = this.props
 
     let content = null
 
     switch (action) {
       case 'deposit':
-        content = <DepositCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        content = <DepositCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
       case 'generate':
-        content = <GenerateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        content = <GenerateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
       case 'payback':
-        content = <PaybackCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        content = <PaybackCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
       case 'withdraw':
-        content = <WithdrawCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        content = <WithdrawCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
       case 'close':
-        content = <CloseCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        content = <CloseCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
       default:
 
@@ -415,8 +477,8 @@ const mapStateToProps = state => {
   return {
     csdt: csdts.csdt,
     csdtParameters: csdts.csdtParameters,
+    loading: loader.loading,
     csdtPrices: prices.prices,
-    loading: loader.loading
   };
 };
 

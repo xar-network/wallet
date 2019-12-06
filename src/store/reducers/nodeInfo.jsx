@@ -6,7 +6,7 @@ const initialState = {
   nodeInfo: null,
 };
 
-const cdcs = (state = initialState, action) => {
+const nodeInfo = (state = initialState, action) => {
   switch (action.type) {
     case SET_NODE_INFO:
       return Object.assign({}, state, {
@@ -17,4 +17,4 @@ const cdcs = (state = initialState, action) => {
   }
 }
 
-export default cdcs
+export default nodeInfo
