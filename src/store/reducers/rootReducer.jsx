@@ -6,6 +6,8 @@ import tokens from './tokens'
 import loader from './loader'
 import nodeInfo from './nodeInfo'
 import interest from './interest'
+import staking from './staking'
+import supply from './supply'
 
 export default combineReducers({
   csdts,
@@ -14,5 +16,7 @@ export default combineReducers({
   tokens,
   loader,
   nodeInfo,
-  interest
+  interest,
+  supply,
+  staking
 })

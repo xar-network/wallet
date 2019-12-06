@@ -8,6 +8,8 @@ import {
   SET_PENDING_CSDT,
   SET_PRICES,
   SET_INTEREST,
+  SET_STAKING,
+  SET_SUPPLY,
   START_LOADER,
   STOP_LOADER,
   SET_NODE_INFO
@@ -67,6 +69,24 @@ export const setInterest = interest => ({
   type: SET_INTEREST,
   interest
 })
+
+
+
+/* STAKING */
+export const setStaking = staking => ({
+  type: SET_STAKING,
+  staking
+})
+
+
+
+
+/* SUPPLY */
+export const setSupply = supply => ({
+  type: SET_SUPPLY,
+  supply
+})
+
 
 
 /* LOADER */

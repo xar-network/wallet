@@ -11,6 +11,8 @@ import * as actions from '../../store/actions';
 import { getCSDTParameters } from '../../store/service/api/csdts.js';
 import { getPrices } from '../../store/service/api/prices.js';
 import { getInterest } from '../../store/service/api/interest.js';
+import { getSupply } from '../../store/service/api/supply.js';
+import { getStaking } from '../../store/service/api/staking.js';
 
 
 const styles = theme => ({
@@ -101,6 +103,8 @@ class Calculator extends Component {
     getCSDTParameters()
     getPrices()
     getInterest()
+    getSupply()
+    getStaking()
   };
 
   onChange(e) {
@@ -199,7 +203,7 @@ class Calculator extends Component {
   };
 
   render() {
-    const { classes, interest } = this.props;
+    const { classes, interest, staking, supply } = this.props;
     const {
       collateral,
       generated,
@@ -229,6 +233,35 @@ class Calculator extends Component {
     if (interest) {
       _interest = (parseFloat(interest)*100).toFixed(2)
     }
+
+    var recommended = (collateral*currentPrice/2)
+
+    console.log(staking)
+    console.log(supply)
+
+    var bonded = 0
+    var total = 0
+    if (staking) {
+      if (staking.staking) {
+        if (staking.staking.staking) {
+          bonded = parseInt(staking.staking.staking.bonded_tokens)
+        }
+      }
+    }
+    if (supply) {
+      if (supply.supply) {
+        if (supply.supply.supply) {
+          if (supply.supply.supply[0].denom == "ucsdt") {
+            total = supply.supply.supply[0].amount
+          } else if (supply.supply.supply[1].denom == "ucsdt") {
+            total = supply.supply.supply[1].amount
+          }
+        }
+      }
+    }
+    console.log("-------------")
+    console.log(bonded)
+    console.log(total)
 
     return (
       <Grid
@@ -269,7 +302,7 @@ class Calculator extends Component {
                 variant="outlined"
                 color="secondary"
                 onChange={ this.onChange }
-                value={ generated }
+                value={ generated ? generated : recommended }
                 onBlur={ this.validateOnBlur }
                 id="generated"
                 InputProps={{
@@ -331,7 +364,7 @@ class Calculator extends Component {
                   <Typography variant={ 'body1' }>Current Interest</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' }>{ _interest + '%' } UCSDT</Typography>
+                  <Typography variant={ 'h3' }>{ _interest + '%' }</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -351,6 +384,44 @@ class Calculator extends Component {
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
                   <Typography variant={ 'h3' }>{(generated*_interest/100)+' UCSDT'}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              className={ classes.infoContainer }>
+              <Grid container justify="flex-start" alignItems="flex-start">
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Staked</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(bonded/1000000).toFixed(2)+' CSDT'}</Typography>
+                </Grid>
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' }>Bonded %</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' }>{ (bonded/total*100).toFixed(2) + '%' }</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              className={ classes.infoContainerRight }>
+              <Grid container justify="flex-end" alignItems="flex-start">
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Total Supply</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(total/1000000).toFixed(2)+' CSDT'}</Typography>
+                </Grid>
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' }>Target Bonded</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' }>{'67%'}</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -413,12 +484,14 @@ Calculator.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { csdts, prices, interest } = state;
+  const { csdts, prices, interest, supply, staking } = state;
   return {
     csdtParameters: csdts.csdtParameters,
     pendingCsdt: csdts.pendingCsdt,
     csdtPrices: prices.prices,
-    interest: interest.interest.interest
+    interest: interest.interest.interest,
+    staking: staking,
+    supply: supply,
   };
 };
 
