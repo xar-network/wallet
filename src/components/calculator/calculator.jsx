@@ -355,10 +355,10 @@ class Calculator extends Component {
               className={ classes.infoContainer }>
               <Grid container justify="flex-start" alignItems="flex-start">
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Minimum APY (6%)</Typography>
+                  <Typography variant={ 'body1' } >Minimum APY (6%)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(generated*0.06)+' UCSDT'}</Typography>
+                  <Typography variant={ 'h3' } >{(generated*0.06)+' UCSDT'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' }>Current Interest</Typography>
@@ -374,16 +374,16 @@ class Calculator extends Component {
               className={ classes.infoContainerRight }>
               <Grid container justify="flex-end" alignItems="flex-start">
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Maximum APY (30%)</Typography>
+                  <Typography variant={ 'body1' } >Maximum APY (30%)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(generated*0.3)+' UCSDT'}</Typography>
+                  <Typography variant={ 'h3' } >{(generated*0.3).toFixed(4)+' UCSDT'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' }>Current APY</Typography>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Current APY</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' }>{(generated*_interest/100)+' UCSDT'}</Typography>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(generated*_interest/100).toFixed(4)+' UCSDT'}</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -393,10 +393,10 @@ class Calculator extends Component {
               className={ classes.infoContainer }>
               <Grid container justify="flex-start" alignItems="flex-start">
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Staked</Typography>
+                  <Typography variant={ 'body1' } >Staked</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(bonded/1000000).toFixed(2)+' CSDT'}</Typography>
+                  <Typography variant={ 'h3' } >{(bonded/1000000).toFixed(2)+' CSDT'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' }>Bonded %</Typography>
@@ -412,10 +412,10 @@ class Calculator extends Component {
               className={ classes.infoContainerRight }>
               <Grid container justify="flex-end" alignItems="flex-start">
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Total Supply</Typography>
+                  <Typography variant={ 'body1' } >Total Supply</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(total/1000000).toFixed(2)+' CSDT'}</Typography>
+                  <Typography variant={ 'h3' } >{(total/1000000).toFixed(2)+' CSDT'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' }>Target Bonded</Typography>

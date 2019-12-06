@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import { Grid, Typography, Menu, MenuItem } from '@material-ui/core'
 import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined';
+import SendIcon from '@material-ui/icons/Send';
 import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
@@ -103,6 +104,10 @@ const styles = theme => ({
   },
   csdtInfoValue: {
     marginBottom: '30px'
+  },
+  sendIcon: {
+    fill: colors.lightGray,
+    height: '15px'
   }
 });
 
@@ -299,7 +304,10 @@ class AccountUnlocked extends Component {
         <Grid item xs={5} className={ classes.tableHeader }>
           <Typography>ASSET</Typography>
         </Grid>
-        <Grid item xs={7} align='right' className={ classes.tableHeader }>
+        <Grid item xs={3} className={ classes.tableHeader }>
+          <Typography>SEND</Typography>
+        </Grid>
+        <Grid item xs={4} align='right' className={ classes.tableHeader }>
           <Typography>BALANCE</Typography>
         </Grid>
       </React.Fragment>
@@ -336,7 +344,10 @@ class AccountUnlocked extends Component {
         <Grid item xs={5} className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' }>{ asset.denom }</Typography>
         </Grid>
-        <Grid item xs={7} align='right' className={ classes['tableBody' + alternating] }>
+        <Grid item xs={3} className={ classes['tableBody' + alternating] }>
+          <SendIcon className={ classes.sendIcon } />
+        </Grid>
+        <Grid item xs={4} align='right' className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' } noWrap>{ asset.amount + ' ' + asset.denom }</Typography>
         </Grid>
       </React.Fragment>
