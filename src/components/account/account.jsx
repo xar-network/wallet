@@ -8,6 +8,7 @@ import AccountUnlocked from './accountUnlocked'
 import store from '../../store/';
 import * as actions from '../../store/actions';
 import { getBalance, getCSDT } from '../../store/service';
+import { getNodeInfo } from '../../store/service/api'
 
 class Account extends Component {
 
@@ -33,6 +34,7 @@ class Account extends Component {
         this.nextPath('/', props)
       }
     }
+    getNodeInfo()
   }
 
   nextPath(path, props) {
@@ -40,27 +42,28 @@ class Account extends Component {
   }
 
   render () {
-    const { action } = this.props
+    const { action, nodeInfo } = this.props
 
     switch(action) {
       case 'unlocked':
         return <AccountUnlocked />
       case 'unlock':
-        return <AccountUnlock />
+        return <AccountUnlock nodeInfo={ nodeInfo } />
       case 'create':
-        return <AccountCreate />
+        return <AccountCreate nodeInfo={ nodeInfo } />
       case 'options':
-        return <AccountOptions />
+        return <AccountOptions nodeInfo={ nodeInfo } />
       default:
-        return <AccountOptions />
+        return <AccountOptions nodeInfo={ nodeInfo } />
     }
   }
 }
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, nodeInfo } = state;
   return {
-    accounts: accounts
+    accounts: accounts,
+    nodeInfo: nodeInfo.nodeInfo
   };
 };
 

@@ -345,7 +345,7 @@ class OpenCSDT extends Component {
                   <Typography variant={ 'body1' } className={ classes.smaller }>Current price information (UFTM/UCSDT)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>{ currentPrice } UCSDT</Typography>
+                  <Typography variant={ 'h3' } className={ classes.smaller }>{ currentPrice ? currentPrice.toFixed(4) : 0.0000 } UCSDT</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' } className={ classes.smaller }>Liquidation penalty</Typography>

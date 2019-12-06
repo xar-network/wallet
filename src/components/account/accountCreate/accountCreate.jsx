@@ -29,13 +29,31 @@ const styles = theme => ({
     padding: '30px',
     backgroundColor: '#152128',
     height: 'calc(100% - 81px)'
-  }
+  },
+  network: {
+    padding: '24px',
+    backgroundColor: colors.background,
+    borderBottom: '1px solid '+colors.border,
+    borderTop: '1px solid '+colors.border,
+    margin: '0 auto'
+  },
+  dot: {
+    height: '10px',
+    width: '10px',
+    backgroundColor: colors.green,
+    borderRadius: '50%',
+    display: 'inline-block',
+    marginRight: '6px'
+  },
+  inline: {
+    display: 'inline-block'
+  },
 });
 
 class AccountCreate extends Component {
 
   render() {
-    const { classes, match } = this.props;
+    const { classes, match, nodeInfo } = this.props;
 
     return (
       <Grid
@@ -54,6 +72,10 @@ class AccountCreate extends Component {
               <Typography variant="h2">Connect your Wallet</Typography>
             </Grid>
           </Grid>
+        </Grid>
+        <Grid item xs={12} className={classes.network} align={ 'center' }>
+          <div className={ classes.dot }> </div>
+          <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
         </Grid>
         <Grid item xs={12} className={classes.actions}>
           <Grid

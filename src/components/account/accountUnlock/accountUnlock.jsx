@@ -41,7 +41,25 @@ const styles = theme => ({
   },
   error: {
     color: colors.red
-  }
+  },
+  network: {
+    padding: '24px',
+    backgroundColor: colors.background,
+    borderBottom: '1px solid '+colors.border,
+    borderTop: '1px solid '+colors.border,
+    margin: '0 auto'
+  },
+  dot: {
+    height: '10px',
+    width: '10px',
+    backgroundColor: colors.green,
+    borderRadius: '50%',
+    display: 'inline-block',
+    marginRight: '6px'
+  },
+  inline: {
+    display: 'inline-block'
+  },
 });
 
 class AccountUnlock extends Component {
@@ -140,7 +158,7 @@ class AccountUnlock extends Component {
   }
 
   render() {
-    const { classes, loading } = this.props;
+    const { classes, loading, nodeInfo } = this.props;
     const { password, fileName, error } = this.state
 
     return (
@@ -160,6 +178,10 @@ class AccountUnlock extends Component {
               <Typography variant="h2">Connect your Wallet</Typography>
             </Grid>
           </Grid>
+        </Grid>
+        <Grid item xs={12} className={classes.network} align={ 'center' }>
+          <div className={ classes.dot }> </div>
+          <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
         </Grid>
         <Grid item xs={12} className={classes.actions}>
           <Grid
