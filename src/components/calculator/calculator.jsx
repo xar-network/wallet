@@ -302,7 +302,7 @@ class Calculator extends Component {
                 variant="outlined"
                 color="secondary"
                 onChange={ this.onChange }
-                value={ generated ? generated : recommended }
+                value={ generated }
                 onBlur={ this.validateOnBlur }
                 id="generated"
                 InputProps={{
