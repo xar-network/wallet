@@ -10,6 +10,7 @@ import store from '../../store/';
 import * as actions from '../../store/actions';
 import { getCSDTParameters } from '../../store/service/api/csdts.js';
 import { getPrices } from '../../store/service/api/prices.js';
+import { getInterest } from '../../store/service/api/interest.js';
 
 
 const styles = theme => ({
@@ -74,12 +75,15 @@ class Calculator extends Component {
     const maxGenerated = props.pendingCsdt ? props.pendingCsdt.maxGenerated : 0
     const calculationWarning = props.pendingCsdt ? props.pendingCsdt.calculationWarning : false
     const calculationError = props.pendingCsdt ? props.pendingCsdt.calculationError : false
+    const interest = props.pendingCsdt ? props.interest : 0.7
+    console.log(props)
 
     this.state = {
       csdtParameters: props.csdtParameters,
       csdtPrices: props.csdtPrices,
       collateral: collateral,
       generated: generated,
+      interest: interest,
       collateralizationRatio: collateralizationRatio,
       minimumCollateralizationRatio: 150,
       currentPrice: currentPrice,
@@ -96,6 +100,7 @@ class Calculator extends Component {
 
     getCSDTParameters()
     getPrices()
+    getInterest()
   };
 
   onChange(e) {
@@ -194,7 +199,7 @@ class Calculator extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, interest } = this.props;
     const {
       collateral,
       generated,
@@ -219,6 +224,10 @@ class Calculator extends Component {
       errorStyle = {
         color: '#f44336'
       }
+    }
+    var _interest = 0.00
+    if (interest) {
+      _interest = (parseFloat(interest)*100).toFixed(2)
     }
 
     return (
@@ -281,10 +290,10 @@ class Calculator extends Component {
                   <Typography variant={ 'h3' }>{ liquidationPrice } UCSDT</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } className={ classes.smaller }>Current price information (UFTM/UCSDT)</Typography>
+                  <Typography variant={ 'body1' }>Current price (UFTM/UCSDT)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>{ currentPrice ? currentPrice.toFixed(4) : 0.0000 } UCSDT</Typography>
+                  <Typography variant={ 'h3' }>{ currentPrice ? currentPrice.toFixed(4) : 0.0000 } UCSDT</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -300,10 +309,48 @@ class Calculator extends Component {
                   <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{ collateralizationRatio+'%'}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } className={ classes.smaller } style={{ ...warningStyle, ...errorStyle }}>Minimum ratio</Typography>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Minimum ratio</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller } style={{ ...warningStyle, ...errorStyle }}>{minimumCollateralizationRatio+'%'}</Typography>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{minimumCollateralizationRatio+'%'}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              className={ classes.infoContainer }>
+              <Grid container justify="flex-start" alignItems="flex-start">
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Minimum APY (6%)</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(generated*0.06)+' UCSDT'}</Typography>
+                </Grid>
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' }>Current Interest</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' }>{ _interest + '%' } UCSDT</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              className={ classes.infoContainerRight }>
+              <Grid container justify="flex-end" alignItems="flex-start">
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Maximum APY (30%)</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{(generated*0.3)+' UCSDT'}</Typography>
+                </Grid>
+                <Grid item xs={7} className={ classes.pricePairSmall }>
+                  <Typography variant={ 'body1' }>Current APY</Typography>
+                </Grid>
+                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                  <Typography variant={ 'h3' }>{(generated*_interest/100)+' UCSDT'}</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -366,11 +413,12 @@ Calculator.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { csdts, prices } = state;
+  const { csdts, prices, interest } = state;
   return {
     csdtParameters: csdts.csdtParameters,
     pendingCsdt: csdts.pendingCsdt,
-    csdtPrices: prices.prices
+    csdtPrices: prices.prices,
+    interest: interest.interest.interest
   };
 };
 

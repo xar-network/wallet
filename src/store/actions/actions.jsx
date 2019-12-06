@@ -7,6 +7,7 @@ import {
   SET_CSDT,
   SET_PENDING_CSDT,
   SET_PRICES,
+  SET_INTEREST,
   START_LOADER,
   STOP_LOADER,
   SET_NODE_INFO
@@ -57,6 +58,14 @@ export const setPendingCSDT = csdt => ({
 export const setPrices = prices => ({
   type: SET_PRICES,
   prices
+})
+
+
+
+/* INTEREST */
+export const setInterest = interest => ({
+  type: SET_INTEREST,
+  interest
 })
 
 
