@@ -10,6 +10,9 @@ export const SET_PENDING_CSDT = 'SET_PENDING_CSDT'
 export const SET_CSDT_PARAMETERS = 'SET_CSDT_PARAMETERS'
 
 export const SET_PRICES = 'SET_PRICES'
+export const SET_INTEREST = 'SET_INTEREST'
+export const SET_SUPPLY = 'SET_SUPPLY'
+export const SET_STAKING = 'SET_STAKING'
 
 export const SET_TOKENS = 'SET_TOKENS'
 
