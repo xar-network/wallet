@@ -7,6 +7,8 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { lockAccount } from '../../../store/service';
+import { getPrices } from '../../../store/service/api/prices.js';
+import { getNodeInfo } from '../../../store/service/api'
 
 const styles = theme => ({
   container: {
@@ -27,7 +29,7 @@ const styles = theme => ({
   balancesContainer: {
   },
   pricesContainer: {
-    padding: '30px 0px',
+    padding: '00px 0px',
     backgroundColor: colors.background,
     borderBottom: '1px solid '+colors.border
   },
@@ -46,7 +48,8 @@ const styles = theme => ({
   walletIcon: {
     color: colors.white,
     display: 'inline-block',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    cursor: 'pointer'
   },
   walletAddress: {
     display: 'inline-block',
@@ -65,14 +68,13 @@ const styles = theme => ({
     padding: '24px'
   },
   pricePair: {
-    paddingBottom: '32px'
+    padding: '12px 24px'
   },
   pricePrice: {
-    paddingBottom: '32px',
-    paddingRight: '6px'
+    padding: '24px'
   },
   priceHeader: {
-    marginBottom: '30px'
+    padding: '24px',
   },
   network: {
     padding: '24px',
@@ -118,6 +120,9 @@ class AccountUnlocked extends Component {
     this.onWalletOptionsClicked = this.onWalletOptionsClicked.bind(this)
     this.handleWalletOptionsClose = this.handleWalletOptionsClose.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
+
+    getPrices()
+    getNodeInfo()
   };
 
   componentDidUpdate(prevProps) {
@@ -148,7 +153,7 @@ class AccountUnlocked extends Component {
   };
 
   render() {
-    const { classes, account } = this.props;
+    const { classes, account, nodeInfo } = this.props;
     const { walletMenuOpen, walletMenuAnchorEl } = this.state
 
     if(!account) {
@@ -195,9 +200,9 @@ class AccountUnlocked extends Component {
         </Grid>
         <Grid item xs={12} className={classes.network} align={ 'center' }>
           <div className={ classes.dot }> </div>
-          <Typography variant="body2" align={ "center" } className={ classes.inline }>Fantom Mainnet ZAR</Typography>
+          <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
         </Grid>
-        <Grid item xs={10} className={classes.pricesContainer}>
+        <Grid item xs={12} className={classes.pricesContainer}>
           <Grid
             container
             direction="row"
@@ -205,16 +210,6 @@ class AccountUnlocked extends Component {
             alignItems="center">
             { this.renderPricesHeader() }
             { this.renderPrices() }
-          </Grid>
-        </Grid>
-        <Grid item xs={10} className={classes.globalContainer}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center">
-            { this.renderGlobalHeader() }
-            { this.renderGlobalInfo() }
           </Grid>
         </Grid>
       </Grid>
@@ -262,14 +257,18 @@ class AccountUnlocked extends Component {
   }
 
   renderPrices() {
-    const prices = [
-      { denom: 'USD', pair: 'USD/FTM', price: '1.932' },
-      { denom: 'ETH', pair: 'CSDT/ETH', price: '16.046' },
-      { denom: 'USD', pair: 'USD/BTC', price: '10014.000' },
-      { denom: 'USD', pair: 'USD/ETH', price: '182.226' }
-    ]
+    const {
+      csdtPrices,
+      classes
+    } = this.props
 
-    return prices.map((price) => {
+    if(!csdtPrices || csdtPrices.length === 0) {
+      return (<Grid item xs={12} className={ classes['tableBody0'] }>
+        <Typography variant={ 'h3' }>Unable to retrieve asset pricing</Typography>
+      </Grid>)
+    }
+
+    return csdtPrices.map((price) => {
       return this.renderPrice(price)
     })
   }
@@ -280,13 +279,13 @@ class AccountUnlocked extends Component {
     return (
       <React.Fragment>
         <Grid item xs={6} className={ classes.pricePair }>
-          <Typography variant={ 'body1' }>{ price.pair }</Typography>
+          <Typography variant={ 'body1' }>{ price.asset_code ? price.asset_code.toUpperCase() : 'Unknown' + ' / UCSDT' }</Typography>
         </Grid>
         <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-          <Typography variant={ 'h3' }>{ price.price }</Typography>
+          <Typography variant={ 'h3' }>{ parseFloat(price.price).toFixed(4) }</Typography>
         </Grid>
         <Grid item xs={1} className={ classes.pricePrice }>
-          <Typography variant={ 'body1' }>{ price.denom }</Typography>
+          <Typography variant={ 'body1' }>{ price.asset_code }</Typography>
         </Grid>
       </React.Fragment>
     )
@@ -297,10 +296,10 @@ class AccountUnlocked extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={7} className={ classes.tableHeader }>
+        <Grid item xs={5} className={ classes.tableHeader }>
           <Typography>ASSET</Typography>
         </Grid>
-        <Grid item xs={5} className={ classes.tableHeader }>
+        <Grid item xs={7} align='right' className={ classes.tableHeader }>
           <Typography>BALANCE</Typography>
         </Grid>
       </React.Fragment>
@@ -308,11 +307,6 @@ class AccountUnlocked extends Component {
   }
 
   renderAssets() {
-    // const assets = [
-    //   { denom: 'ftm', name: 'Fantom', balance: '10203.503' },
-    //   { denom: 'csdt', name: 'CSDT', balance: '152.02' },
-    //   { denom: 'zar', name: 'ZAR Token', balance: '826.45' }
-    // ]
     const {
       classes,
       balances
@@ -339,11 +333,11 @@ class AccountUnlocked extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={7} className={ classes['tableBody' + alternating] }>
-          <Typography variant={ 'h3' }>{ asset.name }</Typography>
-        </Grid>
         <Grid item xs={5} className={ classes['tableBody' + alternating] }>
-        <Typography variant={ 'h3' } noWrap>{ asset.balance + ' ' + asset.denom }</Typography>
+          <Typography variant={ 'h3' }>{ asset.denom }</Typography>
+        </Grid>
+        <Grid item xs={7} align='right' className={ classes['tableBody' + alternating] }>
+          <Typography variant={ 'h3' } noWrap>{ asset.amount + ' ' + asset.denom }</Typography>
         </Grid>
       </React.Fragment>
     )
@@ -355,10 +349,12 @@ AccountUnlocked.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, prices, nodeInfo } = state;
   return {
     account: accounts.account,
-    balances: accounts.balances
+    balances: accounts.balances,
+    csdtPrices: prices.prices,
+    nodeInfo: nodeInfo.nodeInfo
   };
 };
 

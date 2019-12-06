@@ -10,6 +10,9 @@ import OpenCSDT from './openCSDT'
 import ConfirmCSDT from './confirmCSDT'
 import MyCSDT from './myCSDT'
 import Account from '../account'
+import Loader from '../loader'
+
+import { getCSDTParameters } from '../../store/service/api/csdts.js';
 
 const styles = theme => ({
   container: {
@@ -27,8 +30,23 @@ const styles = theme => ({
 
 class CSDT extends Component {
 
+  constructor(props) {
+    super();
+
+    this.state = {
+      account: props.account,
+      csdtParameters: props.csdtParameters,
+      csdtPrices: props.csdtPrices,
+      csdt: props.csdt
+    };
+
+    this.calculateRatios = this.calculateRatios.bind(this)
+
+    getCSDTParameters()
+  };
+
   render() {
-    const { classes, match } = this.props;
+    const { classes, match, loading } = this.props;
 
     return (
       <Grid
@@ -44,20 +62,73 @@ class CSDT extends Component {
         <Grid item xs={12} md={3} className={classes.maxHeight}>
           <Account action={ 'unlocked' } />
         </Grid>
+        { loading && <Loader /> }
       </Grid>
     )
   }
 
   renderScreen(view) {
+    const { csdt } = this.props;
     switch (view) {
       case 'open':
-        return <OpenCSDT />
+        return <OpenCSDT calculateRatios={this.calculateRatios} />
       case 'confirm':
-        return <ConfirmCSDT />
+        return <ConfirmCSDT calculateRatios={this.calculateRatios} />
       case 'mycsdt':
-        return <MyCSDT />
+        return <MyCSDT calculateRatios={this.calculateRatios} />
       default:
-        return <NoCSDTs />
+        if(csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0) {
+          return <MyCSDT calculateRatios={this.calculateRatios} />
+        } else {
+          return <NoCSDTs calculateRatios={this.calculateRatios} />
+        }
+    }
+  }
+
+  calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio) {
+
+    const { csdtPrices } = this.props
+
+    let currentPrice = 0
+    let liquidationPrice = 0
+    let collateralizationRatio = 0
+    let maxGenerated = 0
+    let maxWithdraw = 0
+
+    if(csdtPrices && csdtPrices.length > 0) {
+      const price = csdtPrices.filter((price) => {
+        return price.asset_code === collateralDenom
+      })
+
+      if(price.length > 0) {
+        currentPrice = parseFloat(price[0].price)
+
+        if(collateral && collateral !== "") {
+          if(generated > 0) {
+            collateralizationRatio = parseFloat(currentPrice * parseFloat(collateral) * 100 / generated).toFixed(4)
+            maxWithdraw = Math.floor((collateral - (collateral * minimumCollateralizationRatio / collateralizationRatio))).toFixed(0)
+            liquidationPrice = (minimumCollateralizationRatio * currentPrice / collateralizationRatio).toFixed(4)
+          }
+
+          maxGenerated = Math.floor(((collateral * currentPrice * 100 / minimumCollateralizationRatio) - generated)).toFixed(0)
+        }
+
+        return {
+          currentPrice,
+          collateralizationRatio,
+          liquidationPrice,
+          maxGenerated,
+          maxWithdraw,
+        }
+      }
+    }
+
+    return {
+      currentPrice,
+      collateralizationRatio,
+      liquidationPrice,
+      maxGenerated,
+      maxWithdraw
     }
   }
 }
@@ -67,9 +138,13 @@ CSDT.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, csdts, prices, loader } = state;
   return {
-    accounts: accounts
+    csdt: csdts.csdt,
+    accounts: accounts.account,
+    csdtParameters: csdts.csdtParameters,
+    csdtPrices: prices.prices,
+    loading: loader.loading
   };
 };
 

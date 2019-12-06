@@ -3,6 +3,8 @@ import { Grid, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Te
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 
+import { unlockAccount } from '../../store/service';
+
 const styles = theme => ({
   container: {
 
@@ -19,6 +21,21 @@ class PasswordModal extends Component {
     };
 
     this.onChange = this.onChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+  }
+
+  async onSubmit() {
+    const user = sessionStorage.getItem('xar-csdt-user')
+    const userOjb = JSON.parse(user)
+    const keyStoreOjb = JSON.parse(userOjb.keystore)
+
+    const response = await unlockAccount({ password: this.state.password, keystore: keyStoreOjb })
+
+    if(response.account != null && response.account.privateKey) {
+      this.props.onSubmit(response.account.privateKey)
+    } else {
+      //show error, invalid password????
+    }
   }
 
   onChange(e) {
@@ -71,7 +88,7 @@ class PasswordModal extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={this.props.onSubmit}
+            onClick={ this.onSubmit }
             >
               Submit
           </Button>

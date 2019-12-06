@@ -5,7 +5,15 @@ export const LOCK_ACCOUNT = 'LOCK_ACCOUNT'
 export const CREATE_ACCOUNT = 'CREATE_ACCOUNT'
 export const SET_BALANCES = 'SET_BALANCES'
 
-export const CREATE_CDC = 'CREATE_CDC'
-export const GET_CDCS = 'GET_CDCS'
+export const SET_CSDT = 'SET_CSDT'
+export const SET_PENDING_CSDT = 'SET_PENDING_CSDT'
+export const SET_CSDT_PARAMETERS = 'SET_CSDT_PARAMETERS'
 
-export const GET_PRICES = 'GET_PRICES'
+export const SET_PRICES = 'SET_PRICES'
+
+export const SET_TOKENS = 'SET_TOKENS'
+
+export const START_LOADER = 'START_LOADER'
+export const STOP_LOADER = 'STOP_LOADER'
+
+export const SET_NODE_INFO = 'SET_NODE_INFO'

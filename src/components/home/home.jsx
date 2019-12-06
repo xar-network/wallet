@@ -5,8 +5,9 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { colors } from '../theme'
-import Summary from '../summary'
+import Calculator from '../calculator'
 import Account from '../account'
+import Loader from '../loader'
 
 const styles = theme => ({
   container: {
@@ -23,7 +24,7 @@ const styles = theme => ({
 class Home extends Component {
 
   render() {
-    const { classes, match } = this.props;
+    const { classes, match, loading } = this.props;
 
     return (
       <Grid
@@ -34,11 +35,12 @@ class Home extends Component {
         alignItems="flex-start"
       >
         <Grid item xs={12} md={9} className={classes.maxHeight}>
-          <Summary />
+          <Calculator />
         </Grid>
         <Grid item xs={12} md={3} className={classes.maxHeight}>
           <Account action={ match.params.action } />
         </Grid>
+        { loading && <Loader /> }
       </Grid>
     )
   }
@@ -48,4 +50,11 @@ Home.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Home)))
+const mapStateToProps = state => {
+  const { loader } = state;
+  return {
+    loading: loader.loading
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Home)))

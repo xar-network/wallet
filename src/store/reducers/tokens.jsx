@@ -1,20 +1,20 @@
 import {
-  SET_PRICES
+  SET_TOKENS
 } from '../../constants'
 
 const initialState = {
-  prices: null
+  tokens: null
 };
 
-const prices = (state = initialState, action) => {
+const tokens = (state = initialState, action) => {
   switch (action.type) {
-    case SET_PRICES:
+    case SET_TOKENS:
       return Object.assign({}, state, {
-        prices: action.prices
+        tokens: action.tokens
       });
     default:
       return state
   }
 }
 
-export default prices
+export default tokens

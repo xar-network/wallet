@@ -1,20 +1,20 @@
 import {
-  SET_PRICES
+  SET_NODE_INFO,
 } from '../../constants'
 
 const initialState = {
-  prices: null
+  nodeInfo: null,
 };
 
-const prices = (state = initialState, action) => {
+const cdcs = (state = initialState, action) => {
   switch (action.type) {
-    case SET_PRICES:
+    case SET_NODE_INFO:
       return Object.assign({}, state, {
-        prices: action.prices
+        nodeInfo: action.nodeInfo
       });
     default:
       return state
   }
 }
 
-export default prices
+export default cdcs

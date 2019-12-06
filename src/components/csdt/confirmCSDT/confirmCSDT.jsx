@@ -6,6 +6,8 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { createCSDT } from '../../../store/service/api/csdts.js';
+
 import PasswordModal from '../../passwordModal'
 
 const styles = theme => ({
@@ -56,18 +58,21 @@ const styles = theme => ({
   }
 });
 
-class OpenCSDT extends Component {
+class ConfirmCSDT extends Component {
 
   constructor(props) {
     super();
     this.state = {
-      termsAccepted: false
+      termsAccepted: false,
+      pendingCsdt: props.pendingCsdt
     };
 
     this.onChange = this.onChange.bind(this)
     this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
     this.submitPrivateKey = this.submitPrivateKey.bind(this)
     this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
+    this.onFinalize = this.onFinalize.bind(this)
+    this.validateTermsAndConditions = this.validateTermsAndConditions.bind(this)
   }
 
   nextPath(path) {
@@ -85,7 +90,7 @@ class OpenCSDT extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, pendingCsdt } = this.props;
     const { termsAccepted, privateKeyModalOpen } = this.state
 
     return (
@@ -101,7 +106,7 @@ class OpenCSDT extends Component {
         <Grid item xs={11} className={classes.body}>
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h2" className={ classes.heading }>Collateralize & Generate FTM</Typography>
+              <Typography variant="h2" className={ classes.heading }>Collateralize UFTM & Generate UCSDT</Typography>
             </Grid>
             <Grid item xs={6} className={ classes.infoContainer }>
               <Grid container justify="flex-start" alignItems="flex-start">
@@ -109,7 +114,7 @@ class OpenCSDT extends Component {
                   <Typography variant={ 'body1' }>Collateral</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                  <Typography variant={ 'h3' }>0.5 FTM</Typography>
+                  <Typography variant={ 'h3' }>{ pendingCsdt ? pendingCsdt.collateral : 'Unknown' } UFTM</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -119,7 +124,7 @@ class OpenCSDT extends Component {
                   <Typography variant={ 'body1' }>Generate</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                  <Typography variant={ 'h3' }>0.2 CSDT</Typography>
+                  <Typography variant={ 'h3' }>{ pendingCsdt ? pendingCsdt.generated : 'Unknown' } UCSDT</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -130,16 +135,13 @@ class OpenCSDT extends Component {
               <Typography variant={ 'body1' }>The following occurs when a CSDT is collateralized</Typography>
               <ol>
                 <Typography variant={ 'body1' }>
-                  <li>Your FTM is converted into cFTM</li>
+                  <li>Your UFTM is locked up</li>
                 </Typography>
                 <Typography variant={ 'body1' }>
-                  <li>The generated cFTM is locked up</li>
+                  <li>UCSDT is generated based on the collateralization ratio and collateralized amount</li>
                 </Typography>
                 <Typography variant={ 'body1' }>
-                  <li>CSDT is generated based on the collateralization ration and collateralized amount</li>
-                </Typography>
-                <Typography variant={ 'body1' }>
-                  <li>CSDT is transferred to your account</li>
+                  <li>UCSDT is transferred to your account</li>
                 </Typography>
               </ol>
             </Grid>
@@ -157,7 +159,7 @@ class OpenCSDT extends Component {
                     color="primary"
                   />
                 }
-                label={<span>I accept the <a href="" onClick={ this.termsClicked }>Terms and Conditions</a></span>}
+                label={<span>I accept the terms that this is unaudited software and I will proceed with caution.</span>}
               />
             </Grid>
             <Grid item xs={12}>
@@ -172,7 +174,7 @@ class OpenCSDT extends Component {
               </Button>
               <Button
                 className={ classes.openCSDT }
-                onClick={() => this.showPrivateKeyModal()}
+                onClick={ this.onFinalize }
                 variant="contained"
                 size='medium'
                 color='primary'
@@ -187,13 +189,51 @@ class OpenCSDT extends Component {
     )
   }
 
+  onFinalize() {
+    if(this.validateTermsAndConditions()) {
+      this.showPrivateKeyModal()
+    }
+  }
+
+  validateTermsAndConditions(val) {
+    const {
+      termsAccepted
+    } = this.state
+
+    if(!val) {
+      val = termsAccepted
+    }
+
+    this.setState({ termsAcceptedError: false })
+
+    if(termsAccepted !== true) {
+      this.setState({ termsAcceptedError: 'You need to accept the terms and conditions' })
+    }
+
+    return true
+  }
+
   showPrivateKeyModal() {
     this.setState({ privateKeyModalOpen: true })
   }
 
-  submitPrivateKey() {
+  submitPrivateKey(signingKey) {
     this.setState({ privateKeyModalOpen: false })
-    this.nextPath('/csdt/mycsdt')
+
+    const { pendingCsdt } = this.props
+
+    const user = sessionStorage.getItem('xar-csdt-user')
+    const userOjb = JSON.parse(user)
+
+    createCSDT({
+      privateKey: signingKey,
+      fromAddress: userOjb.address,
+      collateralDenom: 'uftm',
+      collateralChange: pendingCsdt.collateral,
+      debtChange: pendingCsdt.generated
+    })
+
+    // this.nextPath('/csdt/mycsdt')
   }
 
   closePrivateKeyModal() {
@@ -205,8 +245,16 @@ class OpenCSDT extends Component {
   }
 }
 
-OpenCSDT.propTypes = {
+ConfirmCSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(OpenCSDT)))
+const mapStateToProps = state => {
+  const { accounts, csdts } = state;
+  return {
+    accounts: accounts.account,
+    pendingCsdt: csdts.pendingCsdt
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(ConfirmCSDT)))

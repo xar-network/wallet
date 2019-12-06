@@ -7,7 +7,7 @@ import AccountUnlock from './accountUnlock'
 import AccountUnlocked from './accountUnlocked'
 import store from '../../store/';
 import * as actions from '../../store/actions';
-import { getBalance } from '../../store/service';
+import { getBalance, getCSDT } from '../../store/service';
 
 class Account extends Component {
 
@@ -26,7 +26,8 @@ class Account extends Component {
 
     if(user.address && user.keystore) {
       store.dispatch(actions.unlockAccount(user));
-      getBalance({ address: user.address})
+      getBalance({ address: user.address })
+      getCSDT({ address: user.address, denom: 'uftm' })
     } else {
       if(props.match && props.match.path.includes('/csdt')) {
         this.nextPath('/', props)

@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment } from '@material-ui/core'
-import { colors } from '../../theme'
+import { Grid, Typography, TextField, InputAdornment,  } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import store from '../../../store/';
-import * as actions from '../../../store/actions';
+import { colors } from '../theme'
+
+import store from '../../store/';
+import * as actions from '../../store/actions';
+import { getCSDTParameters } from '../../store/service/api/csdts.js';
+import { getPrices } from '../../store/service/api/prices.js';
+
 
 const styles = theme => ({
   container: {
@@ -32,6 +36,7 @@ const styles = theme => ({
     marginRight: '12px'
   },
   heading: {
+    marginTop: '42px',
     marginBottom: '42px'
   },
   infoContainer: {
@@ -52,11 +57,11 @@ const styles = theme => ({
   pricePrice: {
   },
   smaller: {
-    marginTop: '6px'
+    fontSize: '14px'
   }
 });
 
-class OpenCSDT extends Component {
+class Calculator extends Component {
 
   constructor(props) {
     super();
@@ -71,40 +76,35 @@ class OpenCSDT extends Component {
     const calculationError = props.pendingCsdt ? props.pendingCsdt.calculationError : false
 
     this.state = {
+      csdtParameters: props.csdtParameters,
+      csdtPrices: props.csdtPrices,
       collateral: collateral,
-      collateralError: false,
       generated: generated,
-      generatedError: false,
-      minCollateral: 50,
-      maxGenerated: maxGenerated,
       collateralizationRatio: collateralizationRatio,
       minimumCollateralizationRatio: 150,
-      warningCollateralizationRatio: 50,
       currentPrice: currentPrice,
       liquidationPrice: liquidationPrice,
+      maxGenerated: maxGenerated,
+      warningCollateralizationRatio: 50,
       calculationWarning: calculationWarning,
       calculationError: calculationError
     };
 
+    this.calculateRatios = this.calculateRatios.bind(this)
     this.onChange = this.onChange.bind(this)
-    this.validateCollateral = this.validateCollateral.bind(this)
-    this.validateGenerated = this.validateGenerated.bind(this)
-    this.submitCollateralize = this.submitCollateralize.bind(this)
     this.validateOnBlur = this.validateOnBlur.bind(this)
-  }
+
+    getCSDTParameters()
+    getPrices()
+  };
 
   onChange(e) {
-
     const {
       minimumCollateralizationRatio
     } = this.state
 
     if(e.target.id === 'collateral') {
-      if(!this.validateCollateral(e.target.value))  {
-        return false
-      }
-
-      const ratios = this.props.calculateRatios(e.target.value, 'uftm', this.state.generated, minimumCollateralizationRatio)
+      const ratios = this.calculateRatios(e.target.value, 'uftm', this.state.generated, minimumCollateralizationRatio)
 
       this.setState({
         collateral: e.target.value,
@@ -114,11 +114,7 @@ class OpenCSDT extends Component {
         maxGenerated: ratios.maxGenerated
       })
     } else if(e.target.id === 'generated') {
-      if(!this.validateGenerated(e.target.value))  {
-        return false
-      }
-
-      const ratios = this.props.calculateRatios(this.state.collateral, 'uftm', e.target.value, minimumCollateralizationRatio)
+      const ratios = this.calculateRatios(this.state.collateral, 'uftm', e.target.value, minimumCollateralizationRatio)
 
       this.setState({
         generated: e.target.value,
@@ -136,6 +132,7 @@ class OpenCSDT extends Component {
   };
 
   validateOnBlur() {
+
     const {
       collateral,
       generated,
@@ -147,12 +144,13 @@ class OpenCSDT extends Component {
 
     if(collateral && collateral !== "" && generated && generated !== "" && generated > 0) {
 
+      this.setPendingCSDT()
+
       if(collateralizationRatio < minimumCollateralizationRatio) {
         this.setState({
           calculationError: 'Your collateral is below the minimum collateralization ratio',
         })
 
-        console.log('calculationError')
         return
       }
       if(collateralizationRatio < minimumCollateralizationRatio + warningCollateralizationRatio) {
@@ -161,7 +159,6 @@ class OpenCSDT extends Component {
           calculationWarning: 'Your collateral is at risk of being put up for auction'
         })
 
-        console.log('calculationWarning')
         return
       }
     }
@@ -172,94 +169,35 @@ class OpenCSDT extends Component {
     })
   };
 
-  validateCollateral(val) {
-    const {
-      collateral,
-      minCollateral
-    } = this.state
-
-    if(!val) {
-      val = collateral
-    }
-
-    if(isNaN(val)) {
-      return false
-    }
-
-    this.setState({ collateralError: false })
-
-    if(val < minCollateral) {
-      this.setState({ collateralError: 'Amount is less than minimum collateral' })
-    }
-
-    return true
-  }
-
-  validateGenerated(val) {
+  setPendingCSDT() {
     const {
       collateral,
       generated,
+      collateralizationRatio,
+      liquidationPrice,
+      currentPrice,
       maxGenerated,
-      minimumCollateralizationRatio
+      calculationWarning,
+      calculationError
     } = this.state
 
-    if(!val) {
-      val = generated
-    }
-
-    if(isNaN(val)) {
-      return false
-    }
-    this.setState({ generatedError: false })
-
-    if(val > (1*maxGenerated)) {
-      this.setState({ generatedError: 'Amount exceeds maximum generated UCSDT' })
-    }
-
-    return true
-  }
-
-  nextPath(path) {
-    this.props.history.push(path);
-  }
-
-  submitCollateralize() {
-    if(this.validateCollateral() && this.validateGenerated()) {
-
-      const {
-        collateral,
-        generated,
-        collateralizationRatio,
-        liquidationPrice,
-        currentPrice,
-        maxGenerated,
-        calculationWarning,
-        calculationError
-      } = this.state
-
-      const result = store.dispatch(actions.setPendingCSDT({
-        collateral: collateral,
-        generated: generated,
-        collateralizationRatio: collateralizationRatio,
-        liquidationPrice: liquidationPrice,
-        currentPrice: currentPrice,
-        maxGenerated: maxGenerated,
-        calculationWarning: calculationWarning,
-        calculationError: calculationError
-      }))
-
-      this.nextPath('/csdt/confirm')
-    }
-  }
+    const result = store.dispatch(actions.setPendingCSDT({
+      collateral: collateral,
+      generated: generated,
+      collateralizationRatio: collateralizationRatio,
+      liquidationPrice: liquidationPrice,
+      currentPrice: currentPrice,
+      maxGenerated: maxGenerated,
+      calculationWarning: calculationWarning,
+      calculationError: calculationError
+    }))
+  };
 
   render() {
     const { classes } = this.props;
     const {
       collateral,
-      collateralError,
       generated,
-      generatedError,
-      minCollateral,
       maxGenerated,
       collateralizationRatio,
       minimumCollateralizationRatio,
@@ -293,10 +231,10 @@ class OpenCSDT extends Component {
         <Grid item xs={11} className={classes.header}>
           <Typography variant="h1" className={ classes.title }>CSDT Portal</Typography>
         </Grid>
-        <Grid item xs={11} className={classes.body}>
+        <Grid item xs={11}>
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h2" className={ classes.heading }>Collateralize UFTM & Generate UCSDT</Typography>
+              <Typography variant="h2" className={ classes.heading }>Collateralization calculator</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body1">How much UFTM would you like to collateralize?</Typography>
@@ -308,11 +246,10 @@ class OpenCSDT extends Component {
                 onChange={ this.onChange }
                 value={ collateral }
                 id="collateral"
-                error={ collateralError }
+                onBlur={ this.validateOnBlur }
                 InputProps={{
                   endAdornment: <InputAdornment position="end">UFTM</InputAdornment>,
                 }}
-                helperText={"Min. UFTM required: "+minCollateral+" UFTM"}
               />
             </Grid>
             <Grid item xs={6}>
@@ -324,8 +261,8 @@ class OpenCSDT extends Component {
                 color="secondary"
                 onChange={ this.onChange }
                 value={ generated }
+                onBlur={ this.validateOnBlur }
                 id="generated"
-                error={ generatedError }
                 InputProps={{
                   endAdornment: <InputAdornment position="end">UCSDT</InputAdornment>,
                 }}
@@ -347,13 +284,7 @@ class OpenCSDT extends Component {
                   <Typography variant={ 'body1' } className={ classes.smaller }>Current price information (UFTM/UCSDT)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>{ currentPrice } UCSDT</Typography>
-                </Grid>
-                <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } className={ classes.smaller }>Liquidation penalty</Typography>
-                </Grid>
-                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>0.000%</Typography>
+                  <Typography variant={ 'h3' } className={ classes.smaller }>{ currentPrice ? currentPrice.toFixed(4) : 0.0000 } UCSDT</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -374,50 +305,73 @@ class OpenCSDT extends Component {
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
                   <Typography variant={ 'h3' } className={ classes.smaller } style={{ ...warningStyle, ...errorStyle }}>{minimumCollateralizationRatio+'%'}</Typography>
                 </Grid>
-                <Grid item xs={7} className={ classes.pricePairSmall }>
-                  <Typography variant={ 'body1' } className={ classes.smaller }>Stability Fee</Typography>
-                </Grid>
-                <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } className={ classes.smaller }>0.000%</Typography>
-                </Grid>
               </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                className={ classes.back }
-                onClick={() => this.nextPath('/csdt')}
-                variant="contained"
-                size='medium'
-                color='secondary'
-                >
-                  Back
-              </Button>
-              <Button
-                className={ classes.openCSDT }
-                onClick={ this.submitCollateralize }
-                variant="contained"
-                size='medium'
-                color='primary'
-                >
-                  Collateralize and Generate
-              </Button>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
     )
-  }
+  };
+
+  calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio) {
+
+    const { csdtPrices } = this.props
+
+    let currentPrice = 0
+    let liquidationPrice = 0
+    let collateralizationRatio = 0
+    let maxGenerated = 0
+    let maxWithdraw = 0
+
+    if(csdtPrices && csdtPrices.length > 0) {
+      const price = csdtPrices.filter((price) => {
+        return price.asset_code === collateralDenom
+      })
+
+      if(price.length > 0) {
+        currentPrice = parseFloat(price[0].price)
+
+        if(collateral && collateral !== "") {
+          if(generated > 0) {
+            collateralizationRatio = parseFloat(currentPrice * parseFloat(collateral) * 100 / generated).toFixed(4)
+            maxWithdraw = Math.floor((collateral - (collateral * minimumCollateralizationRatio / collateralizationRatio))).toFixed(0)
+            liquidationPrice = (minimumCollateralizationRatio * currentPrice / collateralizationRatio).toFixed(4)
+          }
+
+          maxGenerated = Math.floor(((collateral * currentPrice * 100 / minimumCollateralizationRatio) - generated)).toFixed(0)
+        }
+
+        return {
+          currentPrice,
+          collateralizationRatio,
+          liquidationPrice,
+          maxGenerated,
+          maxWithdraw,
+        }
+      }
+    }
+
+    return {
+      currentPrice,
+      collateralizationRatio,
+      liquidationPrice,
+      maxGenerated,
+      maxWithdraw
+    }
+  };
 }
 
-OpenCSDT.propTypes = {
+Calculator.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => {
   const { csdts, prices } = state;
   return {
+    csdtParameters: csdts.csdtParameters,
     pendingCsdt: csdts.pendingCsdt,
+    csdtPrices: prices.prices
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(OpenCSDT)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Calculator)))

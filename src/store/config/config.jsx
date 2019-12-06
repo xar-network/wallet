@@ -1,5 +1,6 @@
 const config = {
-  zarApi: 'https://smhuzpepz8.execute-api.eu-west-1.amazonaws.com/testnet'
+  // xarApi: 'http://localhost:1317'
+  xarApi: 'https://node.xar.network'
 }
 
 module.exports = config

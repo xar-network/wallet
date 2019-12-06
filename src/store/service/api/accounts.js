@@ -1,12 +1,12 @@
 import store from '../../../store/';
 import * as actions from '../../actions';
 import config from '../../config';
-import ZarClient from '@zar-network/javascript-sdk';
-import { crypto } from '@zar-network/javascript-sdk';
+import XarClient from '@xar-network/javascript-sdk';
+import { crypto } from '@xar-network/javascript-sdk';
 
 export const getBalance = async params => {
   try {
-    const client = new ZarClient(config.zarApi)
+    const client = new XarClient(config.xarApi)
     await client.initChain()
 
     const balances = await client.getBalance(params.address)
@@ -20,8 +20,10 @@ export const getBalance = async params => {
 
 export const unlockAccount = async params => {
   try {
-    const client = new ZarClient(config.zarApi)
+    const client = new XarClient(config.xarApi)
     await client.initChain()
+
+    store.dispatch(actions.startLoader())
 
     const acc = await client.recoverAccountFromKeystore(params.keystore, params.password)
     acc.keystore = params.keystore
@@ -42,7 +44,7 @@ export const lockAccount = async params => {
 
 export const createAccount = async params => {
   try {
-    const client = new ZarClient(config.zarApi)
+    const client = new XarClient(config.xarApi)
     await client.initChain()
 
     const acc = await client.createAccountWithMneomnic()

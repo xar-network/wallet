@@ -87,22 +87,18 @@ class MyCSDT extends Component {
 
   constructor(props) {
     super();
+
     this.state = {
-      collateral: 0,
-      collateralError: false,
-      generated: 0,
-      generatedError: false,
-      minCollateral: 0.5,
-      maxGenerated: 0,
-      collateralizationRatio: 0,
+      csdtParameters: props.csdtParameters,
+      csdtPrices: props.csdtPrices,
+      csdt: props.csdt,
       minimumCollateralizationRatio: 150,
-      conversionRatio: 2, //FTM / CSDT
+      minCollateral: 50,
+      warningCollateralizationRatio: 50,
       privateKeyModalOpen: false,
     };
 
     this.onChange = this.onChange.bind(this)
-    this.validateCollateral = this.validateCollateral.bind(this)
-    this.validateGenerated = this.validateGenerated.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
     this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
     this.submitPrivateKey = this.submitPrivateKey.bind(this)
@@ -110,104 +106,47 @@ class MyCSDT extends Component {
   }
 
   onChange(e) {
-
-    const {
-      conversionRatio,
-      minimumCollateralizationRatio
-    } = this.state
-
-    if(e.target.id === 'collateral') {
-      if(!this.validateCollateral(e.target.value))  {
-        return false
-      }
-
-      const maxGenerated = (e.target.value * (1/conversionRatio) * 100 / minimumCollateralizationRatio).toFixed(2)
-      if(this.state.generated > 0) {
-        const collateralizationRatio = e.target.value * (1/conversionRatio) * 100 / this.state.generated
-        this.setState({ maxGenerated: maxGenerated, collateralizationRatio: collateralizationRatio })
-      } else {
-        this.setState({ maxGenerated: maxGenerated, collateralizationRatio: 0 })
-      }
-    }
-
-    if(e.target.id === 'generated') {
-      if(!this.validateGenerated(e.target.value))  {
-        return false
-      }
-
-      if(e.target.value > 0) {
-        const collateralizationRatio = this.state.collateral * (1/conversionRatio) * 100 / e.target.value
-        this.setState({ collateralizationRatio: collateralizationRatio })
-      }
-    }
-
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)
   };
-
-  validateCollateral(val) {
-    const {
-      collateral,
-      minCollateral
-    } = this.state
-
-    if(!val) {
-      val = collateral
-    }
-
-    if(isNaN(val)) {
-      return false
-    }
-
-    this.setState({ collateralError: false })
-
-    if(val < minCollateral) {
-      this.setState({ collateralError: 'Amount is less than minimum collateral' })
-    }
-
-    return true
-  }
-
-  validateGenerated(val) {
-    const {
-      collateral,
-      generated,
-      conversionRatio,
-      minimumCollateralizationRatio
-    } = this.state
-
-    if(!val) {
-      val = generated
-    }
-
-    if(isNaN(val)) {
-      return false
-    }
-    this.setState({ generatedError: false })
-
-    if(val > (collateral * (1/conversionRatio) * 100 / minimumCollateralizationRatio)) {
-      this.setState({ generatedError: 'Amount exceeds maximum generated CSDT' })
-    }
-
-    return true
-  }
 
   nextPath(path) {
     this.props.history.push(path);
   }
 
   render() {
-    const { classes, match, width } = this.props;
+    const { classes, match, width, csdt, calculateRatios } = this.props;
     const {
-      collateralizationRatio,
       minimumCollateralizationRatio,
+      warningCollateralizationRatio,
       privateKeyModalOpen
     } = this.state
 
+    const collateral = csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].amount : 0
+    const collateralDenom =  csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].denom : 'Unknown'
+    const generated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
+    const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
+
+    const ratios = calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio)
+
+    let warningStyle = {}
+    let errorStyle = {}
+
+    if(ratios.collateralizationRatio < minimumCollateralizationRatio + warningCollateralizationRatio) {
+      warningStyle = {
+        color: 'orange'
+      }
+    }
+
+    if(ratios.collateralizationRatio < minimumCollateralizationRatio) {
+      errorStyle = {
+        color: '#f44336'
+      }
+    }
+
     return (
       <React.Fragment>
-
         <Grid
           container
           direction="row"
@@ -224,6 +163,7 @@ class MyCSDT extends Component {
               variant="contained"
               size='medium'
               color='secondary'
+              disabled={true}
               >
                 Close
             </Button>
@@ -237,22 +177,22 @@ class MyCSDT extends Component {
                 className={ classes.infoContainer }>
                 <Grid container justify="flex-start" alignItems="flex-start" spacing={2}>
                   <Grid item xs={7} className={ classes.pricePair }>
-                    <Typography variant={ 'body1' }>Liquidation price (FTM/USD)</Typography>
+                    <Typography variant={ 'body1' }>Liquidation price (UFTM/UCSDT)</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' }>1.4 USD</Typography>
+                    <Typography variant={ 'h3' }>{ ratios.liquidationPrice } UCSDT</Typography>
                   </Grid>
                   <Grid item xs={7} className={ classes.pricePairSmall }>
-                    <Typography variant={ 'body1' }>Current price information (FTM/USD)</Typography>
+                    <Typography variant={ 'body1' }>Current price information (UFTM/UCSDT)</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' }>2.8 USD</Typography>
+                    <Typography variant={ 'h3' }>{ ratios.currentPrice } UCSDT</Typography>
                   </Grid>
                   <Grid item xs={7} className={ classes.pricePairSmall }>
                     <Typography variant={ 'body1' }>Liquidation penalty</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' }>13.000%</Typography>
+                    <Typography variant={ 'h3' }>0.000%</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -263,16 +203,22 @@ class MyCSDT extends Component {
                 className={ classes.infoContainerRight }>
                 <Grid container justify={ isWidthUp('lg', width) ? "flex-end" : 'flex-start'} alignItems="flex-start" spacing={2}>
                   <Grid item xs={7} className={ classes.pricePair }>
-                    <Typography variant={ 'body1' }>Collateralization ratio</Typography>
+                    <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Collateralization ratio</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' }>{ collateralizationRatio+'%'}</Typography>
+                    <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{ ratios.collateralizationRatio+'%'}</Typography>
                   </Grid>
                   <Grid item xs={7} className={ classes.pricePairSmall }>
-                    <Typography variant={ 'body1' }>Minimum ratio</Typography>
+                    <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Minimum ratio</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' }>{minimumCollateralizationRatio+'%'}</Typography>
+                    <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{ minimumCollateralizationRatio+'%' }</Typography>
+                  </Grid>
+                  <Grid item xs={7} className={ classes.pricePairSmall }>
+                    <Typography variant={ 'body1' }>Stability Fee</Typography>
+                  </Grid>
+                  <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
+                    <Typography variant={ 'h3' }>0.000%</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -283,14 +229,13 @@ class MyCSDT extends Component {
                 className={ classes.infoContainer }>
                 <Grid container direction="row" justify="flex-start" alignItems="center" spacing={1}>
                   <Grid item xs={11} className={ classes.pricePair }>
-                    <Typography variant={ 'body1' } className={ classes.larger }>FTM Collateral</Typography>
+                    <Typography variant={ 'body1' } className={ classes.larger }>Collateral</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePair }>
                     <Typography variant={ 'body1' } className={ classes.smaller }>Deposited</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>1.4 FTM</Typography>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>2.8 USD</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ collateral + ' ' + collateralDenom }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -299,6 +244,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
+                      disabled={true}
                       >
                         Deposit
                     </Button>
@@ -308,7 +254,6 @@ class MyCSDT extends Component {
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
                     <Typography variant={ 'h3' } className={ classes.smaller }>2.8 FTM</Typography>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>5.6 USD</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -317,6 +262,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
+                      disabled={true}
                       >
                         Withdraw
                     </Button>
@@ -330,14 +276,13 @@ class MyCSDT extends Component {
                 className={ classes.infoContainerRight }>
                 <Grid container direction="row" justify={ isWidthUp('lg', width) ? "flex-end" : 'flex-start'} alignItems="center" spacing={1}>
                   <Grid item xs={11} className={ classes.pricePair }>
-                    <Typography variant={ 'body1' } className={ classes.larger }>CSDT Position</Typography>
+                    <Typography variant={ 'body1' } className={ classes.larger }>Position</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePair }>
                     <Typography variant={ 'body1' } className={ classes.smaller }>Generated</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>1.4 CSDT</Typography>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>1.4 USD</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ generated + ' ' + generatedDenom }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -346,6 +291,7 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
+                      disabled={true}
                       >
                         Pay Back
                     </Button>
@@ -355,7 +301,6 @@ class MyCSDT extends Component {
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
                     <Typography variant={ 'h3' } className={ classes.smaller }>2.8 CSDT</Typography>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>2.8 USD</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -364,25 +309,13 @@ class MyCSDT extends Component {
                       variant="contained"
                       size='medium'
                       color='secondary'
+                      disabled={true}
                       >
                         Generate
                     </Button>
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={11} className={classes.header}>
-            <Typography variant="h1" className={ classes.title }>CSDT History</Typography>
-          </Grid>
-          <Grid item xs={ isWidthUp('lg', width) ? 11 : 12} className={classes.header}>
-            <Grid container
-              direction="row"
-              justify="flex-start"
-              alignItems="flex-start"
-              spacing={2}>
-              { this.renderHistoryItem() }
-              { this.renderHistoryItem() }
             </Grid>
           </Grid>
         </Grid>
@@ -477,4 +410,14 @@ MyCSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withWidth()(withStyles(styles)(MyCSDT))))
+const mapStateToProps = state => {
+  const { csdts, prices, loader } = state;
+  return {
+    csdt: csdts.csdt,
+    csdtParameters: csdts.csdtParameters,
+    csdtPrices: prices.prices,
+    loading: loader.loading
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withWidth()(withStyles(styles)(MyCSDT))))

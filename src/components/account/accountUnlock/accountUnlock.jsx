@@ -5,7 +5,7 @@ import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { unlockAccount } from '../../../store/service';
+import { unlockAccount, startLoader, stopLoader, getCSDT } from '../../../store/service';
 
 const styles = theme => ({
   container: {
@@ -52,7 +52,7 @@ class AccountUnlock extends Component {
       error: null,
       password: '',
       keystore: '',
-      fileName: null
+      fileName: null,
     };
 
     this.onChange = this.onChange.bind(this)
@@ -99,23 +99,30 @@ class AccountUnlock extends Component {
     }
 
     try {
+      startLoader()
       const response = await unlockAccount({ password, keystore })
+      stopLoader()
 
       if(response.account != null && response.account.privateKey) {
 
-        //TODO: I don't like storing this in sessionStorage. This si dodgy but it is what Binance DEX does. So can' be that bad.
-        // We will then just request the password every time that they want to interact with the chain. So only save the keystore.
         const obj = {
           address: response.account.address,
           keystore: keystore
         }
 
+        getCSDT({ address: response.account.address, denom: 'uftm' })
+
         sessionStorage.setItem('xar-csdt-user', JSON.stringify(obj))
 
-        this.nextPath('/csdt')
+        if(this.props.pendingCsdt) {
+          this.nextPath('/csdt/open')
+        } else {
+          this.nextPath('/csdt')
+        }
       }
 
     } catch(ex) {
+      stopLoader()
       this.setState({ error: 'Invalid keystore + password combination' })
     }
   }
@@ -133,7 +140,7 @@ class AccountUnlock extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, loading } = this.props;
     const { password, fileName, error } = this.state
 
     return (
@@ -169,6 +176,7 @@ class AccountUnlock extends Component {
                 className={ classes.input }
                 id="text-button-file"
                 type="file"
+                disabled={ loading }
                 onChange={ this.onUploadKeystoreFile }
               />
               <label htmlFor="text-button-file">
@@ -178,6 +186,7 @@ class AccountUnlock extends Component {
                   variant="outlined"
                   size='large'
                   accept="application/JSON"
+                  disabled={ loading }
                   >
                     { fileName || "Upload Keystore File" }
                   </Button>
@@ -197,6 +206,7 @@ class AccountUnlock extends Component {
                 value={ password }
                 onChange={ this.onChange }
                 onKeyDown={ this.handleKeyDown }
+                disabled={ loading }
               />
             </Grid>
             <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
@@ -204,6 +214,7 @@ class AccountUnlock extends Component {
                 onClick={() => this.onContinue() }
                 variant="outlined"
                 size='large'
+                disabled={ loading }
                 >
                   Continue
                 </Button>
@@ -223,9 +234,11 @@ AccountUnlock.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, csdts, loader } = state;
   return {
     account: accounts.account,
+    pendingCsdt: csdts.pendingCsdt,
+    loading: loader.loading
   };
 };
 

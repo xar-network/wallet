@@ -14,6 +14,7 @@ const App = ({ store }) => (
       <Router>
         <Route exact path="/" component={Home} />
         <Route exact path="/home" component={Home} />
+        <Route exact path="/calculator" component={Home} />
         <Route path="/home/:action/:step" component={Home} />
         <Route exact path="/csdt" component={CSDT} />
         <Route exact path="/csdt/:view" component={CSDT} />
