@@ -27,6 +27,12 @@ const crypto = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 4
 })
 
+const ftm = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'FTM',
+  minimumFractionDigits: 2
+})
+
 const styles = theme => ({
   container: {
     width: '100%',
@@ -105,12 +111,16 @@ class Calculator extends Component {
       maxGenerated: maxGenerated,
       warningCollateralizationRatio: 50,
       calculationWarning: calculationWarning,
-      calculationError: calculationError
+      calculationError: calculationError,
+      isEditingFTM: false,
+      isEditingCSDT: false
     };
 
     this.calculateRatios = this.calculateRatios.bind(this)
     this.onChange = this.onChange.bind(this)
     this.validateOnBlur = this.validateOnBlur.bind(this)
+    this.toggleEditingFTM = this.toggleEditingFTM.bind(this)
+    this.toggleEditingCSDT = this.toggleEditingCSDT.bind(this)
 
     getCSDTParameters()
     getPrices()
@@ -118,6 +128,13 @@ class Calculator extends Component {
     getSupply()
     getStaking()
   };
+
+  toggleEditingFTM() {
+    this.setState({ isEditingFTM: !this.state.isEditingFTM });
+  }
+  toggleEditingCSDT() {
+    this.setState({ isEditingCSDT: !this.state.isEditingCSDT });
+  }
 
   onChange(e) {
     const {
@@ -291,37 +308,62 @@ class Calculator extends Component {
               <Typography variant="h2" className={ classes.heading }>Collateralization calculator</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body1">How much UFTM would you like to collateralize?</Typography>
-              <TextField
-                className={classes.textField}
-                margin="normal"
-                variant="outlined"
-                color="secondary"
-                onChange={ this.onChange }
-                value={ collateral }
-                id="collateral"
-                onBlur={ this.validateOnBlur }
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">UFTM</InputAdornment>,
-                }}
-              />
+              <Typography variant="body1">How much FTM would you like to collateralize?</Typography>
+              {this.state.isEditingFTM ? (
+                <TextField
+                  className={classes.textField}
+                  margin="normal"
+                  variant="outlined"
+                  color="secondary"
+                  onChange={ this.onChange }
+                  value={ collateral }
+                  id="collateral"
+                  onBlur={ this.toggleEditingFTM }
+                />
+              ) : (
+                <TextField
+                  className={classes.textField}
+                  margin="normal"
+                  variant="outlined"
+                  color="secondary"
+                  type="text"
+                  onChange={ this.onChange }
+                  value={ ftm.format(collateral) }
+                  id="collateral"
+                  onFocus={this.toggleEditingFTM}
+                  readOnly
+                />
+              )}
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body1">How much UCSDT would you like to generate?</Typography>
-              <TextField
-                className={classes.textField}
-                margin="normal"
-                variant="outlined"
-                color="secondary"
-                onChange={ this.onChange }
-                value={ generated }
-                onBlur={ this.validateOnBlur }
-                id="generated"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">UCSDT</InputAdornment>,
-                }}
-                helperText={"Max UCSDT available to generate: "+maxGenerated+" UCSDT"}
-              />
+              <Typography variant="body1">How much CSDT would you like to generate?</Typography>
+              {this.state.isEditingCSDT ? (
+                <TextField
+                  className={classes.textField}
+                  margin="normal"
+                  variant="outlined"
+                  color="secondary"
+                  onChange={ this.onChange }
+                  value={ generated }
+                  id="generated"
+                  onBlur={ this.toggleEditingCSDT }
+                  helperText={"Max CSDT available to generate: "+formatter.format(maxGenerated)+" CSDT"}
+                />
+              ) : (
+                <TextField
+                  className={classes.textField}
+                  margin="normal"
+                  variant="outlined"
+                  color="secondary"
+                  type="text"
+                  onChange={ this.onChange }
+                  value={ formatter.format(generated) }
+                  id="generated"
+                  onFocus={this.toggleEditingCSDT}
+                  helperText={"Max CSDT available to generate: "+formatter.format(maxGenerated)+" CSDT"}
+                  readOnly
+                />
+              )}
             </Grid>
             <Grid
               item
@@ -370,7 +412,7 @@ class Calculator extends Component {
                   <Typography variant={ 'body1' } >Minimum APY (6%)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } >{formatter.format(generated*0.06/1000000)}</Typography>
+                  <Typography variant={ 'h3' } >{formatter.format(generated*0.06)}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' }>Current Interest</Typography>
@@ -389,13 +431,13 @@ class Calculator extends Component {
                   <Typography variant={ 'body1' } >Maximum APY (30%)</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } >{formatter.format(generated*0.3/1000000)}</Typography>
+                  <Typography variant={ 'h3' } >{formatter.format(generated*0.3)}</Typography>
                 </Grid>
                 <Grid item xs={7} className={ classes.pricePairSmall }>
                   <Typography variant={ 'body1' } style={{ ...warningStyle, ...errorStyle }}>Current APY</Typography>
                 </Grid>
                 <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{formatter.format((generated*_interest/100)/1000000)}</Typography>
+                  <Typography variant={ 'h3' } style={{ ...warningStyle, ...errorStyle }}>{formatter.format((generated*_interest/100))}</Typography>
                 </Grid>
               </Grid>
             </Grid>
