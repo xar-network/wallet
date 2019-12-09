@@ -13,9 +13,29 @@ import GenerateCSDT from '../generateCSDT'
 import PaybackCSDT from '../paybackCSDT'
 import WithdrawCSDT from '../withdrawCSDT'
 import CloseCSDT from '../closeCSDT'
+import DelegateCSDT from '../delegateCSDT'
+import UndelegateCSDT from '../undelegateCSDT'
 import PasswordModal from '../../passwordModal'
+import Snackbar from '../../snackbar'
 
-import { depositCSDT, withdrawCSDT, generateCSDT, paybackCSDT, startLoader, stopLoader, getCSDTParameters, getPrices, getBalance, getCSDT } from '../../../store/service/api';
+import {
+  depositCSDT,
+  withdrawCSDT,
+  generateCSDT,
+  paybackCSDT,
+  delegateStake,
+  undelegateStake,
+  startLoader,
+  stopLoader,
+  getCSDTParameters,
+  getPrices,
+  getBalance,
+  getCSDT,
+  getAllValidators,
+  getAllDelegations,
+  getAllBondedValidators,
+  getAllUnbondingDelegations,
+} from '../../../store/service/api';
 
 const styles = theme => ({
   container: {
@@ -103,7 +123,9 @@ class MyCSDT extends Component {
       minCollateral: 50,
       warningCollateralizationRatio: 50,
       privateKeyModalOpen: false,
-      actionParams: null
+      actionParams: null,
+      snackbarMessage: null,
+      snackbarType: null
     };
 
     this.onChange = this.onChange.bind(this)
@@ -111,6 +133,9 @@ class MyCSDT extends Component {
     this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
     this.submitPrivateKey = this.submitPrivateKey.bind(this)
     this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
+    this.renderSnackbar = this.renderSnackbar.bind(this)
+
+    getAllValidators()
   }
 
   onChange(e) {
@@ -131,8 +156,37 @@ class MyCSDT extends Component {
     getCSDTParameters()
     getPrices()
     getBalance({ address: user.address })
+    getAllDelegations({ address: user.address })
+    getAllUnbondingDelegations({ address: user.address })
+    getAllBondedValidators({ address: user.address })
     await getCSDT({ address: user.address, denom: 'uftm' })
     stopLoader()
+  }
+
+  calculateDelegatedBalance() {
+    const { delegations } = this.props
+
+    return delegations.reduce((total, delegation) => {
+      return parseInt(total) + parseInt(delegation.balance.amount);
+    }, 0)
+  }
+
+  calculateBalance() {
+    const { balances } = this.props
+
+    if(!balances || balances.length === 0) {
+      return 0
+    }
+
+    let bal = balances.filter((balance) => {
+      return balance.denom === 'ucsdt'
+    })
+
+    if(!bal || bal.length === 0) {
+      return 0
+    }
+
+    return bal[0].amount
   }
 
   render() {
@@ -140,7 +194,8 @@ class MyCSDT extends Component {
     const {
       minimumCollateralizationRatio,
       warningCollateralizationRatio,
-      privateKeyModalOpen
+      privateKeyModalOpen,
+      snackbarMessage
     } = this.state
 
     const collateral = csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].amount : 0
@@ -149,6 +204,8 @@ class MyCSDT extends Component {
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
     const ratios = calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio)
+    const delegatedBalance = this.calculateDelegatedBalance()
+    const currentBalance = this.calculateBalance()
 
     let warningStyle = {}
     let errorStyle = {}
@@ -327,14 +384,82 @@ class MyCSDT extends Component {
                   </Grid>
                 </Grid>
               </Grid>
+              <Grid
+                item
+                xs={12}
+                lg={6}
+                className={ classes.infoContainer }>
+                <Grid container direction="row" justify="flex-start" alignItems="center" spacing={1}>
+                  <Grid item xs={11} className={ classes.pricePair }>
+                    <Typography variant={ 'body1' } className={ classes.larger }>Staking</Typography>
+                  </Grid>
+                  <Grid item xs={4} className={ classes.pricePair }>
+                    <Typography variant={ 'body1' } className={ classes.smaller }>Available to delegate</Typography>
+                  </Grid>
+                  <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ currentBalance + ' ' + generatedDenom }</Typography>
+                  </Grid>
+                  <Grid item xs={4} align={ 'right' }>
+                    <Button
+                      className={ classes.ok }
+                      onClick={() => this.nextPath('/csdt/mycsdt/delegate')}
+                      variant="contained"
+                      size='medium'
+                      color='secondary'
+                      disabled={ loading }
+                      >
+                        Delegate
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                lg={6}
+                className={ classes.infoContainerRight }>
+                <Grid container direction="row" justify={ isWidthUp('lg', width) ? "flex-end" : 'flex-start'} alignItems="center" spacing={1}>
+                  <Grid item xs={11} className={ classes.pricePair }>
+                    <Typography variant={ 'body1' } className={ classes.larger }>Delegation</Typography>
+                  </Grid>
+                  <Grid item xs={4} className={ classes.pricePairSmall }>
+                    <Typography variant={ 'body1' } className={ classes.smaller }>Current delegated balance</Typography>
+                  </Grid>
+                  <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ delegatedBalance + ' ' + generatedDenom }</Typography>
+                  </Grid>
+                  <Grid item xs={4} align={ 'right' }>
+                    <Button
+                      className={ classes.ok }
+                      onClick={() => this.nextPath('/csdt/mycsdt/undelegate')}
+                      variant="contained"
+                      size='medium'
+                      color='secondary'
+                      disabled={ loading }
+                      >
+                        Undelegate
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
         { match.params.action ? this.renderModal(match.params.action) : null }
         { privateKeyModalOpen ? this.renderPrivateKeyModal() : null }
+        { snackbarMessage && this.renderSnackbar() }
       </React.Fragment>
     )
   }
+
+  renderSnackbar() {
+    const {
+      snackbarType,
+      snackbarMessage
+    } = this.state
+
+    return <Snackbar type={snackbarType} message={snackbarMessage} open={true} />
+  };
 
   renderHistoryItem() {
 
@@ -369,7 +494,7 @@ class MyCSDT extends Component {
   }
 
   async submitPrivateKey(signingKey) {
-    this.setState({ privateKeyModalOpen: false })
+    this.setState({ privateKeyModalOpen: false, snackbarMessage: null, snackbarType: null })
 
     const user = sessionStorage.getItem('xar-csdt-user')
     const userOjb = JSON.parse(user)
@@ -415,13 +540,48 @@ class MyCSDT extends Component {
           debtChange: actionParams.generated
         })
         break;
+      case 'delegate':
+        response = await delegateStake({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          toAddress: actionParams.recipient,
+          denom: 'ucsdt',
+          amount: actionParams.amount
+        })
+        break;
+      case 'undelegate':
+        response = await undelegateStake({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          toAddress: actionParams.recipient,
+          denom: 'ucsdt',
+          amount: actionParams.amount
+        })
+        break;
       case 'close':
         //ignore
         break;
     }
 
     stopLoader()
-    this.nextPath('/csdt/mycsdt')
+
+    let snackbarObj = {}
+
+    if(response && response.result && response.result.raw_log && response.result.raw_log.includes('"success":true')) {
+      snackbarObj = { snackbarMessage: 'TX: ' + response.result.txhash, snackbarType: 'Success'}
+    } else {
+      const rawLog = JSON.parse(response.result.raw_log)
+
+      if(rawLog && rawLog.message) {
+        snackbarObj = { snackbarMessage: rawLog.message, snackbarType: 'Error'}
+      } else {
+        snackbarObj = { snackbarMessage: 'An error occurred', snackbarType: 'Error'}
+      }
+    }
+
+    this.setState(snackbarObj)
+
+    // this.nextPath('/csdt/mycsdt')
   }
 
   closePrivateKeyModal() {
@@ -454,6 +614,12 @@ class MyCSDT extends Component {
       case 'close':
         content = <CloseCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} calculateRatios={ calculateRatios } />
         break;
+      case 'delegate':
+        content = <DelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        break;
+      case 'undelegate':
+        content = <UndelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        break;
       default:
 
     }
@@ -473,12 +639,14 @@ MyCSDT.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { csdts, prices, loader } = state;
+  const { csdts, prices, loader, staking, accounts } = state;
   return {
     csdt: csdts.csdt,
     csdtParameters: csdts.csdtParameters,
     loading: loader.loading,
     csdtPrices: prices.prices,
+    delegations: staking.delegations,
+    balances: accounts.balances
   };
 };
 

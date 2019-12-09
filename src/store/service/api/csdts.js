@@ -39,8 +39,9 @@ export const createCSDT = async params => {
 
       //sleep for some time
       await sleep(6000)
+      await getCSDT({address: fromAddress, denom: collateralDenom})
 
-      return getCSDT({address: fromAddress, denom: collateralDenom})
+      return res
     } else {
       return res
     }
@@ -66,10 +67,12 @@ export const depositCSDT = async params => {
     const res = await client.sendTx(msg, fromAddress)
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+
       //sleep for some time
       await sleep(6000)
+      await getCSDT({address: fromAddress, denom: collateralDenom})
 
-      return getCSDT({address: fromAddress, denom: collateralDenom})
+      return res
     } else {
       return res
     }
@@ -95,10 +98,12 @@ export const withdrawCSDT = async params => {
     const res = await client.sendTx(msg, fromAddress)
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+
       //sleep for some time
       await sleep(6000)
+      await getCSDT({address: fromAddress, denom: collateralDenom})
 
-      return getCSDT({address: fromAddress, denom: collateralDenom})
+      return res
     } else {
       return res
     }
@@ -124,10 +129,12 @@ export const generateCSDT = async params => {
     const res = await client.sendTx(msg, fromAddress)
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+
       //sleep for some time
       await sleep(6000)
+      await getCSDT({address: fromAddress, denom: collateralDenom})
 
-      return getCSDT({address: fromAddress, denom: collateralDenom})
+      return res
     } else {
       return res
     }
@@ -153,10 +160,12 @@ export const paybackCSDT = async params => {
     const res = await client.sendTx(msg, fromAddress)
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+
       //sleep for some time
       await sleep(6000)
+      await getCSDT({address: fromAddress, denom: collateralDenom})
 
-      return getCSDT({address: fromAddress, denom: collateralDenom})
+      return res
     } else {
       return res
     }

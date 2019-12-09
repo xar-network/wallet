@@ -7,8 +7,14 @@ import AccountUnlock from './accountUnlock'
 import AccountUnlocked from './accountUnlocked'
 import store from '../../store/';
 import * as actions from '../../store/actions';
-import { getBalance, getCSDT } from '../../store/service';
-import { getNodeInfo } from '../../store/service/api'
+import {
+  getBalance,
+  getCSDT,
+  getNodeInfo,
+  getAllDelegations,
+  getAllBondedValidators,
+  getAllUnbondingDelegations
+} from '../../store/service';
 
 class Account extends Component {
 
@@ -29,6 +35,9 @@ class Account extends Component {
       store.dispatch(actions.unlockAccount(user));
       getBalance({ address: user.address })
       getCSDT({ address: user.address, denom: 'uftm' })
+      getAllDelegations({ address: user.address })
+      getAllUnbondingDelegations({ address: user.address })
+      getAllBondedValidators({ address: user.address })
     } else {
       if(props.match && props.match.path.includes('/csdt')) {
         this.nextPath('/', props)

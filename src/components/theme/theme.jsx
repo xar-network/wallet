@@ -7,7 +7,8 @@ export const colors = {
   card: '#202930',
   background: '#152128',
   green: '#1abc9c',
-  red: '#ed4337'
+  red: '#ed4337',
+  orange: 'orange'
 };
 
 const customTheme =  {
@@ -135,7 +136,33 @@ const customTheme =  {
       paper: {
         backgroundColor: colors.background
       }
-    }
+    },
+    MuiSnackbar : {
+      anchorOriginBottomLeft: {
+        bottom: '50px',
+        left: '80px',
+        '@media (min-width: 960px)': {
+          bottom: '50px',
+          left: '80px'
+        }
+      }
+    },
+    MuiSnackbarContent: {
+      root: {
+        backgroundColor: colors.white,
+        padding: '0px',
+        minWidth: '450px',
+        '@media (min-width: 960px)': {
+          minWidth: '450px',
+        }
+      },
+      message: {
+        padding: '0px'
+      },
+      action: {
+        marginRight: '0px'
+      }
+    },
     /*,
     MuiList: {
       padding: {

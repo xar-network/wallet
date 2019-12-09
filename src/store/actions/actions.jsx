@@ -12,7 +12,11 @@ import {
   SET_SUPPLY,
   START_LOADER,
   STOP_LOADER,
-  SET_NODE_INFO
+  SET_NODE_INFO,
+  SET_VALIDATORS,
+  SET_DELEGATIONS,
+  SET_UNBONDED_DELEGATIONS,
+  SET_BONDED_VALIDATORS
 } from '../../constants'
 
 
@@ -102,4 +106,25 @@ export const stopLoader = () => ({
 export const setNodeInfo = nodeInfo => ({
   type: SET_NODE_INFO,
   nodeInfo
+})
+
+
+export const setValidators = validators => ({
+  type: SET_VALIDATORS,
+  validators
+})
+
+export const setBondedValidators = validators => ({
+  type: SET_BONDED_VALIDATORS,
+  validators
+})
+
+export const setDelegations = delegations => ({
+  type: SET_DELEGATIONS,
+  delegations
+})
+
+export const setUnbondedDelegations = delegations => ({
+  type: SET_UNBONDED_DELEGATIONS,
+  delegations
 })

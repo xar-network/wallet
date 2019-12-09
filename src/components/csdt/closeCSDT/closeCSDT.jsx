@@ -27,6 +27,9 @@ const styles = theme => ({
   },
   sepperate: {
     marginTop: '32px'
+  },
+  textField: {
+    width: '350px'
   }
 });
 

@@ -59,3 +59,34 @@ export const createAccount = async params => {
     throw err;
   }
 };
+
+export const send = async params => {
+  try {
+
+    const {
+      privateKey,
+      fromAddress,
+      toAddress,
+      amount,
+      denom
+    } = params
+
+    const client = new XarClient(config.xarApi)
+    await client.initChain()
+    await client.setPrivateKey(privateKey)
+
+    const tx = await client.transfer(fromAddress, toAddress, amount, denom, '')
+
+    await sleep(6000)
+    await getBalance({ address: fromAddress });
+
+    return tx
+    
+  } catch (err) {
+    throw err;
+  }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

@@ -27,6 +27,9 @@ const styles = theme => ({
   },
   sepperate: {
     marginTop: '32px'
+  },
+  textField: {
+    width: '350px'
   }
 });
 
@@ -81,7 +84,7 @@ class PaybackCSDT extends Component {
         alignItems="flex-start"
         className={ classes.container }>
         <Grid item xs={10} className={classes.header}>
-          <Typography variant="h2" className={ classes.title }>Pay Back {generatedDenom}</Typography>
+          <Typography variant="h2" className={ classes.title }>Pay Back Debt</Typography>
         </Grid>
         <Grid item xs={2} align="right">
           <CloseIcon onClick={onClose} className={ classes.closeButton }/>

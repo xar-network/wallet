@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { lockAccount } from '../../../store/service';
 import { getPrices } from '../../../store/service/api/prices.js';
 import { getNodeInfo } from '../../../store/service/api'
+import AccountTransfer from '../accountTransfer';
+import Snackbar from '../../snackbar';
 
 const styles = theme => ({
   container: {
@@ -107,7 +109,8 @@ const styles = theme => ({
   },
   sendIcon: {
     fill: colors.lightGray,
-    height: '15px'
+    height: '15px',
+    cursor: 'pointer'
   }
 });
 
@@ -119,12 +122,17 @@ class AccountUnlocked extends Component {
     this.state = {
       account: props.account,
       walletMenuOpen: false,
-      walletMenuAnchorEl: null
+      walletMenuAnchorEl: null,
+      snackbarMessage: null,
+      snackbarType: null
     };
 
     this.onWalletOptionsClicked = this.onWalletOptionsClicked.bind(this)
     this.handleWalletOptionsClose = this.handleWalletOptionsClose.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
+    this.sendClicked = this.sendClicked.bind(this)
+    this.cancelSendClicked = this.cancelSendClicked.bind(this)
+    this.renderSnackbar = this.renderSnackbar.bind(this)
 
     getPrices()
     getNodeInfo()
@@ -157,9 +165,17 @@ class AccountUnlocked extends Component {
     this.nextPath('/')
   };
 
+  sendClicked(denom) {
+    this.setState({ sendOpen: true, sendDenom: denom, snackbarMessage: null, snackbarType: null })
+  };
+
+  cancelSendClicked(snackbarObj) {
+    this.setState({ sendOpen: false, snackbarMessage: snackbarObj.snackbarMessage, snackbarType: snackbarObj.snackbarType })
+  };
+
   render() {
     const { classes, account, nodeInfo } = this.props;
-    const { walletMenuOpen, walletMenuAnchorEl } = this.state
+    const { walletMenuOpen, walletMenuAnchorEl, sendOpen, snackbarMessage } = this.state
 
     if(!account) {
       return null
@@ -194,14 +210,21 @@ class AccountUnlocked extends Component {
           </Grid>
         </Grid>
         <Grid item xs={12} className={classes.balancesContainer}>
-          <Grid
+          { !sendOpen && <Grid
             container
             direction="row"
             justify="flex-start"
             alignItems="center">
             { this.renderAssetsHeader() }
             { this.renderAssets() }
-          </Grid>
+          </Grid>}
+          { sendOpen && <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="center">
+            { this.renderSend() }
+          </Grid>}
         </Grid>
         <Grid item xs={12} className={classes.network} align={ 'center' }>
           <div className={ classes.dot }> </div>
@@ -217,8 +240,26 @@ class AccountUnlocked extends Component {
             { this.renderPrices() }
           </Grid>
         </Grid>
+        { snackbarMessage && this.renderSnackbar() }
       </Grid>
     )
+  }
+
+  renderSnackbar() {
+    const {
+      snackbarType,
+      snackbarMessage
+    } = this.state
+
+    return <Snackbar type={snackbarType} message={snackbarMessage} open={true} />
+  };
+
+  renderSend() {
+    const {
+      sendDenom
+    } = this.state
+
+    return <AccountTransfer sendDenom={sendDenom} cancelSendClicked={this.cancelSendClicked} />
   }
 
   renderGlobalHeader() {
@@ -345,7 +386,7 @@ class AccountUnlocked extends Component {
           <Typography variant={ 'h3' }>{ asset.denom }</Typography>
         </Grid>
         <Grid item xs={3} className={ classes['tableBody' + alternating] }>
-          <SendIcon className={ classes.sendIcon } />
+          <SendIcon className={ classes.sendIcon } onClick={ () => { this.sendClicked(asset.denom) } } />
         </Grid>
         <Grid item xs={4} align='right' className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' } noWrap>{ asset.amount + ' ' + asset.denom }</Typography>
