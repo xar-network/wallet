@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import AccountOptions from './accountOptions'
 import AccountCreate from './accountCreate'
 import AccountUnlock from './accountUnlock'
+import AccountConvert from './accountConvert'
 import AccountUnlocked from './accountUnlocked'
 import store from '../../store/';
 import * as actions from '../../store/actions';
@@ -58,6 +59,8 @@ class Account extends Component {
         return <AccountUnlocked />
       case 'unlock':
         return <AccountUnlock nodeInfo={ nodeInfo } />
+      case 'convert':
+        return <AccountConvert nodeInfo={ nodeInfo } />
       case 'create':
         return <AccountCreate nodeInfo={ nodeInfo } />
       case 'options':

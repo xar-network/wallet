@@ -16,21 +16,19 @@ export const getBalance = async params => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const unlockAccount = async params => {
   try {
     const client = new XarClient(config.xarApi)
     await client.initChain()
 
-    store.dispatch(actions.startLoader())
-
     const acc = await client.recoverAccountFromKeystore(params.keystore, params.password)
     acc.keystore = params.keystore
 
     return store.dispatch(actions.unlockAccount(acc));
   } catch (err) {
-    throw err;
+    return { error : err }
   }
 };
 
@@ -52,6 +50,29 @@ export const createAccount = async params => {
 
     const keystore = crypto.generateKeyStore(acc.privateKey, params.password)
     acc.keystore = keystore
+
+    delete acc.privateKey
+
+    return store.dispatch(actions.createAccount(acc));
+
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const createAccountWithMneomnic = async params => {
+  try {
+    const client = new XarClient(config.xarApi)
+    await client.initChain()
+
+    const privKey = crypto.getPrivateKeyFromMnemonic(params.mnemonic)
+    const keystore = crypto.generateKeyStore(privKey, params.password)
+    const address = crypto.getAddressFromPrivateKey(privKey)
+
+    const acc = {
+      keystore: JSON.stringify(keystore),
+      address: address
+    }
 
     return store.dispatch(actions.createAccount(acc));
 
@@ -81,7 +102,7 @@ export const send = async params => {
     await getBalance({ address: fromAddress });
 
     return tx
-    
+
   } catch (err) {
     throw err;
   }

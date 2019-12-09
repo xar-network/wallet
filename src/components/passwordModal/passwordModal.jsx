@@ -3,7 +3,7 @@ import { Grid, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Te
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 
-import { unlockAccount } from '../../store/service';
+import { unlockAccount, startLoader, stopLoader } from '../../store/service';
 
 const styles = theme => ({
   container: {
@@ -38,12 +38,16 @@ class PasswordModal extends Component {
     const userOjb = JSON.parse(user)
     const keyStoreOjb = JSON.parse(userOjb.keystore)
 
+    startLoader()
+
     const response = await unlockAccount({ password: this.state.password, keystore: keyStoreOjb })
+
+    stopLoader()
 
     if(response.account != null && response.account.privateKey) {
       this.props.onSubmit(response.account.privateKey)
     } else {
-      //show error, invalid password????
+      this.setState({ passwordError: true, loading: false })
     }
   }
 

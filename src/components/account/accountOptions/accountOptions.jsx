@@ -89,22 +89,34 @@ class AccountOptions extends Component {
             <Grid item >
               <Typography variant="body1">Get started by unlocking your wallet</Typography>
             </Grid>
-            <Grid item>
+            <Grid item xs={11}>
               <Button
+                fullWidth
                 onClick={() => this.nextPath('/home/unlock/1') }
                 variant="outlined"
                 size='large'
                 >
-                  Unlock Wallet
+                  Unlock with keystore
                 </Button>
             </Grid>
-            <Grid item>
+            <Grid item xs={11}>
               <Button
+                fullWidth
+                  onClick={() => this.nextPath('/home/convert/1') }
+                variant="outlined"
+                size='large'
+                >
+                  Unlock with mnemonic
+                </Button>
+            </Grid>
+            <Grid item xs={11}>
+              <Button
+                fullWidth
                 onClick={() => this.nextPath('/home/create/1') }
                 variant="outlined"
                 size='large'
               >
-                Create Wallet
+                Create wallet
               </Button>
             </Grid>
           </Grid>

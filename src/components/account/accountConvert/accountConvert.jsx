@@ -7,9 +7,9 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Step1 from './step1'
-import Step2 from './step2'
-import Step3 from './step3'
-import Step4 from './step4'
+// import Step2 from './step2'
+// import Step3 from './step3'
+// import Step4 from './step4'
 
 const styles = theme => ({
   container: {
@@ -50,7 +50,7 @@ const styles = theme => ({
   },
 });
 
-class AccountCreate extends Component {
+class AccountConvert extends Component {
 
   render() {
     const { classes, match, nodeInfo } = this.props;
@@ -88,19 +88,13 @@ class AccountCreate extends Component {
     switch (step) {
       case '1':
         return <Step1 />
-      case '2':
-        return <Step2 />
-      case '3':
-        return <Step3 />
-      case '4':
-        return <Step4 />
       default:
         return <Step1 />
     }
   }
 }
 
-AccountCreate.propTypes = {
+AccountConvert.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -112,4 +106,4 @@ const mapStateToProps = state => {
 };
 
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(AccountCreate)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(AccountConvert)))
