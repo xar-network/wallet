@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Menu, MenuItem } from '@material-ui/core'
+import { Grid, Typography, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined';
 import SendIcon from '@material-ui/icons/Send';
 import { colors } from '../../theme'
@@ -55,6 +55,7 @@ const styles = theme => ({
     cursor: 'pointer'
   },
   walletAddress: {
+    fontSize: '14px',
     display: 'inline-block',
     width: 'calc(100% - 36px)',
     marginRight: '12px',
@@ -170,7 +171,7 @@ class AccountUnlocked extends Component {
   };
 
   cancelSendClicked(snackbarObj) {
-    this.setState({ sendOpen: false, snackbarMessage: snackbarObj.snackbarMessage, snackbarType: snackbarObj.snackbarType })
+    this.setState({ sendOpen: false, snackbarMessage: (snackbarObj ? snackbarObj.snackbarMessage : null), snackbarType: (snackbarObj ? snackbarObj.snackbarType : null) })
   };
 
   render() {
@@ -195,7 +196,10 @@ class AccountUnlocked extends Component {
             justify="flex-start"
             alignItems="center">
             <Grid item xs={12}>
-              <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
+
+              <Tooltip title={account.address} placement="bottom">
+                <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
+              </Tooltip>
               <AccountBalanceWalletOutlinedIcon className={classes.walletIcon} onClick={ this.onWalletOptionsClicked } />
               <Menu
                 id="simple-menu"
@@ -342,13 +346,13 @@ class AccountUnlocked extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={5} className={ classes.tableHeader }>
+        <Grid item xs={4} className={ classes.tableHeader }>
           <Typography>ASSET</Typography>
         </Grid>
         <Grid item xs={3} className={ classes.tableHeader }>
           <Typography>SEND</Typography>
         </Grid>
-        <Grid item xs={4} align='right' className={ classes.tableHeader }>
+        <Grid item xs={5} align='right' className={ classes.tableHeader }>
           <Typography>BALANCE</Typography>
         </Grid>
       </React.Fragment>
@@ -382,13 +386,13 @@ class AccountUnlocked extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={5} className={ classes['tableBody' + alternating] }>
+        <Grid item xs={4} className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' }>{ asset.denom }</Typography>
         </Grid>
         <Grid item xs={3} className={ classes['tableBody' + alternating] }>
           <SendIcon className={ classes.sendIcon } onClick={ () => { this.sendClicked(asset.denom) } } />
         </Grid>
-        <Grid item xs={4} align='right' className={ classes['tableBody' + alternating] }>
+        <Grid item xs={5} align='right' className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' } noWrap>{ asset.amount + ' ' + asset.denom }</Typography>
         </Grid>
       </React.Fragment>

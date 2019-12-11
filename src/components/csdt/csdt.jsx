@@ -13,6 +13,7 @@ import Account from '../account'
 import Loader from '../loader'
 
 import { getCSDTParameters } from '../../store/service/api/csdts.js';
+import logo from '../../assets/xar-logo.png'
 
 const styles = theme => ({
   container: {
@@ -25,6 +26,15 @@ const styles = theme => ({
   },
   minHeight: {
     minHeight: '100%'
+  },
+  holder: {
+    position: 'relative',
+    height: '100%'
+  },
+  screenContainer: {
+    width: 'calc(100% - 70px)',
+    display: 'inline-block',
+    height: '100%'
   }
 });
 
@@ -95,6 +105,14 @@ class CSDT extends Component {
     let maxGenerated = 0
     let maxWithdraw = 0
 
+    if(!collateral || collateral == "") {
+      collateral = 0
+    }
+
+    if(!generated || generated == "") {
+      generated = 0
+    }
+
     if(csdtPrices && csdtPrices.length > 0) {
       const price = csdtPrices.filter((price) => {
         return price.asset_code === collateralDenom
@@ -103,15 +121,13 @@ class CSDT extends Component {
       if(price.length > 0) {
         currentPrice = parseFloat(price[0].price)
 
-        if(collateral && collateral !== "") {
-          if(generated > 0) {
-            collateralizationRatio = parseFloat(currentPrice * parseFloat(collateral) * 100 / generated).toFixed(4)
-            maxWithdraw = Math.floor((collateral - (collateral * minimumCollateralizationRatio / collateralizationRatio))).toFixed(0)
-            liquidationPrice = (minimumCollateralizationRatio * currentPrice / collateralizationRatio).toFixed(4)
-          }
-
-          maxGenerated = Math.floor(((collateral * currentPrice * 100 / minimumCollateralizationRatio) - generated)).toFixed(0)
+        if(generated > 0) {
+          collateralizationRatio = parseFloat(currentPrice * parseFloat(collateral) * 100 / generated).toFixed(4)
+          maxWithdraw = Math.floor((collateral - (collateral * minimumCollateralizationRatio / collateralizationRatio))).toFixed(0)
+          liquidationPrice = (minimumCollateralizationRatio * currentPrice / collateralizationRatio).toFixed(4)
         }
+
+        maxGenerated = Math.floor(((collateral * currentPrice * 100 / minimumCollateralizationRatio) - generated)).toFixed(0)
 
         return {
           currentPrice,

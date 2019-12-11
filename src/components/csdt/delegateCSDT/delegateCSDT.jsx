@@ -51,7 +51,7 @@ class DelegateCSDT extends Component {
   constructor(props) {
     super();
     this.state = {
-      amount: 0,
+      amount: "",
       amountError: false,
       recipient: '',
       recipientError: false,
@@ -156,6 +156,7 @@ class DelegateCSDT extends Component {
             id="amount"
             error={ amountError }
             disabled={ loading }
+            placeholder={ "0" }
             InputProps={{
               endAdornment: <InputAdornment position="end">{generatedDenom}</InputAdornment>
             }}

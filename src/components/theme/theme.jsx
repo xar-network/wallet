@@ -8,7 +8,8 @@ export const colors = {
   background: '#152128',
   green: '#1abc9c',
   red: '#ed4337',
-  orange: 'orange'
+  orange: 'orange',
+  menu: '#0b1216'
 };
 
 const customTheme =  {

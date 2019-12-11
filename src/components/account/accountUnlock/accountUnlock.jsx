@@ -157,6 +157,10 @@ class AccountUnlock extends Component {
     }
   }
 
+  onBack() {
+    this.nextPath('/home')
+  }
+
   render() {
     const { classes, loading, nodeInfo } = this.props;
     const { password, fileName, error } = this.state
@@ -186,7 +190,7 @@ class AccountUnlock extends Component {
         <Grid item xs={12} className={classes.actions}>
           <Grid
             container
-            direction="column"
+            direction="row"
             justify="flex-start"
             alignItems="flex-start">
             <Grid item className={classes.instruction}>
@@ -231,15 +235,26 @@ class AccountUnlock extends Component {
                 disabled={ loading }
               />
             </Grid>
-            <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+            <Grid item xs={6} className={classes.buttonContainer} align={'left'}>
+              <Button
+                onClick={() => this.onBack() }
+                variant="text"
+                size='small'
+                disabled={ loading }
+                >
+                  Back
+              </Button>
+            </Grid>
+            <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
               <Button
                 onClick={() => this.onContinue() }
-                variant="outlined"
-                size='large'
+                variant="contained"
+                color='primary'
+                size='small'
                 disabled={ loading }
                 >
                   Continue
-                </Button>
+              </Button>
             </Grid>
             <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
               <Typography className={ classes.error }>{ error }</Typography>

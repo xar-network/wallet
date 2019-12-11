@@ -8,6 +8,7 @@ import nodeInfo from './nodeInfo'
 import interest from './interest'
 import staking from './staking'
 import supply from './supply'
+import liquidations from './liquidations'
 
 export default combineReducers({
   csdts,
@@ -18,5 +19,6 @@ export default combineReducers({
   nodeInfo,
   interest,
   supply,
-  staking
+  staking,
+  liquidations
 })

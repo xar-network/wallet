@@ -16,7 +16,8 @@ import {
   SET_VALIDATORS,
   SET_DELEGATIONS,
   SET_UNBONDED_DELEGATIONS,
-  SET_BONDED_VALIDATORS
+  SET_BONDED_VALIDATORS,
+  SET_LIQUIDATIONS
 } from '../../constants'
 
 
@@ -127,4 +128,9 @@ export const setDelegations = delegations => ({
 export const setUnbondedDelegations = delegations => ({
   type: SET_UNBONDED_DELEGATIONS,
   delegations
+})
+
+export const setLiquidations = liquidations => ({
+  type: SET_LIQUIDATIONS,
+  liquidations
 })

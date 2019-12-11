@@ -5,9 +5,13 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { colors } from '../theme'
-import Calculator from '../calculator'
 import Account from '../account'
 import Loader from '../loader'
+
+import ListLiquidations from './listLiquidations'
+import ViewLiquidation from './viewLiquidation'
+
+import { getLiquidations } from '../../store/service/api';
 
 const styles = theme => ({
   container: {
@@ -30,7 +34,15 @@ const styles = theme => ({
   }
 });
 
-class Home extends Component {
+class Liquidation extends Component {
+
+  constructor(props) {
+    super();
+
+    this.state = {};
+
+    getLiquidations()
+  };
 
   render() {
     const { classes, match, loading } = this.props;
@@ -43,19 +55,30 @@ class Home extends Component {
         justify="flex-start"
         alignItems="flex-start"
       >
-        <Grid item xs={12} md={9} className={classes.maxHeight}>
-          <Calculator />
+        <Grid item xs={12} md={9} className={classes.minHeight}>
+          { this.renderScreen(match.params.view) }
         </Grid>
         <Grid item xs={12} md={3} className={classes.maxHeight}>
-          <Account action={ match.params.action } />
+          <Account action={ 'unlocked' } />
         </Grid>
         { loading && <Loader /> }
       </Grid>
     )
   }
+
+  renderScreen(view) {
+    switch (view) {
+      case 'view':
+        return <ViewLiquidation />
+      case 'list':
+        return <ListLiquidations />
+      default:
+        return <ListLiquidations />
+    }
+  }
 }
 
-Home.propTypes = {
+Liquidation.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -66,4 +89,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(Home)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Liquidation)))

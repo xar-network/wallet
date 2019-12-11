@@ -38,7 +38,7 @@ class WithdrawCSDT extends Component {
   constructor(props) {
     super();
     this.state = {
-      collateral: 0,
+      collateral: "",
       collateralError: false,
       minCollateral: 50,
       balances: props.balances,
@@ -86,7 +86,7 @@ class WithdrawCSDT extends Component {
     const generated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
-    const ratios = calculateRatios(parseFloat(currentCollateral) - parseFloat(collateral), collateralDenom, generated, minimumCollateralizationRatio)
+    const ratios = calculateRatios(parseFloat(currentCollateral) - parseFloat(collateral != "" ? collateral : 0), collateralDenom, generated, minimumCollateralizationRatio)
     const balance = this.getBalance(collateralDenom)
 
     return (
@@ -113,6 +113,7 @@ class WithdrawCSDT extends Component {
             value={ collateral }
             id="collateral"
             error={ collateralError }
+            placeholder={ "0" }
             InputProps={{
               endAdornment: <InputAdornment position="end">{collateralDenom}</InputAdornment>
             }}

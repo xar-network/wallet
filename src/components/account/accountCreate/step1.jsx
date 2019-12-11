@@ -4,7 +4,7 @@ import { Grid, Typography, Button, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { createAccount } from '../../../store/service';
+import { createAccount, stopLoader, startLoader } from '../../../store/service';
 
 const styles = theme => ({
   instruction: {
@@ -31,6 +31,7 @@ class Step1 extends Component {
     };
 
     this.onChange = this.onChange.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   nextPath(path) {
@@ -52,12 +53,20 @@ class Step1 extends Component {
       return false
     }
 
+    startLoader()
+
     const response = await createAccount({ password, confirmPassword })
 
     //add error checking
     this.download(response.account.keystore.id+'_keystore.json', JSON.stringify(response.account.keystore))
 
+    stopLoader()
+
     this.nextPath('/home/create/2')
+  }
+
+  onBack() {
+    this.nextPath('/home')
   }
 
   download(filename, text) {
@@ -79,16 +88,22 @@ class Step1 extends Component {
     this.setState(st)
   }
 
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.downloadKeystoreFile();
+    }
+  };
+
   render() {
-    const { classes } = this.props;
+    const { classes, loading } = this.props;
     const { password, confirmPassword } = this.state
 
     return (
       <Grid
         container
-        direction="column"
-        justify="flex-start"
-        alignItems="center">
+        direction="row"
+        justify="center"
+        alignItems="flex-start">
         <Grid item className={classes.instruction}>
           <Typography variant="body1">Create Keystore File + Password</Typography>
         </Grid>
@@ -105,6 +120,8 @@ class Step1 extends Component {
             color="secondary"
             value={ password }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
+            disabled={ loading }
           />
         </Grid>
         <Grid item xs={12} className={classes.inputContainer}>
@@ -120,16 +137,30 @@ class Step1 extends Component {
             color="secondary"
             value={ confirmPassword }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
+            disabled={ loading }
           />
         </Grid>
-        <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+        <Grid item xs={6} className={classes.buttonContainer} align={'left'}>
+          <Button
+            onClick={() => this.onBack() }
+            variant="text"
+            size='small'
+            disabled={ loading }
+            >
+              Back
+          </Button>
+        </Grid>
+        <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
           <Button
             onClick={() => this.downloadKeystoreFile() }
-            variant="outlined"
-            size='large'
+            variant="contained"
+            color='primary'
+            size='small'
+            disabled={ loading }
             >
               Download Keystore
-            </Button>
+          </Button>
         </Grid>
       </Grid>
     )
@@ -142,9 +173,10 @@ Step1.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, loader } = state;
   return {
-    accounts: accounts
+    accounts: accounts,
+    loading: loader.loading
   };
 };
 

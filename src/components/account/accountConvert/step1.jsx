@@ -34,6 +34,7 @@ class Step1 extends Component {
     };
 
     this.onChange = this.onChange.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   nextPath(path) {
@@ -109,6 +110,16 @@ class Step1 extends Component {
     this.setState(st)
   }
 
+  onBack() {
+    this.nextPath('/home')
+  }
+
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.downloadKeystoreFile();
+    }
+  };
+
   render() {
     const { classes, loading } = this.props;
     const { password, confirmPassword, mnemonic } = this.state
@@ -116,7 +127,7 @@ class Step1 extends Component {
     return (
       <Grid
         container
-        direction="column"
+        direction="row"
         justify="flex-start"
         alignItems="center">
         <Grid item xs={12} className={classes.instruction}>
@@ -135,6 +146,7 @@ class Step1 extends Component {
             multiline={true}
             value={ mnemonic }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
             disabled={ loading }
           />
         </Grid>
@@ -151,6 +163,7 @@ class Step1 extends Component {
             color="secondary"
             value={ password }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
             disabled={ loading }
           />
         </Grid>
@@ -167,18 +180,30 @@ class Step1 extends Component {
             color="secondary"
             value={ confirmPassword }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
             disabled={ loading }
           />
         </Grid>
-        <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+        <Grid item xs={6} className={classes.buttonContainer} align={'left'}>
+          <Button
+            onClick={() => this.onBack() }
+            variant="text"
+            size='small'
+            disabled={ loading }
+            >
+              Back
+          </Button>
+        </Grid>
+        <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
           <Button
             onClick={() => this.downloadKeystoreFile() }
-            variant="outlined"
-            size='large'
+            variant="contained"
+            color='primary'
+            size='small'
             disabled={ loading }
             >
               Download Keystore
-            </Button>
+          </Button>
         </Grid>
       </Grid>
     )

@@ -61,8 +61,8 @@ class OpenCSDT extends Component {
   constructor(props) {
     super();
 
-    const generated = props.pendingCsdt ? props.pendingCsdt.generated : 0
-    const collateral = props.pendingCsdt ? props.pendingCsdt.collateral : 0
+    const generated = props.pendingCsdt ? props.pendingCsdt.generated : ""
+    const collateral = props.pendingCsdt ? props.pendingCsdt.collateral : ""
     const collateralizationRatio = props.pendingCsdt ? props.pendingCsdt.collateralizationRatio : 0
     const liquidationPrice = props.pendingCsdt ? props.pendingCsdt.liquidationPrice : 0
     const currentPrice = props.pendingCsdt ? props.pendingCsdt.currentPrice : 0
@@ -307,6 +307,7 @@ class OpenCSDT extends Component {
                 value={ collateral }
                 id="collateral"
                 error={ collateralError }
+                placeholder={ "0" }
                 InputProps={{
                   endAdornment: <InputAdornment position="end">UFTM</InputAdornment>,
                 }}
@@ -324,6 +325,7 @@ class OpenCSDT extends Component {
                 value={ generated }
                 id="generated"
                 error={ generatedError }
+                placeholder={ "0" }
                 InputProps={{
                   endAdornment: <InputAdornment position="end">UCSDT</InputAdornment>,
                 }}

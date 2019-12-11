@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { send, stopLoader } from '../../../store/service/api';
+import { send, stopLoader, startLoader } from '../../../store/service/api';
 
 import PasswordModal from '../../passwordModal'
 
@@ -26,7 +26,9 @@ class AccountTransfer extends Component {
 
     this.state = {
       destination: '',
-      amount: 0,
+      destinationError: false,
+      amount: "",
+      amountError: false,
       privateKeyModalOpen: false
     };
 
@@ -38,6 +40,7 @@ class AccountTransfer extends Component {
     this.showPrivateKeyModal = this.showPrivateKeyModal.bind(this)
     this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
     this.submitPrivateKey = this.submitPrivateKey.bind(this)
+    this.validateSend = this.validateSend.bind(this)
   };
 
   onChange(e, val) {
@@ -70,6 +73,7 @@ class AccountTransfer extends Component {
 
   async submitPrivateKey(signingKey) {
     this.setState({ privateKeyModalOpen: false })
+    startLoader()
 
     const { amount, destination } = this.state
     const { sendDenom } = this.props;
@@ -113,7 +117,34 @@ class AccountTransfer extends Component {
   }
 
   onContinue() {
-    this.showPrivateKeyModal()
+    if(this.validateSend()) {
+      this.showPrivateKeyModal()
+    }
+  };
+
+  validateSend() {
+    const {
+      destination,
+      amount
+    } = this.state
+
+    let returnVal = true;
+
+    if(!destination || destination === "") {
+      this.setState({ destinationError: true})
+      returnVal = false
+    } else {
+      this.setState({ destinationError: false})
+    }
+
+    if(!amount || amount === "" || amount <= 0 || isNaN(amount)) {
+      this.setState({ amountError: true})
+      returnVal = false
+    } else {
+      this.setState({ amountError: false})
+    }
+
+    return returnVal
   };
 
   onCancel() {
@@ -124,7 +155,9 @@ class AccountTransfer extends Component {
     const { classes, loading, sendDenom } = this.props;
     const {
       amount,
+      amountError,
       destination,
+      destinationError,
       privateKeyModalOpen
     } = this.state
 
@@ -151,6 +184,7 @@ class AccountTransfer extends Component {
             onKeyDown={ this.handleKeyDown }
             disabled={ loading }
             placeholder='xar123...'
+            error={ destinationError }
           />
         </Grid>
         <Grid item xs={11}>
@@ -166,8 +200,9 @@ class AccountTransfer extends Component {
             onChange={ this.onChange }
             onKeyDown={ this.handleKeyDown }
             disabled={ loading }
-            placeholder='1.2'
+            placeholder='0'
             helperText={'Available balance: '+ (balance ? balance.amount : '0') +' '+sendDenom}
+            error={ amountError }
             InputProps={{
               endAdornment: <InputAdornment position="end">{sendDenom}</InputAdornment>,
             }}

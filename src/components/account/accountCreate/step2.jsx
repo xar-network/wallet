@@ -41,8 +41,12 @@ class Step2 extends Component {
     this.props.history.push(path);
   }
 
+  onBack() {
+    this.nextPath('/home/create/1')
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, loading } = this.props;
 
     return (
       <Grid
@@ -56,14 +60,26 @@ class Step2 extends Component {
           <Typography variant="body1" align='center'>Please backup your mnemonic</Typography>
         </Grid>
         { this.renderWords() }
-        <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+        <Grid item xs={6} className={classes.buttonContainer} align={'left'}>
+          <Button
+            onClick={() => this.onBack() }
+            variant="text"
+            size='small'
+            disabled={ loading }
+            >
+              Back
+          </Button>
+        </Grid>
+        <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
           <Button
             onClick={() => this.nextPath('/home/create/3') }
-            variant="outlined"
-            size='large'
+            variant="contained"
+            color='primary'
+            size='small'
+            disabled={ loading }
             >
               Continue
-            </Button>
+          </Button>
         </Grid>
       </Grid>
     )
@@ -103,9 +119,10 @@ Step2.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, loader } = state;
   return {
     account: accounts.createdAccount,
+    loading: loader.loading
   };
 };
 

@@ -38,7 +38,7 @@ class PaybackCSDT extends Component {
   constructor(props) {
     super();
     this.state = {
-      generated: 0,
+      generated: "",
       generatedError: false,
       minCollateral: 50,
       balances: props.balances,
@@ -74,7 +74,7 @@ class PaybackCSDT extends Component {
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
     const currentRatios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated), minimumCollateralizationRatio)
-    const ratios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated) - parseFloat(generated), minimumCollateralizationRatio)
+    const ratios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated) - parseFloat(generated != "" ? generated : 0), minimumCollateralizationRatio)
 
     return (
       <Grid
@@ -101,6 +101,7 @@ class PaybackCSDT extends Component {
             id="generated"
             error={ generatedError }
             disabled={ loading }
+            placeholder={ "0" }
             InputProps={{
               endAdornment: <InputAdornment position="end">{generatedDenom}</InputAdornment>,
             }}

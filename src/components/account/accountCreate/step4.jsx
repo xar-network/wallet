@@ -43,11 +43,12 @@ class Step4 extends Component {
         <Grid item xs={12} className={classes.buttonContainer} align={'center'}>
           <Button
             onClick={() => this.nextPath('/home/unlock/1') }
-            variant="outlined"
-            size='large'
+            variant="contained"
+            color='primary'
+            size='small'
             >
               Unlock Wallet
-            </Button>
+          </Button>
         </Grid>
       </Grid>
     )

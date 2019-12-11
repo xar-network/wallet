@@ -38,11 +38,18 @@ class Step3 extends Component {
 
     this.onChange = this.onChange.bind(this)
     this.validateMnemonic = this.validateMnemonic.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   nextPath(path) {
     this.props.history.push(path);
   }
+
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.validateMnemonic();
+    }
+  };
 
   validateMnemonic() {
     const { account } = this.props
@@ -74,6 +81,10 @@ class Step3 extends Component {
     this.nextPath('/home/create/4')
   }
 
+  onBack() {
+    this.nextPath('/home/create/2')
+  }
+
   onChange(e, val) {
     let st = {}
     st[e.target.id] = e.target.value
@@ -81,7 +92,7 @@ class Step3 extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, loading } = this.props;
     const { first, second, third, error } = this.state
 
     return (
@@ -105,6 +116,8 @@ class Step3 extends Component {
             id="first"
             value={ first }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
+            disabled={ loading }
           />
         </Grid>
         <Grid item xs={4} className={classes.inputContainer}>
@@ -118,6 +131,8 @@ class Step3 extends Component {
             id="second"
             value={ second }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
+            disabled={ loading }
           />
         </Grid>
         <Grid item xs={4} className={classes.inputContainer}>
@@ -131,16 +146,30 @@ class Step3 extends Component {
             id="third"
             value={ third }
             onChange={ this.onChange }
+            onKeyDown={ this.handleKeyDown }
+            disabled={ loading }
           />
         </Grid>
-        <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
+        <Grid item xs={6} className={classes.buttonContainer} align={'left'}>
+          <Button
+            onClick={() => this.onBack() }
+            variant="text"
+            size='small'
+            disabled={ loading }
+            >
+              Back
+          </Button>
+        </Grid>
+        <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
           <Button
             onClick={ this.validateMnemonic }
-            variant="outlined"
-            size='large'
+            variant="contained"
+            color='primary'
+            size='small'
+            disabled={ loading }
             >
               Confirm
-            </Button>
+          </Button>
         </Grid>
         <Grid item xs={12} className={classes.buttonContainer} align={'right'}>
           <Typography className={ classes.error }>{ error }</Typography>
@@ -155,9 +184,10 @@ Step3.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts } = state;
+  const { accounts, loader } = state;
   return {
     account: accounts.createdAccount,
+    loading: loader.loading
   };
 };
 
