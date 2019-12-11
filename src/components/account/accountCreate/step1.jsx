@@ -34,10 +34,6 @@ class Step1 extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
-  nextPath(path) {
-    this.props.history.push(path);
-  }
-
   async downloadKeystoreFile() {
     const {
       password,
@@ -62,11 +58,11 @@ class Step1 extends Component {
 
     stopLoader()
 
-    this.nextPath('/home/create/2')
+    this.props.setStep('2')
   }
 
   onBack() {
-    this.nextPath('/home')
+    this.props.setFlow('options')
   }
 
   download(filename, text) {

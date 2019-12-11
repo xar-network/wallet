@@ -37,12 +37,8 @@ class Step2 extends Component {
     };
   }
 
-  nextPath(path) {
-    this.props.history.push(path);
-  }
-
   onBack() {
-    this.nextPath('/home/create/1')
+    this.props.setStep('1')
   }
 
   render() {
@@ -72,7 +68,7 @@ class Step2 extends Component {
         </Grid>
         <Grid item xs={6} className={classes.buttonContainer} align={'right'}>
           <Button
-            onClick={() => this.nextPath('/home/create/3') }
+            onClick={() => this.props.setStep('3') }
             variant="contained"
             color='primary'
             size='small'

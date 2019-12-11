@@ -108,7 +108,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: colors.card
   },
   table: {
-    minWidth: 750,
   },
   tableWrapper: {
     overflowX: 'auto',

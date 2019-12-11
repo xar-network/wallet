@@ -25,7 +25,7 @@ class Step4 extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, setFlow } = this.props;
 
     return (
       <Grid
@@ -42,7 +42,7 @@ class Step4 extends Component {
         </Grid>
         <Grid item xs={12} className={classes.buttonContainer} align={'center'}>
           <Button
-            onClick={() => this.nextPath('/home/unlock/1') }
+            onClick={() => setFlow('options') }
             variant="contained"
             color='primary'
             size='small'

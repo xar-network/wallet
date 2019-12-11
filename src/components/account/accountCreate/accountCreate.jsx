@@ -28,7 +28,7 @@ const styles = theme => ({
     flex: '1',
     padding: '30px',
     backgroundColor: '#152128',
-    height: 'calc(100% - 81px)'
+    height: 'calc(100% - 153px)'
   },
   network: {
     padding: '24px',
@@ -51,6 +51,19 @@ const styles = theme => ({
 });
 
 class AccountCreate extends Component {
+
+  constructor(props) {
+    super();
+    this.state = {
+      step: 1,
+    };
+
+    this.setStep = this.setStep.bind(this)
+  }
+
+  setStep(step){
+    this.setState({step: step})
+  }
 
   render() {
     const { classes, match, nodeInfo } = this.props;
@@ -78,24 +91,26 @@ class AccountCreate extends Component {
           <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
         </Grid>
         <Grid item xs={12} className={classes.actions}>
-          { this.renderStep(match.params.step) }
+          { this.renderStep() }
         </Grid>
       </Grid>
     )
   }
 
-  renderStep(step) {
+  renderStep() {
+    const { step } = this.state
+
     switch (step) {
       case '1':
-        return <Step1 />
+        return <Step1 setFlow={ this.props.setFlow } setStep={ this.setStep } />
       case '2':
-        return <Step2 />
+        return <Step2 setStep={ this.setStep } />
       case '3':
-        return <Step3 />
+        return <Step3 setStep={ this.setStep } />
       case '4':
-        return <Step4 />
+        return <Step4 setFlow={ this.props.setFlow } setStep={ this.setStep } />
       default:
-        return <Step1 />
+        return <Step1 setFlow={ this.props.setFlow } setStep={ this.setStep } />
     }
   }
 }

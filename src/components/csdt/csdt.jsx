@@ -12,7 +12,17 @@ import MyCSDT from './myCSDT'
 import Account from '../account'
 import Loader from '../loader'
 
-import { getCSDTParameters } from '../../store/service/api/csdts.js';
+import store from '../../store/';
+import * as actions from '../../store/actions';
+import {
+  getCSDTParameters,
+  getCSDT,
+  getAllDelegations,
+  getAllBondedValidators,
+  getAllUnbondingDelegations,
+  getBalance
+} from '../../store/service';
+
 import logo from '../../assets/xar-logo.png'
 
 const styles = theme => ({
@@ -51,29 +61,44 @@ class CSDT extends Component {
     };
 
     this.calculateRatios = this.calculateRatios.bind(this)
+    this.validateUser = this.validateUser.bind(this)
 
-    getCSDTParameters()
+    const user = this.validateUser()
+
+    if (user !== false) {
+      getCSDTParameters()
+      getCSDT({ address: user.address, denom: 'uftm' })
+      getAllDelegations({ address: user.address })
+      getAllUnbondingDelegations({ address: user.address })
+      getAllBondedValidators({ address: user.address })
+    } else {
+      this.nextPath('/', props)
+    }
   };
+
+  nextPath(path, props) {
+    props.history.push(path);
+  }
+
+  validateUser() {
+    const userString = sessionStorage.getItem('xar-csdt-user')
+    const user = JSON.parse(userString || '{}')
+
+    if(user.address && user.keystore) {
+      return user
+    } else {
+      return false
+    }
+  }
 
   render() {
     const { classes, match, loading } = this.props;
 
     return (
-      <Grid
-        className={classes.container}
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid item xs={12} md={9} className={classes.minHeight}>
-          { this.renderScreen(match.params.view) }
-        </Grid>
-        <Grid item xs={12} md={3} className={classes.maxHeight}>
-          <Account action={ 'unlocked' } />
-        </Grid>
+      <React.Fragment>
+        { this.renderScreen(match.params.view) }
         { loading && <Loader /> }
-      </Grid>
+      </React.Fragment>
     )
   }
 

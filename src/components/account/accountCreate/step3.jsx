@@ -41,10 +41,6 @@ class Step3 extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
-  nextPath(path) {
-    this.props.history.push(path);
-  }
-
   handleKeyDown(event) {
     if (event.which === 13) {
       this.validateMnemonic();
@@ -78,11 +74,11 @@ class Step3 extends Component {
       return false
     }
 
-    this.nextPath('/home/create/4')
+    this.props.setStep('4')
   }
 
   onBack() {
-    this.nextPath('/home/create/2')
+    this.props.setStep('2')
   }
 
   onChange(e, val) {

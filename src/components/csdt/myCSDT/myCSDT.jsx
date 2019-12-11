@@ -42,7 +42,6 @@ const styles = theme => ({
     width: '100%',
     minHeight: '100%',
     alignContent: 'flex-start',
-    marginBottom: '12px'
   },
   header: {
     padding: '30px',
@@ -101,7 +100,7 @@ const styles = theme => ({
     right: '0px',
     top: '0px',
     bottom: '0px',
-    width: '480px',
+    width: '499px',
     backgroundColor: colors.background
   },
   refreshButton: {

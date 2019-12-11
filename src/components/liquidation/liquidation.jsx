@@ -41,28 +41,40 @@ class Liquidation extends Component {
 
     this.state = {};
 
-    getLiquidations()
+    this.validateUser = this.validateUser.bind(this)
+
+    const user = this.validateUser()
+
+    if (user !== false) {
+      getLiquidations()
+    } else {
+      this.nextPath('/', props)
+    }
   };
+
+  nextPath(path, props) {
+    props.history.push(path);
+  }
+
+  validateUser() {
+    const userString = sessionStorage.getItem('xar-csdt-user')
+    const user = JSON.parse(userString || '{}')
+
+    if(user.address && user.keystore) {
+      return user
+    } else {
+      return false
+    }
+  }
 
   render() {
     const { classes, match, loading } = this.props;
 
     return (
-      <Grid
-        className={classes.container}
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid item xs={12} md={9} className={classes.minHeight}>
-          { this.renderScreen(match.params.view) }
-        </Grid>
-        <Grid item xs={12} md={3} className={classes.maxHeight}>
-          <Account action={ 'unlocked' } />
-        </Grid>
+      <React.Fragment>
+        { this.renderScreen(match.params.view) }
         { loading && <Loader /> }
-      </Grid>
+      </React.Fragment>
     )
   }
 

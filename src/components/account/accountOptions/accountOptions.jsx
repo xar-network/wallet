@@ -23,7 +23,7 @@ const styles = theme => ({
     flex: '1',
     padding: '30px',
     backgroundColor: '#152128',
-    height: 'calc(100% - 81px)'
+    height: 'calc(100% - 153px)'
   },
   instruction: {
     paddingBottom: '30px'
@@ -51,7 +51,7 @@ const styles = theme => ({
 class AccountOptions extends Component {
 
   nextPath(path) {
-    this.props.history.push(path);
+    this.props.setFlow(path);
   }
 
   render() {
@@ -92,7 +92,7 @@ class AccountOptions extends Component {
             <Grid item xs={11}>
               <Button
                 fullWidth
-                onClick={() => this.nextPath('/home/unlock/1') }
+                onClick={() => this.nextPath('unlock') }
                 variant="outlined"
                 size='large'
                 >
@@ -102,7 +102,7 @@ class AccountOptions extends Component {
             <Grid item xs={11}>
               <Button
                 fullWidth
-                  onClick={() => this.nextPath('/home/convert/1') }
+                  onClick={() => this.nextPath('convert') }
                 variant="outlined"
                 size='large'
                 >
@@ -112,7 +112,7 @@ class AccountOptions extends Component {
             <Grid item xs={11}>
               <Button
                 fullWidth
-                onClick={() => this.nextPath('/home/create/1') }
+                onClick={() => this.nextPath('create') }
                 variant="outlined"
                 size='large'
               >

@@ -47,12 +47,24 @@ class GenerateCSDT extends Component {
 
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   onChange(e) {
+
+    if(isNaN(e.target.value)) {
+      return false
+    }
+
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)
+  };
+
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.onSubmit();
+    }
   };
 
   onSubmit() {
@@ -102,6 +114,7 @@ class GenerateCSDT extends Component {
             error={ generatedError }
             disabled={ loading }
             placeholder={ "0" }
+            onKeyDown={ this.handleKeyDown }
             InputProps={{
               endAdornment: <InputAdornment position="end">{generatedDenom}</InputAdornment>
             }}

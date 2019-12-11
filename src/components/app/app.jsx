@@ -10,29 +10,65 @@ import Home from '../home'
 import CSDT from '../csdt'
 import Terms from '../terms'
 import Menu from '../menu'
+import Account from '../account'
 import Liquidation from '../liquidation'
+import { colors } from '../theme'
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import { Grid } from '@material-ui/core';
 
 const styles = theme => ({
   holder: {
-    display: 'flex'
+    display: 'flex',
+  },
+  holderSmall: {
+    display: 'flex',
+    flexDirection: 'column-reverse'
   },
   screenContainer: {
     flex: '1',
     display: 'inline-block',
-  }
+  },
+  screenContainerSmall: {
+    flex: '1',
+    width: '100%'
+  },
+  accountContainer: {
+    display: 'inline-block',
+    width: '500px'
+  },
+  menuContainer: {
+    width: '70px',
+    display: 'inline-block',
+    background: colors.menu,
+  },
+  menuContainerHorizontal: {
+    height: '70px',
+    width: '100%',
+    background: colors.menu,
+  },
+  accountContainerSmall: {
+    width: '100%',
+    flexShrink: 0
+  },
 });
 
 class App extends Component {
 
   render() {
-    const { classes, store } = this.props;
+    const { classes, store, width } = this.props;
 
     return (<MuiThemeProvider theme={ createMuiTheme(customTheme) }>
       <Provider store={store}>
         <Router>
-          <div className={classes.holder}>
-            <Menu />
-            <div className={classes.screenContainer}>
+          <Grid container className={isWidthUp('lg', width) ? classes.holder : classes.holderSmall}>
+            { isWidthUp('lg', width) ?
+              <Grid item className={ classes.menuContainer }>
+                <Menu orientation={'vertical'} />
+              </Grid>
+              :
+              null
+            }
+            <Grid item className={ (isWidthUp('lg', width) ? classes.screenContainer : classes.screenContainerSmall) }>
               <Route exact path="/" component={Home} />
               <Route exact path="/home" component={Home} />
               <Route exact path="/calculator" component={Home} />
@@ -42,8 +78,18 @@ class App extends Component {
               <Route exact path="/csdt/:view/:action" component={CSDT} />
               <Route exact path="/terms" component={Terms} />
               <Route exact path="/liquidation" component={Liquidation} />
-            </div>
-          </div>
+            </Grid>
+            <Grid item className={ isWidthUp('lg', width) ? classes.accountContainer : classes.accountContainerSmall }>
+              <Account />
+            </Grid>
+            { !isWidthUp('lg', width) ?
+              <Grid item className={ classes.menuContainerHorizontal }>
+                <Menu orientation={'horizontal'} />
+              </Grid>
+              :
+              null
+            }
+          </Grid>
         </Router>
       </Provider>
     </MuiThemeProvider>)
@@ -54,4 +100,4 @@ App.propTypes = {
   store: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(App)
+export default withWidth()(withStyles(styles)(App))

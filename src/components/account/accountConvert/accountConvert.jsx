@@ -27,8 +27,7 @@ const styles = theme => ({
   actions: {
     flex: '1',
     padding: '30px',
-    backgroundColor: '#152128',
-    height: 'calc(100% - 81px)'
+    backgroundColor: '#152128'
   },
   network: {
     padding: '24px',
@@ -87,9 +86,9 @@ class AccountConvert extends Component {
   renderStep(step) {
     switch (step) {
       case '1':
-        return <Step1 />
+        return <Step1 setFlow={ this.props.setFlow } />
       default:
-        return <Step1 />
+        return <Step1 setFlow={ this.props.setFlow } />
     }
   }
 }

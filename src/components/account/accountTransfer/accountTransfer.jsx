@@ -43,7 +43,14 @@ class AccountTransfer extends Component {
     this.validateSend = this.validateSend.bind(this)
   };
 
-  onChange(e, val) {
+  onChange(e) {
+
+    if(e.target.id === 'amount') {
+      if(isNaN(e.target.value)) {
+        return false
+      }
+    }
+
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)

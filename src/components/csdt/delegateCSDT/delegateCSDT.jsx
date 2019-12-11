@@ -62,9 +62,23 @@ class DelegateCSDT extends Component {
     this.onSelectChange = this.onSelectChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.calculateDelegatedBalance = this.calculateDelegatedBalance.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.onSubmit();
+    }
+  };
+
   onChange(e) {
+
+    if(e.target.id === 'amount') {
+      if(isNaN(e.target.value)) {
+        return false
+      }
+    }
+
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)
@@ -157,6 +171,7 @@ class DelegateCSDT extends Component {
             error={ amountError }
             disabled={ loading }
             placeholder={ "0" }
+            onKeyDown={ this.handleKeyDown }
             InputProps={{
               endAdornment: <InputAdornment position="end">{generatedDenom}</InputAdornment>
             }}
@@ -173,6 +188,7 @@ class DelegateCSDT extends Component {
               value={recipient}
               error={recipientError}
               onChange={this.onSelectChange}
+              onKeyDown={ this.handleKeyDown }
             >
               {
                 (validators && validators.length > 0) && validators.filter((validator) => {

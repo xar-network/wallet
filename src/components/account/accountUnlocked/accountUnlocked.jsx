@@ -19,8 +19,7 @@ const styles = theme => ({
     width: '100%',
     minHeight: '100%',
     alignContent: 'flex-start',
-    backgroundColor: colors.background,
-    paddingBottom: '32px'
+    backgroundColor: colors.background
   },
   header: {
     padding: '30px',
@@ -163,7 +162,8 @@ class AccountUnlocked extends Component {
   handleLogout() {
     lockAccount()
     sessionStorage.removeItem('xar-csdt-user')
-    this.nextPath('/')
+    this.props.setFlow('options')
+    this.nextPath('/');
   };
 
   sendClicked(denom) {

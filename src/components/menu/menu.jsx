@@ -22,13 +22,14 @@ const styles = theme => ({
     height: '70px'
   },
   xarIcon: {
-    padding: '17px 5px',
+    padding: '15px 5px',
     backgroundColor: colors.white,
-    height: '70px'
+    height: '70px',
+    width: '70px'
   },
   iconButton: {
     fill: '#fff',
-    width: 'calc(100% - 20px)',
+    width: '50px',
     height: '50px',
     padding: '10px',
     backgroundColor: colors.background,
@@ -45,35 +46,46 @@ const styles = theme => ({
 
 class Menu extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, orientation } = this.props;
 
     return (
-      <div className={classes.menuContainer}>
-        <Grid
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-start"
-          spacing={0}
-        >
-          <Grid item xs={12} className={ classes.xarIcon } >
-            <img src={logo} width='60px' height='36px' />
-          </Grid>
-          <Grid item xs={12} className={ classes.menuButton } >
-            { this.renderButton('csdt') }
-          </Grid>
-          <Grid item xs={12} className={ classes.menuButton } >
-            { this.renderButton('liquidations') }
-          </Grid>
+      <Grid
+        container
+        direction={ orientation == 'vertical' ? "column" : "row"}
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={0}
+      >
+        <Grid item className={ classes.xarIcon } >
+          <img src={logo} width='60px' height='36px' />
         </Grid>
-      </div>
+        { this.renderMenu() }
+      </Grid>
+    )
+  }
+
+  renderMenu() {
+
+    const { account, classes } = this.props
+
+    if(!account) {
+      return null
+    }
+
+    return (
+      <React.Fragment>
+        <Grid item className={ classes.menuButton } >
+          { this.renderButton('csdt') }
+        </Grid>
+        <Grid item className={ classes.menuButton } >
+          { this.renderButton('liquidations') }
+        </Grid>
+      </React.Fragment>
     )
   }
 
   renderButton(path) {
     const { classes, match } = this.props;
-
-    console.log(match)
 
     let iconButton = null
     let selected = {}
@@ -116,4 +128,11 @@ Menu.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect()(withStyles(styles)(Menu)))
+const mapStateToProps = state => {
+  const { accounts } = state;
+  return {
+    account: accounts.account,
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Menu)))

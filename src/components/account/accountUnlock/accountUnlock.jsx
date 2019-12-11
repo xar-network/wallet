@@ -24,7 +24,7 @@ const styles = theme => ({
     flex: '1',
     padding: '30px',
     backgroundColor: '#152128',
-    height: 'calc(100% - 81px)'
+    height: 'calc(100% - 153px)'
   },
   instruction: {
     paddingBottom: '30px'
@@ -69,7 +69,9 @@ class AccountUnlock extends Component {
     this.state = {
       error: null,
       password: '',
+      passwordError: false,
       keystore: '',
+      keystoreError: false,
       fileName: null,
     };
 
@@ -112,11 +114,26 @@ class AccountUnlock extends Component {
       keystore
     } = this.state
 
-    if(!password || !keystore) {
+    let error = false
+
+    if(!keystore || keystore == '') {
+      this.setState({ keystoreError: 'Keystore is required' })
+      error = true
+    }
+
+    if(!password || password == '') {
+      this.setState({ passwordError: 'Password is required' })
+      error = true
+    }
+
+    if(error) {
       return false
     }
 
     try {
+
+      this.setState({ passwordError: false, keystoreError: false })
+
       startLoader()
       const response = await unlockAccount({ password, keystore })
       stopLoader()
@@ -137,6 +154,10 @@ class AccountUnlock extends Component {
         } else {
           this.nextPath('/csdt')
         }
+
+        this.props.setFlow('unlocked')
+      } else {
+        this.setState({ error: 'Invalid keystore + password combination' })
       }
 
     } catch(ex) {
@@ -158,12 +179,12 @@ class AccountUnlock extends Component {
   }
 
   onBack() {
-    this.nextPath('/home')
+    this.props.setFlow('options')
   }
 
   render() {
     const { classes, loading, nodeInfo } = this.props;
-    const { password, fileName, error } = this.state
+    const { password, fileName, error, keystoreError, passwordError } = this.state
 
     return (
       <Grid
@@ -213,6 +234,8 @@ class AccountUnlock extends Component {
                   size='large'
                   accept="application/JSON"
                   disabled={ loading }
+                  helperText={ keystoreError }
+                  error={ keystoreError }
                   >
                     { fileName || "Upload Keystore File" }
                   </Button>
@@ -233,6 +256,8 @@ class AccountUnlock extends Component {
                 onChange={ this.onChange }
                 onKeyDown={ this.handleKeyDown }
                 disabled={ loading }
+                helperText={ passwordError }
+                error={ passwordError }
               />
             </Grid>
             <Grid item xs={6} className={classes.buttonContainer} align={'left'}>

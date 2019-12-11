@@ -40,16 +40,32 @@ class CloseCSDT extends Component {
     this.state = { };
 
     this.onChange = this.onChange.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.onSubmit();
+    }
+  };
+
+  onSubmit() {
+    this.props.onSubmit({ amount: this.state.amount, recipient: this.state.recipient })
+  };
+
   onChange(e) {
+
+    if(isNaN(e.target.value)) {
+      return false
+    }
+
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)
   };
 
   render() {
-    const { classes, onClose, onSubmit } = this.props;
+    const { classes, onClose } = this.props;
 
     return (
       <Grid
@@ -96,7 +112,7 @@ class CloseCSDT extends Component {
             variant="contained"
             size='medium'
             color='primary'
-            onClick={onSubmit}
+            onClick={ this.onSubmit }
             >
               Close
           </Button>

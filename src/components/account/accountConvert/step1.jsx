@@ -48,23 +48,31 @@ class Step1 extends Component {
       confirmPassword
     } = this.state
 
-    startLoader()
+    this.setState({ error: false, mnemonicError: false, passwordError: false })
 
-    if(!mnemonic || !password || !confirmPassword) {
+    if(!mnemonic) {
+      this.setState({ error: 'Invalid mnemonic', mnemonicError: true })
+      return false
+    }
+
+    if(!password || !confirmPassword) {
+      this.setState({ error: 'Invalid passwords', passwordError: true })
       return false
     }
 
     const mnemonicSplit = mnemonic.split(' ')
 
     if(mnemonicSplit.length != 24) {
-      this.setState({ error: 'Invalid mnemonic' })
+      this.setState({ error: 'Invalid mnemonic', mnemonicError: true })
       return false
     }
 
     if(password !== confirmPassword) {
-      this.setState({ error: 'Passwords do not match' })
+      this.setState({ error: 'Passwords do not match', passwordError: true })
       return false
     }
+
+    startLoader()
 
     const response = await createAccountWithMneomnic({ mnemonic, password })
 
@@ -89,6 +97,8 @@ class Step1 extends Component {
     } else {
       this.nextPath('/csdt')
     }
+
+    this.props.setFlow('unlocked')
   }
 
   download(filename, text) {
@@ -111,7 +121,7 @@ class Step1 extends Component {
   }
 
   onBack() {
-    this.nextPath('/home')
+    this.props.setFlow('options')
   }
 
   handleKeyDown(event) {
@@ -122,7 +132,7 @@ class Step1 extends Component {
 
   render() {
     const { classes, loading } = this.props;
-    const { password, confirmPassword, mnemonic } = this.state
+    const { password, confirmPassword, passwordError, mnemonic, mnemonicError, error } = this.state
 
     return (
       <Grid
@@ -148,6 +158,8 @@ class Step1 extends Component {
             onChange={ this.onChange }
             onKeyDown={ this.handleKeyDown }
             disabled={ loading }
+            error={ mnemonicError }
+            helperText={ mnemonicError ? error : '' }
           />
         </Grid>
         <Grid item xs={12} className={classes.inputContainer}>
@@ -165,6 +177,8 @@ class Step1 extends Component {
             onChange={ this.onChange }
             onKeyDown={ this.handleKeyDown }
             disabled={ loading }
+            error={ passwordError }
+            helperText={ passwordError ? error : '' }
           />
         </Grid>
         <Grid item xs={12} className={classes.inputContainer}>
@@ -182,6 +196,7 @@ class Step1 extends Component {
             onChange={ this.onChange }
             onKeyDown={ this.handleKeyDown }
             disabled={ loading }
+            error={ passwordError }
           />
         </Grid>
         <Grid item xs={6} className={classes.buttonContainer} align={'left'}>

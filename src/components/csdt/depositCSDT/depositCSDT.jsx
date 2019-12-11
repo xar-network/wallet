@@ -48,9 +48,15 @@ class DepositCSDT extends Component {
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.getBalance = this.getBalance.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   onChange(e) {
+
+    if(isNaN(e.target.value)) {
+      return false
+    }
+
     let st = {}
     st[e.target.id] = e.target.value
     this.setState(st)
@@ -65,6 +71,12 @@ class DepositCSDT extends Component {
       return bal[0]
     } else {
       return {}
+    }
+  };
+
+  handleKeyDown(event) {
+    if (event.which === 13) {
+      this.onSubmit();
     }
   };
 
@@ -114,6 +126,7 @@ class DepositCSDT extends Component {
             id="collateral"
             error={ collateralError }
             placeholder={ "0" }
+            onKeyDown={ this.handleKeyDown }
             InputProps={{
               endAdornment: <InputAdornment position="end">{collateralDenom}</InputAdornment>
             }}

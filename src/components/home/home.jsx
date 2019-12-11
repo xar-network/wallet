@@ -6,7 +6,6 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { colors } from '../theme'
 import Calculator from '../calculator'
-import Account from '../account'
 import Loader from '../loader'
 
 const styles = theme => ({
@@ -18,15 +17,6 @@ const styles = theme => ({
   maxHeight: {
     height: '100%',
     minHeight: '100%'
-  },
-  holder: {
-    position: 'relative',
-    height: '100%'
-  },
-  screenContainer: {
-    width: 'calc(100% - 70px)',
-    display: 'inline-block',
-    height: '100%'
   }
 });
 
@@ -36,21 +26,7 @@ class Home extends Component {
     const { classes, match, loading } = this.props;
 
     return (
-      <Grid
-        className={classes.container}
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid item xs={12} md={9} className={classes.maxHeight}>
-          <Calculator />
-        </Grid>
-        <Grid item xs={12} md={3} className={classes.maxHeight}>
-          <Account action={ match.params.action } />
-        </Grid>
-        { loading && <Loader /> }
-      </Grid>
+      <Calculator />
     )
   }
 }
