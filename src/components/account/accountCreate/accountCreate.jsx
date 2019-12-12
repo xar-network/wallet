@@ -66,7 +66,7 @@ class AccountCreate extends Component {
   }
 
   render() {
-    const { classes, match, nodeInfo } = this.props;
+    const { classes, nodeInfo } = this.props;
 
     return (
       <Grid

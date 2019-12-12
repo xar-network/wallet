@@ -106,7 +106,7 @@ class AccountOptions extends Component {
                 variant="outlined"
                 size='large'
                 >
-                  Unlock with mnemonic
+                  Create wallet using mnemonic
                 </Button>
             </Grid>
             <Grid item xs={11}>

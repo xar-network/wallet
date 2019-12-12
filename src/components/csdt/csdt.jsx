@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -9,11 +8,8 @@ import NoCSDTs from './noCSDTs'
 import OpenCSDT from './openCSDT'
 import ConfirmCSDT from './confirmCSDT'
 import MyCSDT from './myCSDT'
-import Account from '../account'
 import Loader from '../loader'
 
-import store from '../../store/';
-import * as actions from '../../store/actions';
 import {
   getCSDTParameters,
   getCSDT,
@@ -23,8 +19,6 @@ import {
   getBalance,
   getDelegationRewards
 } from '../../store/service';
-
-import logo from '../../assets/xar-logo.png'
 
 const styles = theme => ({
   container: {
@@ -73,6 +67,7 @@ class CSDT extends Component {
       getAllUnbondingDelegations({ address: user.address })
       getAllBondedValidators({ address: user.address })
       getDelegationRewards({ address: user.address })
+      getBalance({ address: user.address })
     } else {
       this.nextPath('/', props)
     }
@@ -94,7 +89,7 @@ class CSDT extends Component {
   }
 
   render() {
-    const { classes, match, loading } = this.props;
+    const { match, loading } = this.props;
 
     return (
       <React.Fragment>
@@ -132,11 +127,11 @@ class CSDT extends Component {
     let maxGenerated = 0
     let maxWithdraw = 0
 
-    if(!collateral || collateral == "") {
+    if(!collateral || collateral === "") {
       collateral = 0
     }
 
-    if(!generated || generated == "") {
+    if(!generated || generated === "") {
       generated = 0
     }
 

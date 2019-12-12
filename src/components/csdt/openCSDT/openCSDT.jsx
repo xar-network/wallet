@@ -142,7 +142,6 @@ class OpenCSDT extends Component {
     const {
       collateral,
       generated,
-      generatedError,
       collateralizationRatio,
       minimumCollateralizationRatio,
       warningCollateralizationRatio
@@ -198,10 +197,8 @@ class OpenCSDT extends Component {
 
   validateGenerated(val) {
     const {
-      collateral,
       generated,
-      maxGenerated,
-      minimumCollateralizationRatio
+      maxGenerated
     } = this.state
 
     if(!val) {
@@ -238,7 +235,7 @@ class OpenCSDT extends Component {
         calculationError
       } = this.state
 
-      const result = store.dispatch(actions.setPendingCSDT({
+      store.dispatch(actions.setPendingCSDT({
         collateral: collateral,
         generated: generated,
         collateralizationRatio: collateralizationRatio,
@@ -417,7 +414,7 @@ OpenCSDT.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { csdts, prices } = state;
+  const { csdts } = state;
   return {
     pendingCsdt: csdts.pendingCsdt,
   };

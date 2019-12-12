@@ -116,12 +116,12 @@ class AccountUnlock extends Component {
 
     let error = false
 
-    if(!keystore || keystore == '') {
+    if(!keystore || keystore === '') {
       this.setState({ keystoreError: 'Keystore is required' })
       error = true
     }
 
-    if(!password || password == '') {
+    if(!password || password === '') {
       this.setState({ passwordError: 'Password is required' })
       error = true
     }

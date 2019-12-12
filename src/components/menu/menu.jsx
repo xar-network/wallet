@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { LinearProgress } from '@material-ui/core'
 import { colors } from '../theme'
 import { Grid, Tooltip } from '@material-ui/core'
 import PropTypes from 'prop-types';
@@ -51,13 +50,13 @@ class Menu extends Component {
     return (
       <Grid
         container
-        direction={ orientation == 'vertical' ? "column" : "row"}
+        direction={ orientation === 'vertical' ? "column" : "row"}
         justify="flex-start"
         alignItems="flex-start"
         spacing={0}
       >
         <Grid item className={ classes.xarIcon } >
-          <img src={logo} width='60px' height='36px' />
+          <img src={logo} alt='logo' width='60px' height='36px' />
         </Grid>
         { this.renderMenu() }
       </Grid>
@@ -85,7 +84,7 @@ class Menu extends Component {
   }
 
   renderButton(path) {
-    const { classes, match } = this.props;
+    const { classes } = this.props;
 
     let iconButton = null
     let selected = {}

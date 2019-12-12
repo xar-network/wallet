@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, TextField, InputAdornment,  } from '@material-ui/core'
+import { Grid, Typography, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -174,7 +174,6 @@ class Calculator extends Component {
     const {
       collateral,
       generated,
-      generatedError,
       collateralizationRatio,
       minimumCollateralizationRatio,
       warningCollateralizationRatio
@@ -219,7 +218,7 @@ class Calculator extends Component {
       calculationError
     } = this.state
 
-    const result = store.dispatch(actions.setPendingCSDT({
+    store.dispatch(actions.setPendingCSDT({
       collateral: collateral,
       generated: generated,
       collateralizationRatio: collateralizationRatio,
@@ -263,8 +262,6 @@ class Calculator extends Component {
       _interest = (parseFloat(interest)*100).toFixed(2)
     }
 
-    var recommended = (collateral*currentPrice/2)
-
     // console.log(staking)
     // console.log(supply)
 
@@ -280,9 +277,9 @@ class Calculator extends Component {
     if (supply) {
       if (supply.supply) {
         if (supply.supply.supply) {
-          if (supply.supply.supply[0].denom == "ucsdt") {
+          if (supply.supply.supply[0].denom === "ucsdt") {
             total = supply.supply.supply[0].amount
-          } else if (supply.supply.supply[1].denom == "ucsdt") {
+          } else if (supply.supply.supply[1].denom === "ucsdt") {
             total = supply.supply.supply[1].amount
           }
         }

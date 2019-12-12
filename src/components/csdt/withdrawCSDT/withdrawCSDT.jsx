@@ -98,7 +98,7 @@ class WithdrawCSDT extends Component {
     const generated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
-    const ratios = calculateRatios(parseFloat(currentCollateral) - parseFloat(collateral != "" ? collateral : 0), collateralDenom, generated, minimumCollateralizationRatio)
+    const ratios = calculateRatios(parseFloat(currentCollateral) - parseFloat(collateral !== "" ? collateral : 0), collateralDenom, generated, minimumCollateralizationRatio)
     const balance = this.getBalance(collateralDenom)
 
     return (

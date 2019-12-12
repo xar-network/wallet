@@ -4,7 +4,7 @@ import { Grid, Typography, Button, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { createAccount, createAccountWithMneomnic, getCSDT, startLoader, stopLoader } from '../../../store/service';
+import { createAccountWithMneomnic, getCSDT, startLoader, stopLoader } from '../../../store/service';
 
 const styles = theme => ({
   instruction: {
@@ -62,7 +62,7 @@ class Step1 extends Component {
 
     const mnemonicSplit = mnemonic.split(' ')
 
-    if(mnemonicSplit.length != 24) {
+    if(mnemonicSplit.length !== 24) {
       this.setState({ error: 'Invalid mnemonic', mnemonicError: true })
       return false
     }

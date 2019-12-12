@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid, Typography, Button, TextField, InputAdornment } from '@material-ui/core'
-import { colors } from '../../theme'
+import { Grid, Button, TextField, InputAdornment } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -252,7 +251,7 @@ AccountTransfer.propTypes = {
 
 
 const mapStateToProps = state => {
-  const { accounts, prices, nodeInfo, loader } = state;
+  const { accounts, loader } = state;
   return {
     account: accounts.account,
     balances: accounts.balances,

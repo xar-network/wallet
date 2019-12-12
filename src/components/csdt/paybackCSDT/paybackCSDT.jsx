@@ -76,7 +76,6 @@ class PaybackCSDT extends Component {
     const {
       generated,
       generatedError,
-      maxCollateral,
       minimumCollateralizationRatio
     } = this.state
 
@@ -85,8 +84,7 @@ class PaybackCSDT extends Component {
     const currentGenerated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
-    const currentRatios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated), minimumCollateralizationRatio)
-    const ratios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated) - parseFloat(generated != "" ? generated : 0), minimumCollateralizationRatio)
+    const ratios = calculateRatios(collateral, collateralDenom, parseFloat(currentGenerated) - parseFloat(generated !== "" ? generated : 0), minimumCollateralizationRatio)
 
     return (
       <Grid

@@ -14,7 +14,7 @@ const styles = theme => ({
 class Liquidation extends Component {
 
   render() {
-    const { classes, match, loading } = this.props;
+    const { classes } = this.props;
 
     return (
       <Grid
@@ -24,7 +24,7 @@ class Liquidation extends Component {
         justify="flex-start"
         alignItems="flex-start"
       >
-      
+
       </Grid>
     )
   }

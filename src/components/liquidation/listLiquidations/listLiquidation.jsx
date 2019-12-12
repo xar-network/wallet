@@ -37,7 +37,7 @@ class ListLiquidation extends Component {
   };
 
   render() {
-    const { classes, match, loading } = this.props;
+    const { classes } = this.props;
 
     return (
       <Grid

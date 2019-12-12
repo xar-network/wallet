@@ -201,7 +201,7 @@ class UndelegateCSDT extends Component {
                 })
               }
             </Select>
-            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
+            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" rel="noopener noreferrer" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>

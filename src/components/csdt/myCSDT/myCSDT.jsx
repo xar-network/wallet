@@ -602,6 +602,9 @@ class MyCSDT extends Component {
       case 'close':
         //ignore
         break;
+      default:
+        //ignore
+        break;
     }
 
     stopLoader()

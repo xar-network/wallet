@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import customTheme from '../theme';
 import { withStyles } from '@material-ui/styles';
-import { connect } from 'react-redux';
 import Home from '../home'
 import CSDT from '../csdt'
 import Terms from '../terms'
