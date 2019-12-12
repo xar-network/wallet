@@ -55,6 +55,10 @@ const styles = theme => ({
   },
   smaller: {
     fontSize: '14px'
+  },
+  error: {
+    color: colors.red,
+    marginTop: '12px'
   }
 });
 
@@ -64,7 +68,8 @@ class ConfirmCSDT extends Component {
     super();
     this.state = {
       termsAccepted: false,
-      pendingCsdt: props.pendingCsdt
+      pendingCsdt: props.pendingCsdt,
+      error: false
     };
 
     this.onChange = this.onChange.bind(this)
@@ -91,7 +96,7 @@ class ConfirmCSDT extends Component {
 
   render() {
     const { classes, pendingCsdt } = this.props;
-    const { termsAccepted, privateKeyModalOpen } = this.state
+    const { termsAccepted, termsAcceptedError, privateKeyModalOpen, error } = this.state
 
     return (
       <Grid
@@ -157,6 +162,7 @@ class ConfirmCSDT extends Component {
                     onChange={ this.onChange }
                     value="termsAccepted"
                     color="primary"
+                    error={ termsAcceptedError }
                   />
                 }
                 label={<span>I accept the terms that this is unaudited software and I will proceed with caution.</span>}
@@ -181,6 +187,9 @@ class ConfirmCSDT extends Component {
                 >
                   Finalize and Generate
               </Button>
+            </Grid>
+            <Grid item xs={12}>
+              {error && <Typography className={classes.error}>{error}</Typography>}
             </Grid>
           </Grid>
         </Grid>
@@ -208,6 +217,7 @@ class ConfirmCSDT extends Component {
 
     if(termsAccepted !== true) {
       this.setState({ termsAcceptedError: 'You need to accept the terms and conditions' })
+      return false
     }
 
     return true
@@ -217,15 +227,15 @@ class ConfirmCSDT extends Component {
     this.setState({ privateKeyModalOpen: true })
   }
 
-  submitPrivateKey(signingKey) {
-    this.setState({ privateKeyModalOpen: false })
+  async submitPrivateKey(signingKey) {
+    this.setState({ privateKeyModalOpen: false, error: false })
 
     const { pendingCsdt } = this.props
 
     const user = sessionStorage.getItem('xar-csdt-user')
     const userOjb = JSON.parse(user)
 
-    createCSDT({
+    const result = await createCSDT({
       privateKey: signingKey,
       fromAddress: userOjb.address,
       collateralDenom: 'uftm',
@@ -233,7 +243,21 @@ class ConfirmCSDT extends Component {
       debtChange: pendingCsdt.generated
     })
 
-    // this.nextPath('/csdt/mycsdt')
+    const res = result.result
+
+    if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+      this.nextPath('/csdt/mycsdt')
+    } else {
+      let errorMessage = 'An error occurred'
+      if(res.raw_log) {
+        const errorObj = JSON.parse(res.raw_log)
+        if(errorObj.message) {
+          errorMessage = errorObj.message
+        }
+      }
+
+      this.setState({error: errorMessage})
+    }
   }
 
   closePrivateKeyModal() {

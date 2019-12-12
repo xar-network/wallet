@@ -53,8 +53,8 @@ const headCells = [
   { id: 'owner', numeric: false, disablePadding: true, label: 'Owner' },
   { id: 'collateral_denom', numeric: false, disablePadding: false, label: 'Denom' },
   { id: 'calc_collateral', numeric: true, disablePadding: false, label: 'Collateral' },
-  { id: 'calc_collateral_ratio', numeric: true, disablePadding: false, label: 'Col. Ratio' },
-  { id: 'calc_available', numeric: true, disablePadding: false, label: 'Available' },
+  { id: 'calc_collateral_ratio', numeric: true, disablePadding: false, label: 'Coll. Ratio' },
+  { id: 'calc_min_ratio', numeric: true, disablePadding: false, label: 'Min Coll. Ratio' },
 ];
 
 function EnhancedTableHead(props) {
@@ -222,7 +222,7 @@ export default function EnhancedTable(props) {
                     <TableCell className={classes.tableValue}>{row.collateral_denom}</TableCell>
                     <TableCell className={classes.tableValue} align="right">{row.calc_collateral + ' ' + row.collateral_denom}</TableCell>
                     <TableCell className={classes.tableValue} align="right">{row.calc_collateral_ratio.toFixed(4)} %</TableCell>
-                    <TableCell className={classes.tableValue} align="right">{row.calc_available.toFixed(0) + ' ' + row.collateral_denom}</TableCell>
+                    <TableCell className={classes.tableValue} align="right">150 %</TableCell>
                   </TableRow>
                 );
               })}

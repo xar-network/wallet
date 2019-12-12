@@ -105,7 +105,7 @@ class RewardsCSDT extends Component {
         return reward.validator_address === validatorAddress
       })
 
-      if(validator.length > 0) {
+      if(validator && validator.length > 0 && validator[0].reward && validator[0].reward.length > 0) {
         reward = parseInt(validator[0].reward[0].amount)
       }
     }

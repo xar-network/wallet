@@ -99,19 +99,22 @@ class OpenCSDT extends Component {
       minimumCollateralizationRatio
     } = this.state
 
+    this.setState({ collateralError: false, generatedError: false })
+
     if(e.target.id === 'collateral') {
       if(!this.validateCollateral(e.target.value))  {
         return false
       }
 
       const ratios = this.props.calculateRatios(e.target.value, 'uftm', this.state.generated, minimumCollateralizationRatio)
+      const ratiosBase = this.props.calculateRatios(e.target.value, 'uftm', "0", minimumCollateralizationRatio)
 
       this.setState({
         collateral: e.target.value,
         currentPrice: ratios.currentPrice,
         collateralizationRatio: ratios.collateralizationRatio,
         liquidationPrice: ratios.liquidationPrice,
-        maxGenerated: ratios.maxGenerated
+        maxGenerated: ratiosBase.maxGenerated
       })
     } else if(e.target.id === 'generated') {
       if(!this.validateGenerated(e.target.value))  {
