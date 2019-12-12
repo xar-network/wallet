@@ -40,6 +40,24 @@ import {
   withdrawDelegationRewards,
 } from '../../../store/service/api';
 
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2
+})
+
+const crypto = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 4
+})
+
+const ftm = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'FTM',
+  minimumFractionDigits: 2
+})
+
 const styles = theme => ({
   container: {
     width: '100%',
@@ -261,16 +279,16 @@ class MyCSDT extends Component {
                 className={ classes.infoContainer }>
                 <Grid container justify="flex-start" alignItems="flex-start" spacing={2}>
                   <Grid item xs={7} className={ classes.pricePair }>
-                    <Typography variant={ 'body1' }>Liquidation price (UFTM/UCSDT)</Typography>
+                    <Typography variant={ 'body1' }>Liquidation price (FTM/CSDT)</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' }>{ ratios.liquidationPrice } UCSDT</Typography>
+                    <Typography variant={ 'h3' }>{ crypto.format(ratios.liquidationPrice) }</Typography>
                   </Grid>
                   <Grid item xs={7} className={ classes.pricePairSmall }>
-                    <Typography variant={ 'body1' }>Current price information (UFTM/UCSDT)</Typography>
+                    <Typography variant={ 'body1' }>Current price (FTM/CSDT)</Typography>
                   </Grid>
                   <Grid item xs={4} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' }>{ ratios.currentPrice } UCSDT</Typography>
+                    <Typography variant={ 'h3' }>{ crypto.format(ratios.currentPrice) }</Typography>
                   </Grid>
                   <Grid item xs={7} className={ classes.pricePairSmall }>
                     <Typography variant={ 'body1' }>Liquidation penalty</Typography>
@@ -319,7 +337,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Deposited</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ collateral + ' ' + collateralDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ftm.format(collateral/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -337,7 +355,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Max available to withdraw</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ratios.maxWithdraw + ' ' + collateralDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ftm.format(ratios.maxWithdraw/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -366,7 +384,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Generated</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ generated + ' ' + generatedDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ formatter.format(generated/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -384,7 +402,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Max available to generate</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ ratios.maxGenerated + ' ' + generatedDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ formatter.format(ratios.maxGenerated/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -413,7 +431,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Available to delegate</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ currentBalance + ' ' + generatedDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ formatter.format(currentBalance/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -442,7 +460,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Current delegated balance</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePriceSmall } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ delegatedBalance + ' ' + generatedDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ formatter.format(delegatedBalance/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
@@ -460,7 +478,7 @@ class MyCSDT extends Component {
                     <Typography variant={ 'body1' } className={ classes.smaller }>Delegation rewards available</Typography>
                   </Grid>
                   <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
-                    <Typography variant={ 'h3' } className={ classes.smaller }>{ delegationBalance + ' ' + generatedDenom }</Typography>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ formatter.format(delegationBalance/1000000) }</Typography>
                   </Grid>
                   <Grid item xs={4} align={ 'right' }>
                     <Button
