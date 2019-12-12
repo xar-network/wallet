@@ -332,10 +332,7 @@ class AccountUnlocked extends Component {
           <Typography variant={ 'body1' }>{ price.asset_code ? price.asset_code.toUpperCase() : 'Unknown' + ' / UCSDT' }</Typography>
         </Grid>
         <Grid item xs={4} className={ classes.pricePrice } align={ 'right' }>
-          <Typography variant={ 'h3' }>{ parseFloat(price.price).toFixed(4) }</Typography>
-        </Grid>
-        <Grid item xs={1} className={ classes.pricePrice }>
-          <Typography variant={ 'body1' }>{ price.asset_code }</Typography>
+          <Typography variant={ 'h3' }>{ '$'+parseFloat(price.price).toFixed(4) }</Typography>
         </Grid>
       </React.Fragment>
     )
