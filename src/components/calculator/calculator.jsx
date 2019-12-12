@@ -87,8 +87,8 @@ class Calculator extends Component {
   constructor(props) {
     super();
 
-    const generated = props.pendingCsdt ? props.pendingCsdt.generated : 0
-    const collateral = props.pendingCsdt ? props.pendingCsdt.collateral : 0
+    const generated = props.pendingCsdt ? props.pendingCsdt.generated : ''
+    const collateral = props.pendingCsdt ? props.pendingCsdt.collateral : ''
     const collateralizationRatio = props.pendingCsdt ? props.pendingCsdt.collateralizationRatio : 0
     const liquidationPrice = props.pendingCsdt ? props.pendingCsdt.liquidationPrice : 0
     const currentPrice = props.pendingCsdt ? props.pendingCsdt.currentPrice : 0
@@ -96,7 +96,7 @@ class Calculator extends Component {
     const calculationWarning = props.pendingCsdt ? props.pendingCsdt.calculationWarning : false
     const calculationError = props.pendingCsdt ? props.pendingCsdt.calculationError : false
     const interest = props.pendingCsdt ? props.interest : 0.7
-    console.log(props)
+    // console.log(props)
 
     this.state = {
       csdtParameters: props.csdtParameters,
@@ -265,8 +265,8 @@ class Calculator extends Component {
 
     var recommended = (collateral*currentPrice/2)
 
-    console.log(staking)
-    console.log(supply)
+    // console.log(staking)
+    // console.log(supply)
 
     var bonded = 0
     var total = 0
@@ -288,9 +288,9 @@ class Calculator extends Component {
         }
       }
     }
-    console.log("-------------")
-    console.log(bonded)
-    console.log(total)
+    // console.log("-------------")
+    // console.log(bonded)
+    // console.log(total)
 
     return (
       <Grid
