@@ -4,6 +4,7 @@ import {
   SET_BONDED_VALIDATORS,
   SET_DELEGATIONS,
   SET_UNBONDED_DELEGATIONS,
+  SET_DELEGATION_REWARDS
 } from '../../constants'
 
 const initialState = {
@@ -11,7 +12,8 @@ const initialState = {
   validators: [],
   bondedValidators: [],
   delegations: [],
-  unbondedDelegations: []
+  unbondedDelegations: [],
+  delegationRewards: {}
 };
 
 const interest = (state = initialState, action) => {
@@ -35,6 +37,10 @@ const interest = (state = initialState, action) => {
     case SET_UNBONDED_DELEGATIONS:
       return Object.assign({}, state, {
         unbondedDelegations: action.delegations
+      });
+    case SET_DELEGATION_REWARDS:
+      return Object.assign({}, state, {
+        delegationRewards: action.rewards
       });
     default:
       return state

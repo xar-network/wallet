@@ -20,7 +20,8 @@ import {
   getAllDelegations,
   getAllBondedValidators,
   getAllUnbondingDelegations,
-  getBalance
+  getBalance,
+  getDelegationRewards
 } from '../../store/service';
 
 import logo from '../../assets/xar-logo.png'
@@ -71,6 +72,7 @@ class CSDT extends Component {
       getAllDelegations({ address: user.address })
       getAllUnbondingDelegations({ address: user.address })
       getAllBondedValidators({ address: user.address })
+      getDelegationRewards({ address: user.address })
     } else {
       this.nextPath('/', props)
     }

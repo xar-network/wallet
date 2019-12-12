@@ -164,3 +164,60 @@ export const getAllValidators = async () => {
     throw err;
   }
 }
+
+export const getDelegationRewards = async params => {
+  try {
+    const {
+      address
+    } = params
+
+    const client = new XarClient(config.xarApi)
+    await client.initChain()
+
+    const rewards = await client.getDelegatorRewards(address)
+
+    if(rewards && rewards.result && rewards.result.result) {
+      return store.dispatch(actions.setDelegationRewards(rewards.result.result))
+    } else {
+      return rewards
+    }
+
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const withdrawDelegationRewards = async params => {
+  try {
+    const {
+      privateKey,
+      fromAddress,
+      validatorAddress
+    } = params
+
+    const client = new XarClient(config.xarApi)
+    await client.initChain()
+    await client.setPrivateKey(privateKey)
+
+    const msg = client.Distribution.withdrawDelegatorRewards(fromAddress, validatorAddress)
+    const res = await client.sendTx(msg, fromAddress)
+
+    if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
+
+      //sleep for some time
+      await sleep(6000)
+      await getDelegationRewards({ address: fromAddress })
+
+      return res
+    } else {
+      return res
+    }
+
+  } catch (err) {
+    throw err;
+  }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

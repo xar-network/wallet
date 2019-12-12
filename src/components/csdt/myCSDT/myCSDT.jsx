@@ -15,6 +15,7 @@ import WithdrawCSDT from '../withdrawCSDT'
 import CloseCSDT from '../closeCSDT'
 import DelegateCSDT from '../delegateCSDT'
 import UndelegateCSDT from '../undelegateCSDT'
+import RewardsCSDT from '../rewardsCSDT'
 import PasswordModal from '../../passwordModal'
 import Snackbar from '../../snackbar'
 
@@ -35,6 +36,8 @@ import {
   getAllDelegations,
   getAllBondedValidators,
   getAllUnbondingDelegations,
+  getDelegationRewards,
+  withdrawDelegationRewards,
 } from '../../../store/service/api';
 
 const styles = theme => ({
@@ -158,6 +161,7 @@ class MyCSDT extends Component {
     getAllDelegations({ address: user.address })
     getAllUnbondingDelegations({ address: user.address })
     getAllBondedValidators({ address: user.address })
+    getDelegationRewards({ address: user.address })
     await getCSDT({ address: user.address, denom: 'uftm' })
     stopLoader()
   }
@@ -188,6 +192,18 @@ class MyCSDT extends Component {
     return bal[0].amount
   }
 
+  calculateDelegationRewards() {
+    const { delegationRewards } = this.props
+
+    let reward = 0
+
+    if(delegationRewards && delegationRewards.total && delegationRewards.total.length > 0) {
+      reward = parseInt(delegationRewards.total[0].amount)
+    }
+
+    return reward
+  }
+
   render() {
     const { classes, match, width, csdt, calculateRatios, loading } = this.props;
     const {
@@ -205,6 +221,7 @@ class MyCSDT extends Component {
     const ratios = calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio)
     const delegatedBalance = this.calculateDelegatedBalance()
     const currentBalance = this.calculateBalance()
+    const delegationBalance = this.calculateDelegationRewards()
 
     let warningStyle = {}
     let errorStyle = {}
@@ -439,6 +456,24 @@ class MyCSDT extends Component {
                         Undelegate
                     </Button>
                   </Grid>
+                  <Grid item xs={4} className={ classes.pricePair }>
+                    <Typography variant={ 'body1' } className={ classes.smaller }>Delegation rewards available</Typography>
+                  </Grid>
+                  <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
+                    <Typography variant={ 'h3' } className={ classes.smaller }>{ delegationBalance + ' ' + generatedDenom }</Typography>
+                  </Grid>
+                  <Grid item xs={4} align={ 'right' }>
+                    <Button
+                      className={ classes.ok }
+                      onClick={() => this.nextPath('/csdt/mycsdt/rewards')}
+                      variant="contained"
+                      size='medium'
+                      color='secondary'
+                      disabled={ loading }
+                      >
+                        Get Rewards
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -557,6 +592,13 @@ class MyCSDT extends Component {
           amount: actionParams.amount
         })
         break;
+      case 'rewards':
+        response = await withdrawDelegationRewards({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          validatorAddress: actionParams.recipient,
+        })
+        break;
       case 'close':
         //ignore
         break;
@@ -619,6 +661,9 @@ class MyCSDT extends Component {
       case 'undelegate':
         content = <UndelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
+      case 'rewards':
+        content = <RewardsCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        break;
       default:
 
     }
@@ -645,7 +690,8 @@ const mapStateToProps = state => {
     loading: loader.loading,
     csdtPrices: prices.prices,
     delegations: staking.delegations,
-    balances: accounts.balances
+    balances: accounts.balances,
+    delegationRewards: staking.delegationRewards
   };
 };
 
