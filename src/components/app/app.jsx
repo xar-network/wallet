@@ -53,6 +53,9 @@ const styles = theme => ({
 });
 
 class App extends Component {
+  constructor(props) {
+    super();
+  }
 
   render() {
     const { classes, store, width } = this.props;

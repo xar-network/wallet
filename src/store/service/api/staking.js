@@ -204,9 +204,9 @@ export const withdrawDelegationRewards = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getDelegationRewards({ address: fromAddress })
+      setTimeout(() => {
+        getDelegationRewards({ address: fromAddress })
+      }, config.timeout)
 
       return res
     } else {

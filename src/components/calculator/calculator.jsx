@@ -8,12 +8,7 @@ import { colors } from '../theme'
 
 import store from '../../store/';
 import * as actions from '../../store/actions';
-import { getCSDTParameters } from '../../store/service/api/csdts.js';
-import { getPrices } from '../../store/service/api/prices.js';
-import { getInterest } from '../../store/service/api/interest.js';
-import { getSupply } from '../../store/service/api/supply.js';
-import { getStaking } from '../../store/service/api/staking.js';
-
+import { getPrices, getInterest, getSupply, getStaking } from '../../store/service';
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -96,10 +91,8 @@ class Calculator extends Component {
     const calculationWarning = props.pendingCsdt ? props.pendingCsdt.calculationWarning : false
     const calculationError = props.pendingCsdt ? props.pendingCsdt.calculationError : false
     const interest = props.pendingCsdt ? props.interest : 0.7
-    // console.log(props)
 
     this.state = {
-      csdtParameters: props.csdtParameters,
       csdtPrices: props.csdtPrices,
       collateral: collateral,
       generated: generated,
@@ -122,7 +115,6 @@ class Calculator extends Component {
     this.toggleEditingFTM = this.toggleEditingFTM.bind(this)
     this.toggleEditingCSDT = this.toggleEditingCSDT.bind(this)
 
-    getCSDTParameters()
     getPrices()
     getInterest()
     getSupply()
@@ -537,7 +529,6 @@ Calculator.propTypes = {
 const mapStateToProps = state => {
   const { csdts, prices, interest, supply, staking } = state;
   return {
-    csdtParameters: csdts.csdtParameters,
     pendingCsdt: csdts.pendingCsdt,
     csdtPrices: prices.prices,
     interest: interest.interest.interest,

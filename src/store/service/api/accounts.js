@@ -98,16 +98,13 @@ export const send = async params => {
 
     const tx = await client.transfer(fromAddress, toAddress, amount, denom, '')
 
-    await sleep(6000)
-    await getBalance({ address: fromAddress });
+    setTimeout(() => {
+      getBalance({ address: fromAddress });
+    }, config.timeout)
 
     return tx
 
   } catch (err) {
     throw err;
   }
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }

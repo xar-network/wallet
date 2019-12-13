@@ -200,9 +200,9 @@ export default function EnhancedTable(props) {
                 return (
                   <TableRow
                     hover
-                    onClick={event => handleClick(event, row.owner)}
+                    onClick={event => handleClick(event, row.name)}
                     tabIndex={-1}
-                    key={row.owner}
+                    key={row.name}
                     selected={isItemSelected}
                   >
                     <TableCell className={classes.tableValue} component="th" id={labelId} scope="row" padding="none">

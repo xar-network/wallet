@@ -28,14 +28,11 @@ import {
   undelegateStake,
   startLoader,
   stopLoader,
-  getCSDTParameters,
   getPrices,
   getBalance,
   getCSDT,
   getAllValidators,
   getAllDelegations,
-  getAllBondedValidators,
-  getAllUnbondingDelegations,
   getDelegationRewards,
   withdrawDelegationRewards,
 } from '../../../store/service/api';
@@ -139,7 +136,6 @@ class MyCSDT extends Component {
     super();
 
     this.state = {
-      csdtParameters: props.csdtParameters,
       csdt: props.csdt,
       minimumCollateralizationRatio: 150,
       minCollateral: 50,
@@ -156,8 +152,6 @@ class MyCSDT extends Component {
     this.submitPrivateKey = this.submitPrivateKey.bind(this)
     this.closePrivateKeyModal = this.closePrivateKeyModal.bind(this)
     this.renderSnackbar = this.renderSnackbar.bind(this)
-
-    getAllValidators()
   }
 
   onChange(e) {
@@ -175,13 +169,11 @@ class MyCSDT extends Component {
     const user = JSON.parse(userString || '{}')
 
     startLoader()
-    getCSDTParameters()
     getPrices()
     getBalance({ address: user.address })
     getAllDelegations({ address: user.address })
-    getAllUnbondingDelegations({ address: user.address })
-    getAllBondedValidators({ address: user.address })
     getDelegationRewards({ address: user.address })
+    getAllValidators()
     await getCSDT({ address: user.address, denom: 'uftm' })
     stopLoader()
   }
@@ -643,8 +635,6 @@ class MyCSDT extends Component {
     }
 
     this.setState(snackbarObj)
-
-    // this.nextPath('/csdt/mycsdt')
   }
 
   closePrivateKeyModal() {
@@ -708,7 +698,6 @@ const mapStateToProps = state => {
   const { csdts, prices, loader, staking, accounts } = state;
   return {
     csdt: csdts.csdt,
-    csdtParameters: csdts.csdtParameters,
     loading: loader.loading,
     csdtPrices: prices.prices,
     delegations: staking.delegations,

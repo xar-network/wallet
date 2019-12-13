@@ -11,7 +11,7 @@ import {
 import { withStyles } from '@material-ui/styles';
 import withWidth from '@material-ui/core/withWidth';
 import { colors } from '../../theme'
-import { lockAccount, getNodeInfo, getPrices } from '../../../store/service'
+import { lockAccount } from '../../../store/service'
 import AccountTransfer from '../accountTransfer';
 import Snackbar from '../../snackbar';
 import SendIcon from '@material-ui/icons/Send';
@@ -138,15 +138,9 @@ class AccountUnlocked extends Component {
     this.sendClicked = this.sendClicked.bind(this)
     this.cancelSendClicked = this.cancelSendClicked.bind(this)
     this.renderSnackbar = this.renderSnackbar.bind(this)
-
-    getPrices()
-    getNodeInfo()
   };
 
   componentDidUpdate(prevProps) {
-    // if (!this.props.account || !this.props.account.privateKey) {
-    //   this.nextPath('/');
-    // }
   }
 
   nextPath(path) {
@@ -386,7 +380,7 @@ class AccountUnlocked extends Component {
     const alternating = index % 2
 
     return (
-      <React.Fragment>
+      <React.Fragment key={asset.denom}>
         <Grid item xs={4} className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' }>{ asset.denom }</Typography>
         </Grid>

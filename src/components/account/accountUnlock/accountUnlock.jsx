@@ -5,7 +5,7 @@ import { colors } from '../../theme'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { unlockAccount, startLoader, stopLoader, getCSDT } from '../../../store/service';
+import { unlockAccount, startLoader, stopLoader } from '../../../store/service';
 
 const styles = theme => ({
   container: {
@@ -69,9 +69,9 @@ class AccountUnlock extends Component {
     this.state = {
       error: null,
       password: '',
-      passwordError: false,
+      passwordError: null,
       keystore: '',
-      keystoreError: false,
+      keystoreError: null,
       fileName: null,
     };
 
@@ -132,7 +132,7 @@ class AccountUnlock extends Component {
 
     try {
 
-      this.setState({ passwordError: false, keystoreError: false })
+      this.setState({ passwordError: null, keystoreError: null })
 
       startLoader()
       const response = await unlockAccount({ password, keystore })
@@ -144,8 +144,6 @@ class AccountUnlock extends Component {
           address: response.account.address,
           keystore: keystore
         }
-
-        getCSDT({ address: response.account.address, denom: 'uftm' })
 
         sessionStorage.setItem('xar-csdt-user', JSON.stringify(obj))
 
@@ -234,7 +232,7 @@ class AccountUnlock extends Component {
                   size='large'
                   accept="application/JSON"
                   disabled={ loading }
-                  helperText={ keystoreError }
+                  helpertext={ keystoreError }
                   error={ keystoreError }
                   >
                     { fileName || "Upload Keystore File" }
@@ -256,7 +254,7 @@ class AccountUnlock extends Component {
                 onChange={ this.onChange }
                 onKeyDown={ this.handleKeyDown }
                 disabled={ loading }
-                helperText={ passwordError }
+                helpertext={ passwordError }
                 error={ passwordError }
               />
             </Grid>

@@ -11,13 +11,13 @@ import MyCSDT from './myCSDT'
 import Loader from '../loader'
 
 import {
-  getCSDTParameters,
   getCSDT,
   getAllDelegations,
-  getAllBondedValidators,
-  getAllUnbondingDelegations,
-  getBalance,
-  getDelegationRewards
+  getDelegationRewards,
+  startLoader,
+  stopLoader,
+  getAllValidators,
+  getPrices
 } from '../../store/service';
 
 const styles = theme => ({
@@ -50,7 +50,6 @@ class CSDT extends Component {
 
     this.state = {
       account: props.account,
-      csdtParameters: props.csdtParameters,
       csdtPrices: props.csdtPrices,
       csdt: props.csdt
     };
@@ -61,13 +60,23 @@ class CSDT extends Component {
     const user = this.validateUser()
 
     if (user !== false) {
-      getCSDTParameters()
-      getCSDT({ address: user.address, denom: 'uftm' })
-      getAllDelegations({ address: user.address })
-      getAllUnbondingDelegations({ address: user.address })
-      getAllBondedValidators({ address: user.address })
-      getDelegationRewards({ address: user.address })
-      getBalance({ address: user.address })
+
+      if(!props.csdt) {
+        getCSDT({ address: user.address, denom: 'uftm' })
+      }
+      if(!props.delegations) {
+        getAllDelegations({ address: user.address })
+      }
+      if(!props.dleegationRewards) {
+        getDelegationRewards({ address: user.address })
+      }
+      if(!props.validators) {
+        getAllValidators()
+      }
+      if(!props.csdtPrices) {
+        getPrices()
+      }
+
     } else {
       this.nextPath('/', props)
     }
@@ -176,13 +185,13 @@ CSDT.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts, csdts, prices, loader } = state;
+  const { csdts, prices, loader, staking } = state;
   return {
     csdt: csdts.csdt,
-    accounts: accounts.account,
-    csdtParameters: csdts.csdtParameters,
     csdtPrices: prices.prices,
-    loading: loader.loading
+    loading: loader.loading,
+    delegations: staking.delegations,
+    validators: staking.validators
   };
 };
 

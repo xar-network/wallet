@@ -14,9 +14,9 @@ import store from '../../store/';
 import * as actions from '../../store/actions';
 import { colors } from '../theme'
 import {
-  getNodeInfo,
   getBalance,
-  toggleAccount
+  toggleAccount,
+  getNodeInfo
 } from '../../store/service';
 import { withStyles } from '@material-ui/styles';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
@@ -92,11 +92,13 @@ class Account extends Component {
     this.state = {
       currentFlow: userLoggedIn ? 'unlocked' : 'options'
     };
+
+    if(!props.nodeInfo) {
+      getNodeInfo()
+    }
   }
 
   validateUser(props) {
-    getNodeInfo()
-
     const userString = sessionStorage.getItem('xar-csdt-user')
     const user = JSON.parse(userString || '{}')
 

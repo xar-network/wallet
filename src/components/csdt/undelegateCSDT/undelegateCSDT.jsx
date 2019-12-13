@@ -183,7 +183,6 @@ class UndelegateCSDT extends Component {
             <Typography variant="body1">Which validator would you like to delegate to?</Typography>
             <Select
               className={classes.select}
-              labelId="recipient"
               id="recipient"
               name="recipient"
               value={recipient}
@@ -196,7 +195,7 @@ class UndelegateCSDT extends Component {
                   return (!['0503F79A2B10BC4B', 'A80787E4CC6AA8B5'].includes(validator.description.identity))
                 }).map((validator) => {
                   return (
-                    <MenuItem value={validator.operator_address}>
+                    <MenuItem key={validator.operator_address} value={validator.operator_address}>
                       {validator.description.moniker}
                     </MenuItem>)
                 })

@@ -37,9 +37,9 @@ export const createCSDT = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getCSDT({address: fromAddress, denom: collateralDenom})
+      setTimeout(() => {
+        getCSDT({address: fromAddress, denom: collateralDenom})
+      }, config.timeout)
 
       return res
     } else {
@@ -68,9 +68,9 @@ export const depositCSDT = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getCSDT({address: fromAddress, denom: collateralDenom})
+      setTimeout(() => {
+        getCSDT({address: fromAddress, denom: collateralDenom})
+      }, config.timeout)
 
       return res
     } else {
@@ -99,9 +99,9 @@ export const withdrawCSDT = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getCSDT({address: fromAddress, denom: collateralDenom})
+      setTimeout(() => {
+        getCSDT({address: fromAddress, denom: collateralDenom})
+      }, config.timeout)
 
       return res
     } else {
@@ -130,9 +130,9 @@ export const generateCSDT = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getCSDT({address: fromAddress, denom: collateralDenom})
+      setTimeout(() => {
+        getCSDT({address: fromAddress, denom: collateralDenom})
+      }, config.timeout)
 
       return res
     } else {
@@ -161,9 +161,9 @@ export const paybackCSDT = async params => {
 
     if(res && res.logs && res.logs.length > 0 && res.logs[0].success === true) {
 
-      //sleep for some time
-      await sleep(6000)
-      await getCSDT({address: fromAddress, denom: collateralDenom})
+      setTimeout(() => {
+        getCSDT({address: fromAddress, denom: collateralDenom})
+      }, config.timeout)
 
       return res
     } else {
@@ -186,7 +186,3 @@ export const getCSDT = async params => {
     throw err;
   }
 };
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}

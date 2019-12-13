@@ -4,7 +4,7 @@ import { Grid, Typography, Button, TextField } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { createAccountWithMneomnic, getCSDT, startLoader, stopLoader } from '../../../store/service';
+import { createAccountWithMneomnic, startLoader, stopLoader } from '../../../store/service';
 
 const styles = theme => ({
   instruction: {
@@ -85,8 +85,6 @@ class Step1 extends Component {
       address: response.account.address,
       keystore: response.account.keystore
     }
-
-    await getCSDT({ address: response.account.address, denom: 'uftm' })
 
     sessionStorage.setItem('xar-csdt-user', JSON.stringify(obj))
 
