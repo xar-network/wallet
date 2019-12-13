@@ -65,11 +65,11 @@ const styles = theme => ({
     alignContent: 'flex-start',
   },
   header: {
-    padding: '30px',
+    padding: '15px 15px 16px 15px',
     borderBottom: '1px solid '+colors.border
   },
   headerButton: {
-    padding: '33px 0px',
+    padding: '15px 15px 16px 15px',
     borderBottom: '1px solid '+colors.border,
     verticalAlign: 'bottom'
   },
@@ -122,11 +122,13 @@ const styles = theme => ({
     top: '0px',
     bottom: '0px',
     width: '499px',
+    zIndex: 999,
     backgroundColor: colors.background
   },
   refreshButton: {
     cursor: 'pointer',
-    height: '44px',
+    height: '36px',
+    paddingTop: '8px',
     fill: colors.border
   },
 });
@@ -234,7 +236,6 @@ class MyCSDT extends Component {
     const collateral = csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].amount : 0
     const collateralDenom =  csdt && csdt.collateral_amount && csdt.collateral_amount.length > 0 ? csdt.collateral_amount[0].denom : 'Unknown'
     const generated = csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].amount : 'N/A'
-    const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
     const ratios = calculateRatios(collateral, collateralDenom, generated, minimumCollateralizationRatio)
     const delegatedBalance = this.calculateDelegatedBalance()

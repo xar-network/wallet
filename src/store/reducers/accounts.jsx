@@ -18,7 +18,7 @@ const accounts = (state = initialState, action) => {
       });
     case LOCK_ACCOUNT:
       return Object.assign({}, state, {
-        account: {}
+        account: null
       });
     case CREATE_ACCOUNT:
       return Object.assign({}, state, {

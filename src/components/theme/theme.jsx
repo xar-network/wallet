@@ -43,7 +43,7 @@ const customTheme =  {
     },
     h1: {
       letterSpacing: '1px',
-      fontSize: '36px',
+      fontSize: '32px',
       fontWeight: '100',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",

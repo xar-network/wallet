@@ -5,14 +5,15 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loader from '../loader'
 
-import ListLiquidations from './listLiquidations'
-import ViewLiquidation from './viewLiquidation'
+import ListSynthetics from './listSynthetics'
 
-import { getLiquidations } from '../../store/service/api';
+import { getSynthetics } from '../../store/service/api';
 
-const styles = theme => ({ });
+const styles = theme => ({
 
-class Liquidation extends Component {
+});
+
+class Synthetics extends Component {
 
   constructor(props) {
     super();
@@ -24,7 +25,7 @@ class Liquidation extends Component {
     const user = this.validateUser()
 
     if (user !== false) {
-      getLiquidations()
+      getSynthetics()
     } else {
       this.nextPath('/', props)
     }
@@ -58,17 +59,15 @@ class Liquidation extends Component {
 
   renderScreen(view) {
     switch (view) {
-      case 'view':
-        return <ViewLiquidation />
       case 'list':
-        return <ListLiquidations />
+        return <ListSynthetics />
       default:
-        return <ListLiquidations />
+        return <ListSynthetics />
     }
   }
 }
 
-Liquidation.propTypes = {
+Synthetics.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -79,4 +78,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(Liquidation)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Synthetics)))

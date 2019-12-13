@@ -9,6 +9,8 @@ import interest from './interest'
 import staking from './staking'
 import supply from './supply'
 import liquidations from './liquidations'
+import synthetics from './synthetics'
+import screen from './screen'
 
 export default combineReducers({
   csdts,
@@ -20,5 +22,7 @@ export default combineReducers({
   interest,
   supply,
   staking,
-  liquidations
+  liquidations,
+  synthetics,
+  screen
 })

@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Grid, Typography } from '@material-ui/core'
 import { colors } from '../../theme'
-import LiquidationTable from './liquidationTable.jsx'
+import SyntheticsTable from './syntheticsTable.jsx'
 
 const styles = theme => ({
   container: {
@@ -25,13 +25,13 @@ const styles = theme => ({
   }
 });
 
-class ListLiquidation extends Component {
+class ListSynthetics extends Component {
 
   constructor(props) {
     super();
 
     this.state = {
-      liquidations: props.liquidations,
+      synthetics: props.synthetics,
     };
   };
 
@@ -46,7 +46,7 @@ class ListLiquidation extends Component {
         alignItems="flex-start"
         className={classes.container}>
         <Grid item xs={11} className={classes.header}>
-          <Typography variant="h1" className={ classes.title }>Liquidation Portal</Typography>
+          <Typography variant="h1" className={ classes.title }>Synthetics Market</Typography>
         </Grid>
         <Grid item xs={11} className={classes.body}>
           { this.renderLiquidationTable() }
@@ -56,26 +56,26 @@ class ListLiquidation extends Component {
   }
 
   renderLiquidationTable() {
-    const liquidations = this.props.liquidations
+    const synthetics = this.props.synthetics
 
-    if(!liquidations || liquidations.length === 0) {
-      return <Typography variant="h2">No available liquidations</Typography>
+    if(!synthetics || synthetics.length === 0) {
+      return <Typography variant="h2">No available synthetics</Typography>
     }
 
-    return <LiquidationTable data={liquidations} />
+    return <SyntheticsTable data={synthetics} />
   }
 }
 
-ListLiquidation.propTypes = {
+ListSynthetics.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => {
-  const { loader, liquidations } = state;
+  const { loader, synthetics } = state;
   return {
     loading: loader.loading,
-    liquidations: liquidations.liquidations
+    synthetics: synthetics.synthetics
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(ListLiquidation)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(ListSynthetics)))

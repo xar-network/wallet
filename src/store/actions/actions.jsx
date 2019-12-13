@@ -19,6 +19,10 @@ import {
   SET_BONDED_VALIDATORS,
   SET_LIQUIDATIONS,
   SET_DELEGATION_REWARDS,
+  SET_SYNTHETICS,
+  TOGGLE_ACCOUNT,
+  COLLAPSE_ACCOUNT,
+  EXPAND_ACCOUNT
 } from '../../constants'
 
 
@@ -139,4 +143,23 @@ export const setLiquidations = liquidations => ({
 export const setDelegationRewards = rewards => ({
   type: SET_DELEGATION_REWARDS,
   rewards
+})
+
+
+export const setSynthetics = synthetics => ({
+  type: SET_SYNTHETICS,
+  synthetics
+})
+
+
+export const toggleAccount = () => ({
+  type: TOGGLE_ACCOUNT,
+})
+
+export const collapseAccount = () => ({
+  type: COLLAPSE_ACCOUNT,
+})
+
+export const expandAccount = () => ({
+  type: EXPAND_ACCOUNT,
 })

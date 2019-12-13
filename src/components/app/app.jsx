@@ -11,6 +11,7 @@ import Terms from '../terms'
 import Menu from '../menu'
 import Account from '../account'
 import Liquidation from '../liquidation'
+import Synthetics from '../synthetics'
 import { colors } from '../theme'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { Grid } from '@material-ui/core';
@@ -77,10 +78,11 @@ class App extends Component {
               <Route exact path="/csdt/:view/:action" component={CSDT} />
               <Route exact path="/terms" component={Terms} />
               <Route exact path="/liquidation" component={Liquidation} />
+              <Route exact path="/liquidation/:view" component={Liquidation} />
+              <Route exact path="/synthetics" component={Synthetics} />
+              <Route exact path="/synthetics/:view" component={Synthetics} />
             </Grid>
-            <Grid item className={ isWidthUp('lg', width) ? classes.accountContainer : classes.accountContainerSmall }>
-              <Account />
-            </Grid>
+            <Account />
             { !isWidthUp('lg', width) ?
               <Grid item className={ classes.menuContainerHorizontal }>
                 <Menu orientation={'horizontal'} />

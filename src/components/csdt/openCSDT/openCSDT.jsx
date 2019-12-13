@@ -15,7 +15,7 @@ const styles = theme => ({
     alignContent: 'flex-start'
   },
   header: {
-    padding: '30px',
+    padding: '15px 15px 16px 15px',
     borderBottom: '1px solid '+colors.border
   },
   title: {

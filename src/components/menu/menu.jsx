@@ -10,6 +10,7 @@ import logo from '../../assets/xar-logo.png'
 
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import OpacityIcon from '@material-ui/icons/Opacity';
+import PieChartIcon from '@material-ui/icons/PieChart';
 
 const styles = theme => ({
   menuContainer: {
@@ -18,7 +19,8 @@ const styles = theme => ({
     background: colors.menu,
   },
   menuButton: {
-    height: '70px'
+    height: '71px',
+    borderBottom: '1px solid #202930'
   },
   xarIcon: {
     padding: '15px 5px',
@@ -28,9 +30,9 @@ const styles = theme => ({
   },
   iconButton: {
     fill: '#fff',
-    width: '50px',
-    height: '50px',
-    padding: '10px',
+    width: '30px',
+    height: '30px',
+    padding: '20px',
     backgroundColor: colors.background,
     cursor: 'pointer',
     '&:hover': {
@@ -39,6 +41,9 @@ const styles = theme => ({
   },
   selected: {
      background: colors.card,
+  },
+  none: {
+
   }
 });
 
@@ -79,6 +84,9 @@ class Menu extends Component {
         <Grid item className={ classes.menuButton } >
           { this.renderButton('liquidations') }
         </Grid>
+        <Grid item className={ classes.menuButton } >
+          { this.renderButton('synthetics') }
+        </Grid>
       </React.Fragment>
     )
   }
@@ -87,11 +95,11 @@ class Menu extends Component {
     const { classes } = this.props;
 
     let iconButton = null
-    let selected = {}
+    let selected = classes.none
 
     switch (path) {
       case 'csdt':
-        if(window.location.pathname.includes("/csdt")) {
+        if(window.location.pathname.includes("/csdt") || window.location.pathname === '/') {
           selected = classes.selected
         }
         iconButton = (
@@ -105,8 +113,18 @@ class Menu extends Component {
           selected = classes.selected
         }
         iconButton = (
-          <Tooltip title="Liquidations" placement="right">
+          <Tooltip title="Liquidation Portal" placement="right">
             <OpacityIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/liquidation') }} />
+          </Tooltip>
+        )
+        break;
+      case 'synthetics':
+        if(window.location.pathname.includes("/synthetics")) {
+          selected = classes.selected
+        }
+        iconButton = (
+          <Tooltip title="Synthetics Market" placement="right">
+            <PieChartIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/synthetics') }} />
           </Tooltip>
         )
         break;

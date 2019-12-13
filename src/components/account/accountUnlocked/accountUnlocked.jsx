@@ -1,25 +1,24 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types';
-import { Grid, Typography, Menu, MenuItem, Tooltip } from '@material-ui/core'
-import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined';
-import SendIcon from '@material-ui/icons/Send';
-import { colors } from '../../theme'
-import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { lockAccount } from '../../../store/service';
-import { getPrices } from '../../../store/service/api/prices.js';
-import { getNodeInfo } from '../../../store/service/api'
+import PropTypes from 'prop-types';
+import {
+  Grid,
+  Typography,
+  Tooltip,
+  Button
+} from '@material-ui/core'
+import { withStyles } from '@material-ui/styles';
+import withWidth from '@material-ui/core/withWidth';
+import { colors } from '../../theme'
+import { lockAccount, getNodeInfo, getPrices } from '../../../store/service'
 import AccountTransfer from '../accountTransfer';
 import Snackbar from '../../snackbar';
+import SendIcon from '@material-ui/icons/Send';
 
 const styles = theme => ({
   container: {
-    borderLeft: '1px solid '+colors.border,
-    width: '100%',
-    minHeight: '100%',
-    alignContent: 'flex-start',
-    backgroundColor: colors.background
+    alignContent: 'flex-start'
   },
   header: {
     padding: '30px',
@@ -47,17 +46,10 @@ const styles = theme => ({
     width: '100%',
     marginTop: '16px'
   },
-  walletIcon: {
-    color: colors.white,
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    cursor: 'pointer'
-  },
   walletAddress: {
-    fontSize: '14px',
+    fontSize: '15px',
     display: 'inline-block',
     width: 'calc(100% - 36px)',
-    marginRight: '12px',
     verticalAlign: 'middle'
   },
   tableHeader: {
@@ -111,6 +103,23 @@ const styles = theme => ({
     fill: colors.lightGray,
     height: '15px',
     cursor: 'pointer'
+  },
+  logOutButton: {
+    padding: '32px'
+  },
+  filler: {
+    minHeight: '30px',
+    flex: 1
+  },
+  wholeContaienr: {
+    minHeight: '100%',
+    display: 'flex',
+    flexFlow: 'column',
+    borderLeft: '1px solid '+colors.border,
+    backgroundColor: colors.background,
+    [theme.breakpoints.down('md')]: {
+      borderLeft: 'none'
+    },
   }
 });
 
@@ -121,14 +130,10 @@ class AccountUnlocked extends Component {
 
     this.state = {
       account: props.account,
-      walletMenuOpen: false,
-      walletMenuAnchorEl: null,
       snackbarMessage: null,
       snackbarType: null
     };
 
-    this.onWalletOptionsClicked = this.onWalletOptionsClicked.bind(this)
-    this.handleWalletOptionsClose = this.handleWalletOptionsClose.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
     this.sendClicked = this.sendClicked.bind(this)
     this.cancelSendClicked = this.cancelSendClicked.bind(this)
@@ -148,17 +153,6 @@ class AccountUnlocked extends Component {
     this.props.history.push(path);
   }
 
-  handleWalletOptionsClose() {
-    this.setState({ walletMenuOpen: false })
-  };
-
-  onWalletOptionsClicked(event) {
-    this.setState({
-      walletMenuOpen: !this.state.walletMenuOpen,
-      walletMenuAnchorEl: event.currentTarget
-    })
-  };
-
   handleLogout() {
     lockAccount()
     sessionStorage.removeItem('xar-csdt-user')
@@ -175,77 +169,87 @@ class AccountUnlocked extends Component {
   };
 
   render() {
-    const { classes, account, nodeInfo } = this.props;
-    const { walletMenuOpen, walletMenuAnchorEl, sendOpen, snackbarMessage } = this.state
+    const { classes, account, nodeInfo, accountsCollapsed } = this.props;
+    const { sendOpen, snackbarMessage } = this.state
 
     if(!account) {
       return null
     }
 
     return (
-      <Grid
-        container
-        direction="row"
-        justify="center"
-        alignItems="flex-start"
-        className={classes.container}>
-        <Grid item xs={12} className={classes.header}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center">
-            <Grid item xs={12}>
 
-              <Tooltip title={account.address} placement="bottom">
-                <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
-              </Tooltip>
-              <AccountBalanceWalletOutlinedIcon className={classes.walletIcon} onClick={ this.onWalletOptionsClicked } />
-              <Menu
-                id="simple-menu"
-                anchorEl={walletMenuAnchorEl}
-                keepMounted
-                open={walletMenuOpen}
-                onClose={this.handleWalletOptionsClose}
-              >
-                <MenuItem key='logout' onClick={this.handleLogout}>Logout</MenuItem>
-              </Menu>
+      <div className={classes.wholeContaienr}>
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="flex-start"
+          className={classes.container}>
+          <Grid item xs={12} className={classes.header}>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="center">
+              <Grid item xs={12} align='center'>
+                <Tooltip title={account.address} placement="bottom">
+                  <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12} className={classes.balancesContainer}>
-          { !sendOpen && <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center">
-            { this.renderAssetsHeader() }
-            { this.renderAssets() }
-          </Grid>}
-          { sendOpen && <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center">
-            { this.renderSend() }
-          </Grid>}
-        </Grid>
-        <Grid item xs={12} className={classes.network} align={ 'center' }>
-          <div className={ classes.dot }> </div>
-          <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
-        </Grid>
-        <Grid item xs={12} className={classes.pricesContainer}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center">
-            { this.renderPricesHeader() }
-            { this.renderPrices() }
+
+          { !accountsCollapsed && <React.Fragment>
+          <Grid item xs={12} className={classes.balancesContainer}>
+            { !sendOpen && <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="center">
+              { this.renderAssetsHeader() }
+              { this.renderAssets() }
+            </Grid>}
+            { sendOpen && <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="center">
+              { this.renderSend() }
+            </Grid>}
           </Grid>
+          <Grid item xs={12} className={classes.network} align={ 'center' }>
+            <div className={ classes.dot }> </div>
+            <Typography variant="body2" align={ "center" } className={ classes.inline }>{ (nodeInfo && nodeInfo.node_info) ? nodeInfo.node_info.network : 'Unknown' }</Typography>
+          </Grid>
+          {/*<Grid item xs={12} className={classes.pricesContainer}>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="center">
+              { this.renderPricesHeader() }
+              { this.renderPrices() }
+            </Grid>
+          </Grid>*/}
+          </React.Fragment>}
+          { snackbarMessage && this.renderSnackbar() }
         </Grid>
-        { snackbarMessage && this.renderSnackbar() }
-      </Grid>
+        { !accountsCollapsed && <React.Fragment>
+          <div className={classes.filler}>
+
+          </div>
+          <div className={ classes.logOutButton }>
+            <Button
+              fullWidth
+              onClick={() => this.handleLogout('unlock') }
+              variant="outlined"
+              size='large'
+              >
+                Log Out
+            </Button>
+          </div>
+        </React.Fragment>}
+      </div>
     )
   }
 
@@ -402,13 +406,14 @@ AccountUnlocked.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { accounts, prices, nodeInfo } = state;
+  const { accounts, prices, nodeInfo, screen } = state;
   return {
     account: accounts.account,
     balances: accounts.balances,
     csdtPrices: prices.prices,
-    nodeInfo: nodeInfo.nodeInfo
+    nodeInfo: nodeInfo.nodeInfo,
+    accountsCollapsed: screen.accountsCollapsed
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(AccountUnlocked)))
+export default withRouter(connect(mapStateToProps)(withWidth()(withStyles(styles)(AccountUnlocked))))

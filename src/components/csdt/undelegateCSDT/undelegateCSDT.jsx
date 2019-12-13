@@ -18,7 +18,8 @@ import { connect } from 'react-redux';
 
 const styles = theme => ({
   container: {
-    padding: '30px'
+    padding: '30px',
+    zIndex: 1
   },
   closeButton: {
     cursor: 'pointer'
