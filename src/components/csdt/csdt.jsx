@@ -70,7 +70,7 @@ class CSDT extends Component {
       if(!props.dleegationRewards) {
         getDelegationRewards({ address: user.address })
       }
-      if(!props.validators) {
+      if(!props.validators || props.validators.length === 0) {
         getAllValidators()
       }
       if(!props.csdtPrices) {
