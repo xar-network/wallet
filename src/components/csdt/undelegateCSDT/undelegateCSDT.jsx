@@ -179,7 +179,7 @@ class UndelegateCSDT extends Component {
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
           <FormControl variant="outlined" className={classes.textField}>
-            <Typography variant="body1">Which validator would you like to delegate to?</Typography>
+            <Typography variant="body1">Which validator would you like to undelegate from?</Typography>
             <Select
               className={classes.select}
               labelId="recipient"
