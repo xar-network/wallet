@@ -170,15 +170,16 @@ class ViewProposal extends Component {
       <Grid container>
         <Grid item xs={12} className={ classes.infoContainer }>
           <Grid container justify="flex-start" alignItems="flex-start" spacing={2}>
-            <Grid item xs={11} >
+            <Grid item xs={9} >
               <IconButton onClick={() => this.nextPath('/governance')} disabled={ loading } >
                 <ChevronLeftIcon className={ classes.back } />
               </IconButton>
               <Typography variant={ 'h3' } className={ classes.content_title } noWrap>{ proposal.content.value.title }</Typography>
               <Typography variant={ 'body1' } className={ classes.pair }>{ proposal.content.value.description }</Typography>
             </Grid>
-            <Grid item xs={1} align='right' >
+            <Grid item xs={3} align='right' >
               <Typography variant={ 'h1' }>#{ proposal.id }</Typography>
+              <Typography variant={ 'body1' } className={ classes.pair }><a style={{ color: "#9aa3ad" }} target="_blank" href={"https://explorer.xar.network/proposals/"+proposal.id}>View proposal</a></Typography>
             </Grid>
             { proposal.content.value.changes &&
               <Grid item xs={12} >
