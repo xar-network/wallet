@@ -11,6 +11,7 @@ import logo from '../../assets/xar-logo.png'
 
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import OpacityIcon from '@material-ui/icons/Opacity';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const styles = theme => ({
   menuContainer: {
@@ -80,6 +81,9 @@ class Menu extends Component {
         <Grid item className={ classes.menuButton } >
           { this.renderButton('liquidations') }
         </Grid>
+        <Grid item className={ classes.menuButton } >
+          { this.renderButton('staking') }
+        </Grid>
       </React.Fragment>
     )
   }
@@ -108,6 +112,16 @@ class Menu extends Component {
         iconButton = (
           <Tooltip title="Liquidations" placement="right">
             <OpacityIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/liquidation') }} />
+          </Tooltip>
+        )
+        break;
+      case 'staking':
+        if(window.location.pathname.includes("/staking")) {
+          selected = classes.selected
+        }
+        iconButton = (
+          <Tooltip title="Staking" placement="right">
+            <AttachMoneyIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/staking') }} />
           </Tooltip>
         )
         break;

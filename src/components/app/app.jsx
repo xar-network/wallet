@@ -12,6 +12,7 @@ import Terms from '../terms'
 import Menu from '../menu'
 import Account from '../account'
 import Liquidation from '../liquidation'
+import Staking from '../staking'
 import { colors } from '../theme'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { Grid } from '@material-ui/core';
@@ -78,6 +79,8 @@ class App extends Component {
               <Route exact path="/csdt/:view/:action" component={CSDT} />
               <Route exact path="/terms" component={Terms} />
               <Route exact path="/liquidation" component={Liquidation} />
+              <Route exact path="/staking" component={Staking} />
+              <Route exact path="/staking/:action" component={Staking} />
             </Grid>
             <Grid item className={ isWidthUp('lg', width) ? classes.accountContainer : classes.accountContainerSmall }>
               <Account />
