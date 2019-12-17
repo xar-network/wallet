@@ -58,6 +58,31 @@ export const delegateStake = async params => {
   }
 }
 
+export const redelegateStake = async params => {
+  try {
+    const {
+      privateKey,
+      fromAddress,
+      srcAddress,
+      toAddress,
+      amount,
+      denom
+    } = params
+
+    const client = new XarClient(config.xarApi)
+    await client.initChain()
+    await client.setPrivateKey(privateKey)
+
+    const msg = client.Staking.redelegate(fromAddress, srcAddress, toAddress, denom, amount)
+    const res = await client.sendTx(msg, fromAddress)
+    return res
+
+  } catch (err) {
+    throw err;
+  }
+}
+
+
 export const undelegateStake = async params => {
   try {
     const {

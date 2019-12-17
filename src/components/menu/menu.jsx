@@ -17,6 +17,7 @@ const styles = theme => ({
     width: '70px',
     display: 'inline-block',
     background: colors.menu,
+    minHeight: '100vh'
   },
   menuButton: {
     height: '70px'
