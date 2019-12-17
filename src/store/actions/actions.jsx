@@ -19,6 +19,8 @@ import {
   SET_BONDED_VALIDATORS,
   SET_LIQUIDATIONS,
   SET_DELEGATION_REWARDS,
+  SET_PROPOSALS,
+  SET_PROPOSAL
 } from '../../constants'
 
 
@@ -139,4 +141,14 @@ export const setLiquidations = liquidations => ({
 export const setDelegationRewards = rewards => ({
   type: SET_DELEGATION_REWARDS,
   rewards
+})
+
+export const setProposals = proposals => ({
+  type: SET_PROPOSALS,
+  proposals
+})
+
+export const setProposal = proposal => ({
+  type: SET_PROPOSAL,
+  proposal
 })
