@@ -50,7 +50,12 @@ const styles = theme => ({
     fontSize: '15px',
     display: 'inline-block',
     width: 'calc(100% - 36px)',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    cursor: 'pointer'
+  },
+  walletLink: {
+    color: colors.lightGray,
+    textDecoration: 'none'
   },
   tableHeader: {
     padding: '12px 24px'
@@ -187,7 +192,7 @@ class AccountUnlocked extends Component {
               alignItems="center">
               <Grid item xs={12} align='center'>
                 <Tooltip title={account.address} placement="bottom">
-                  <Typography variant="h2" noWrap className={classes.walletAddress}>{ account.address }</Typography>
+                  <Typography variant="h2" noWrap className={classes.walletAddress}><a className={ classes.walletLink } target="_blank" rel="noopener noreferrer" href={"https://explorer.xar.network/account/"+account.address}>{ account.address }</a></Typography>
                 </Tooltip>
               </Grid>
             </Grid>
