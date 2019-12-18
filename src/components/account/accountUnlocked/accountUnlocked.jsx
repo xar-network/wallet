@@ -420,13 +420,13 @@ class AccountUnlocked extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={4} className={ classes.tableHeader }>
+        <Grid item xs={3} className={ classes.tableHeader }>
           <Typography>ASSET</Typography>
         </Grid>
-        <Grid item xs={3} className={ classes.tableHeader }>
+        <Grid item xs={2} className={ classes.tableHeader }>
           <Typography>SEND</Typography>
         </Grid>
-        <Grid item xs={5} align='right' className={ classes.tableHeader }>
+        <Grid item xs={7} align='right' className={ classes.tableHeader }>
           <Typography>BALANCE</Typography>
         </Grid>
       </React.Fragment>
@@ -458,16 +458,31 @@ class AccountUnlocked extends Component {
     const { classes } = this.props;
     const alternating = index % 2
 
+    let currency = asset.denom.substr(1).toUpperCase()
+    if(currency === 'CSDT') {
+      currency = 'USD'
+    }
+
+    if(currency.length > 3) {
+      currency = currency.substr(0, 3)
+    }
+
+    const crypto = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 4
+    })
+
     return (
       <React.Fragment key={asset.denom}>
-        <Grid item xs={4} className={ classes['tableBody' + alternating] }>
+        <Grid item xs={3} className={ classes['tableBody' + alternating] }>
           <Typography variant={ 'h3' }>{ asset.denom }</Typography>
         </Grid>
-        <Grid item xs={3} className={ classes['tableBody' + alternating] }>
+        <Grid item xs={2} className={ classes['tableBody' + alternating] }>
           <SendIcon className={ classes.sendIcon } onClick={ () => { this.sendClicked(asset.denom) } } />
         </Grid>
-        <Grid item xs={5} align='right' className={ classes['tableBody' + alternating] }>
-          <Typography variant={ 'h3' } noWrap>{ asset.amount + ' ' + asset.denom }</Typography>
+        <Grid item xs={7} align='right' className={ classes['tableBody' + alternating] }>
+          <Typography variant={ 'h3' } noWrap>{ crypto.format(asset.amount/1000000) }</Typography>
         </Grid>
       </React.Fragment>
     )
