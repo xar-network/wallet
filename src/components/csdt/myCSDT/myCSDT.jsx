@@ -14,6 +14,7 @@ import PaybackCSDT from '../paybackCSDT'
 import WithdrawCSDT from '../withdrawCSDT'
 import CloseCSDT from '../closeCSDT'
 import DelegateCSDT from '../delegateCSDT'
+import RedelegateCSDT from '../redelegateCSDT'
 import UndelegateCSDT from '../undelegateCSDT'
 import RewardsCSDT from '../rewardsCSDT'
 import PasswordModal from '../../passwordModal'
@@ -26,6 +27,7 @@ import {
   paybackCSDT,
   delegateStake,
   undelegateStake,
+  redelegateStake,
   startLoader,
   stopLoader,
   getPrices,
@@ -117,7 +119,7 @@ const styles = theme => ({
     position: 'absolute',
     right: '0px',
     top: '0px',
-    bottom: '0px',
+    minHeight: '100vh',
     width: '499px',
     zIndex: 999,
     backgroundColor: colors.background
@@ -438,6 +440,22 @@ class MyCSDT extends Component {
                         Delegate
                     </Button>
                   </Grid>
+                  <Grid item xs={4} className={ classes.pricePair }>
+                  </Grid>
+                  <Grid item xs={3} className={ classes.pricePrice } align={ 'right' }>
+                  </Grid>
+                  <Grid item xs={4} align={ 'right' }>
+                    <Button
+                      className={ classes.ok }
+                      onClick={() => this.nextPath('/csdt/mycsdt/redelegate')}
+                      variant="contained"
+                      size='medium'
+                      color='secondary'
+                      disabled={ loading }
+                      >
+                        Re-Delegate
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
               <Grid
@@ -594,6 +612,16 @@ class MyCSDT extends Component {
           amount: actionParams.amount
         })
         break;
+        case 'redelegate':
+        response = await redelegateStake({
+          privateKey: signingKey,
+          fromAddress: userOjb.address,
+          srcAddress: actionParams.source,
+          toAddress: actionParams.recipient,
+          denom: 'ucsdt',
+          amount: actionParams.amount
+        })
+        break;
       case 'undelegate':
         response = await undelegateStake({
           privateKey: signingKey,
@@ -669,6 +697,9 @@ class MyCSDT extends Component {
         break;
       case 'delegate':
         content = <DelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
+        break;
+      case 'redelegate':
+        content = <RedelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />
         break;
       case 'undelegate':
         content = <UndelegateCSDT onClose={this.toggleModal} onSubmit={this.showPrivateKeyModal} />

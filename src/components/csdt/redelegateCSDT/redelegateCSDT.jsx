@@ -18,8 +18,7 @@ import { connect } from 'react-redux';
 
 const styles = theme => ({
   container: {
-    padding: '30px',
-    zIndex: 1
+    padding: '30px'
   },
   closeButton: {
     cursor: 'pointer'
@@ -47,13 +46,15 @@ const styles = theme => ({
   }
 });
 
-class UndelegateCSDT extends Component {
+class RedelegateCSDT extends Component {
 
   constructor(props) {
     super();
     this.state = {
       amount: "",
       amountError: false,
+      source: '',
+      sourceError: false,
       recipient: '',
       recipientError: false,
       balances: props.balances,
@@ -92,7 +93,7 @@ class UndelegateCSDT extends Component {
   };
 
   onSubmit() {
-    this.props.onSubmit({ amount: this.state.amount, recipient: this.state.recipient })
+    this.props.onSubmit({ amount: this.state.amount, recipient: this.state.recipient, source: this.state.source })
   };
 
   calculateDelegatedBalance(validatorAddress) {
@@ -138,13 +139,16 @@ class UndelegateCSDT extends Component {
       amountError,
       recipient,
       recipientError,
+      source,
+      sourceError,
     } = this.state
 
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
 
     const currentBalance = this.calculateBalance()
     const delegatedBalance = this.calculateDelegatedBalance()
-    const currentValidatoroBalance = this.calculateDelegatedBalance(recipient)
+    const sourceValidatoroBalance = this.calculateDelegatedBalance(source)
+    const recipientValidatoroBalance = this.calculateDelegatedBalance(recipient)
 
     return (
       <Grid
@@ -154,13 +158,13 @@ class UndelegateCSDT extends Component {
         alignItems="flex-start"
         className={ classes.container }>
         <Grid item xs={10} className={classes.header}>
-          <Typography variant="h2" className={ classes.title }>Undelegate {generatedDenom}</Typography>
+          <Typography variant="h2" className={ classes.title }>Redelegate {generatedDenom}</Typography>
         </Grid>
         <Grid item xs={2} align="right">
           <CloseIcon onClick={onClose} className={ classes.closeButton }/>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
-          <Typography variant="body1">How much {generatedDenom} would you like to undelegate?</Typography>
+          <Typography variant="body1">How much {generatedDenom} would you like to redelegate?</Typography>
           <TextField
             className={classes.textField}
             margin="normal"
@@ -180,9 +184,37 @@ class UndelegateCSDT extends Component {
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
           <FormControl variant="outlined" className={classes.textField}>
-            <Typography variant="body1">Which validator would you like to undelegate from?</Typography>
+            <Typography variant="body1">Which validator would you like to remove your delegation from?</Typography>
             <Select
               className={classes.select}
+              labelId="source"
+              id="source"
+              name="source"
+              value={source}
+              error={recipientError}
+              onChange={this.onSelectChange}
+              onKeyDown={ this.handleKeyDown }
+            >
+              {
+                (validators && validators.length > 0) && validators.filter((validator) => {
+                  return (!['0503F79A2B10BC4B', 'A80787E4CC6AA8B5'].includes(validator.description.identity))
+                }).map((validator) => {
+                  return (
+                    <MenuItem value={validator.operator_address}>
+                      {validator.description.moniker}
+                    </MenuItem>)
+                })
+              }
+            </Select>
+            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} className={ classes.sepperate }>
+          <FormControl variant="outlined" className={classes.textField}>
+            <Typography variant="body1">Which validator would you like to delegate to?</Typography>
+            <Select
+              className={classes.select}
+              labelId="recipient"
               id="recipient"
               name="recipient"
               value={recipient}
@@ -195,13 +227,13 @@ class UndelegateCSDT extends Component {
                   return (!['0503F79A2B10BC4B', 'A80787E4CC6AA8B5'].includes(validator.description.identity))
                 }).map((validator) => {
                   return (
-                    <MenuItem key={validator.operator_address} value={validator.operator_address}>
+                    <MenuItem value={validator.operator_address}>
                       {validator.description.moniker}
                     </MenuItem>)
                 })
               }
             </Select>
-            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" rel="noopener noreferrer" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
+            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
@@ -209,8 +241,10 @@ class UndelegateCSDT extends Component {
           <Typography variant="h3" className={ classes.infoValue }>{ currentBalance + ' ' + generatedDenom }</Typography>
           <Typography variant="body1" className={ classes.infoTitle }>Total delegated balance</Typography>
           <Typography variant="h3" className={ classes.infoValue }>{ delegatedBalance + ' ' + generatedDenom }</Typography>
-          <Typography variant="body1" className={ classes.infoTitle }>Delegated balance at validator</Typography>
-          <Typography variant="h3" className={ classes.infoValue }>{ currentValidatoroBalance + ' ' + generatedDenom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Delegated balance at source validator</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ sourceValidatoroBalance + ' ' + generatedDenom }</Typography>
+          <Typography variant="body1" className={ classes.infoTitle }>Delegated balance at recipient validator</Typography>
+          <Typography variant="h3" className={ classes.infoValue }>{ recipientValidatoroBalance + ' ' + generatedDenom }</Typography>
         </Grid>
         <Grid item xs={6} className={ classes.sepperate }>
           <Button
@@ -233,7 +267,7 @@ class UndelegateCSDT extends Component {
             onClick={this.onSubmit}
             disabled={loading}
             >
-              Undelegate
+              Redelegate
           </Button>
         </Grid>
       </Grid>
@@ -241,7 +275,7 @@ class UndelegateCSDT extends Component {
   }
 }
 
-UndelegateCSDT.propTypes = {
+RedelegateCSDT.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -258,4 +292,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(UndelegateCSDT)))
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(RedelegateCSDT)))

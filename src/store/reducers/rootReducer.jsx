@@ -11,6 +11,7 @@ import supply from './supply'
 import liquidations from './liquidations'
 import synthetics from './synthetics'
 import screen from './screen'
+import governance from './governance'
 
 export default combineReducers({
   csdts,
@@ -24,5 +25,6 @@ export default combineReducers({
   staking,
   liquidations,
   synthetics,
-  screen
+  screen,
+  governance,
 })

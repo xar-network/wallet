@@ -10,6 +10,7 @@ import logo from '../../assets/xar-logo.png'
 
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import OpacityIcon from '@material-ui/icons/Opacity';
+import GavelIcon from '@material-ui/icons/Gavel';
 import PieChartIcon from '@material-ui/icons/PieChart';
 
 const styles = theme => ({
@@ -17,6 +18,7 @@ const styles = theme => ({
     width: '70px',
     display: 'inline-block',
     background: colors.menu,
+    minHeight: '100vh'
   },
   menuButton: {
     height: '71px',
@@ -85,7 +87,11 @@ class Menu extends Component {
           { this.renderButton('liquidations') }
         </Grid>
         <Grid item className={ classes.menuButton } >
+<<<<<<< HEAD
           { this.renderButton('synthetics') }
+=======
+          { this.renderButton('governance') }
+>>>>>>> e563e3d63be3794d131188d6a09ff93190997a1e
         </Grid>
       </React.Fragment>
     )
@@ -118,6 +124,7 @@ class Menu extends Component {
           </Tooltip>
         )
         break;
+<<<<<<< HEAD
       case 'synthetics':
         if(window.location.pathname.includes("/synthetics")) {
           selected = classes.selected
@@ -125,6 +132,15 @@ class Menu extends Component {
         iconButton = (
           <Tooltip title="Synthetics Market" placement="right">
             <PieChartIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/synthetics') }} />
+=======
+      case 'governance':
+        if(window.location.pathname.includes("/governance")) {
+          selected = classes.selected
+        }
+        iconButton = (
+          <Tooltip title="Governance" placement="right">
+            <GavelIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/governance') }} />
+>>>>>>> e563e3d63be3794d131188d6a09ff93190997a1e
           </Tooltip>
         )
         break;
