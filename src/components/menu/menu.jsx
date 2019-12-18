@@ -87,11 +87,10 @@ class Menu extends Component {
           { this.renderButton('liquidations') }
         </Grid>
         <Grid item className={ classes.menuButton } >
-<<<<<<< HEAD
-          { this.renderButton('synthetics') }
-=======
           { this.renderButton('governance') }
->>>>>>> e563e3d63be3794d131188d6a09ff93190997a1e
+        </Grid>
+        <Grid item className={ classes.menuButton } >
+          { this.renderButton('synthetics') }
         </Grid>
       </React.Fragment>
     )
@@ -124,7 +123,6 @@ class Menu extends Component {
           </Tooltip>
         )
         break;
-<<<<<<< HEAD
       case 'synthetics':
         if(window.location.pathname.includes("/synthetics")) {
           selected = classes.selected
@@ -132,7 +130,9 @@ class Menu extends Component {
         iconButton = (
           <Tooltip title="Synthetics Market" placement="right">
             <PieChartIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/synthetics') }} />
-=======
+          </Tooltip>
+        )
+        break;
       case 'governance':
         if(window.location.pathname.includes("/governance")) {
           selected = classes.selected
@@ -140,7 +140,6 @@ class Menu extends Component {
         iconButton = (
           <Tooltip title="Governance" placement="right">
             <GavelIcon className={ `${classes.iconButton} ${selected}` } onClick={() => { this.menuClicked('/governance') }} />
->>>>>>> e563e3d63be3794d131188d6a09ff93190997a1e
           </Tooltip>
         )
         break;

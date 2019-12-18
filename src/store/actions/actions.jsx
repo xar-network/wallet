@@ -22,7 +22,7 @@ import {
   SET_SYNTHETICS,
   TOGGLE_ACCOUNT,
   COLLAPSE_ACCOUNT,
-  EXPAND_ACCOUNT
+  EXPAND_ACCOUNT,
   SET_PROPOSALS,
   SET_PROPOSAL
 } from '../../constants'
@@ -147,7 +147,6 @@ export const setDelegationRewards = rewards => ({
   rewards
 })
 
-<<<<<<< HEAD
 
 export const setSynthetics = synthetics => ({
   type: SET_SYNTHETICS,
@@ -165,7 +164,9 @@ export const collapseAccount = () => ({
 
 export const expandAccount = () => ({
   type: EXPAND_ACCOUNT,
-=======
+})
+
+
 export const setProposals = proposals => ({
   type: SET_PROPOSALS,
   proposals
@@ -174,5 +175,4 @@ export const setProposals = proposals => ({
 export const setProposal = proposal => ({
   type: SET_PROPOSAL,
   proposal
->>>>>>> e563e3d63be3794d131188d6a09ff93190997a1e
 })

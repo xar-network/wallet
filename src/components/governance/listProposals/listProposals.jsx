@@ -12,7 +12,6 @@ const styles = theme => ({
     width: '100%',
     minHeight: '100%',
     alignContent: 'flex-start',
-    marginBottom: '12px'
   },
   header: {
     padding: '30px',
