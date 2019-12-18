@@ -36,7 +36,7 @@ class ListProposals extends Component {
   };
 
   render() {
-    const { classes, match, loading, navigate } = this.props;
+    const { classes } = this.props;
 
     return (
       <Grid

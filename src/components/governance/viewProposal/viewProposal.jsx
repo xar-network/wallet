@@ -77,7 +77,6 @@ class ViewProposal extends Component {
     super();
 
     this.state = {
-      loading: false,
       privateKeyModalOpen: false,
       snackbarMessage: null
     };
@@ -124,7 +123,7 @@ class ViewProposal extends Component {
   }
 
   render() {
-    const { classes, match, loading } = this.props;
+    const { classes, match } = this.props;
 
     const {
       privateKeyModalOpen,
@@ -158,8 +157,7 @@ class ViewProposal extends Component {
     const {
       proposal,
       classes,
-      loading,
-      match
+      loading
     } = this.props
 
     if(!proposal) {
@@ -179,7 +177,7 @@ class ViewProposal extends Component {
             </Grid>
             <Grid item xs={3} align='right' >
               <Typography variant={ 'h1' }>#{ proposal.id }</Typography>
-              <Typography variant={ 'body1' } className={ classes.pair }><a style={{ color: "#9aa3ad" }} target="_blank" href={"https://explorer.xar.network/proposals/"+proposal.id}>View proposal</a></Typography>
+              <Typography variant={ 'body1' } className={ classes.pair }><a style={{ color: "#9aa3ad" }} target="_blank" rel="noopener noreferrer" href={"https://explorer.xar.network/proposals/"+proposal.id}>View proposal</a></Typography>
             </Grid>
             { proposal.content.value.changes &&
               <Grid item xs={12} >
@@ -261,7 +259,7 @@ class ViewProposal extends Component {
     const user = sessionStorage.getItem('xar-csdt-user')
     const userOjb = JSON.parse(user)
 
-    const { match, proposal } = this.props
+    const { proposal } = this.props
     const { actionParams } = this.state
 
     startLoader()

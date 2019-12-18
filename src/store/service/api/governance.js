@@ -59,7 +59,3 @@ export const getProposal = async params => {
     throw err;
   }
 };
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}

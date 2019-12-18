@@ -14,8 +14,6 @@ import {
   getCSDT,
   getAllDelegations,
   getDelegationRewards,
-  startLoader,
-  stopLoader,
   getAllValidators,
   getPrices
 } from '../../store/service';
@@ -64,7 +62,7 @@ class CSDT extends Component {
       if(!props.csdt) {
         getCSDT({ address: user.address, denom: 'uftm' })
       }
-      if(!props.delegations) {
+      if(!props.delegations || props.delegations.length === 0) {
         getAllDelegations({ address: user.address })
       }
       if(!props.dleegationRewards) {

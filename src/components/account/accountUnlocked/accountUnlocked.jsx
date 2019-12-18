@@ -6,7 +6,8 @@ import {
   Grid,
   Typography,
   Tooltip,
-  Button
+  Button,
+  Popover
 } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import withWidth from '@material-ui/core/withWidth';
@@ -15,13 +16,18 @@ import { lockAccount } from '../../../store/service'
 import AccountTransfer from '../accountTransfer';
 import Snackbar from '../../snackbar';
 import SendIcon from '@material-ui/icons/Send';
+import CropFreeIcon from '@material-ui/icons/CropFree';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+var QRCode = require('qrcode.react');
 
 const styles = theme => ({
   container: {
     alignContent: 'flex-start'
   },
   header: {
-    padding: '30px',
+    padding: '16px',
     backgroundColor: '#202930',
     margin: '0 auto',
     borderBottom: '1px solid '+colors.border,
@@ -49,13 +55,21 @@ const styles = theme => ({
   walletAddress: {
     fontSize: '15px',
     display: 'inline-block',
-    width: 'calc(100% - 36px)',
     verticalAlign: 'middle',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    lineHeight: '46px'
   },
   walletLink: {
     color: colors.lightGray,
     textDecoration: 'none'
+  },
+  walletIcon: {
+    fill: colors.lightGray,
+    height: '30px',
+    cursor: 'pointer',
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    padding: '0px 6px'
   },
   tableHeader: {
     padding: '12px 24px'
@@ -136,13 +150,19 @@ class AccountUnlocked extends Component {
     this.state = {
       account: props.account,
       snackbarMessage: null,
-      snackbarType: null
+      snackbarType: null,
+      qrCodeOpen: false,
+      anchorEl: null
     };
 
     this.handleLogout = this.handleLogout.bind(this)
     this.sendClicked = this.sendClicked.bind(this)
     this.cancelSendClicked = this.cancelSendClicked.bind(this)
     this.renderSnackbar = this.renderSnackbar.bind(this)
+    this.copyAddress = this.copyAddress.bind(this)
+    this.showQRCode = this.showQRCode.bind(this)
+    this.hideQrCode = this.hideQrCode.bind(this)
+    this.clearSnackbar = this.clearSnackbar.bind(this)
   };
 
   componentDidUpdate(prevProps) {
@@ -167,9 +187,27 @@ class AccountUnlocked extends Component {
     this.setState({ sendOpen: false, snackbarMessage: (snackbarObj ? snackbarObj.snackbarMessage : null), snackbarType: (snackbarObj ? snackbarObj.snackbarType : null) })
   };
 
+  copyAddress() {
+    this.setState({ snackbarMessage: "Wallet address copied", snackbarType: "Success" })
+    setTimeout(this.clearSnackbar, 3000)
+  };
+
+  clearSnackbar() {
+    this.setState({ snackbarMessage: null, snackbarType: null })
+  };
+
+  showQRCode(e) {
+    this.setState({ qrCodeOpen: true, anchorEl: e.currentTarget })
+  };
+
+  hideQrCode() {
+    this.setState({ qrCodeOpen: false, anchorEl: null })
+  };
+
   render() {
+
     const { classes, account, nodeInfo, accountsCollapsed } = this.props;
-    const { sendOpen, snackbarMessage } = this.state
+    const { sendOpen, snackbarMessage, anchorEl, qrCodeOpen } = this.state
 
     if(!account) {
       return null
@@ -192,9 +230,45 @@ class AccountUnlocked extends Component {
               alignItems="center">
               <Grid item xs={12} align='center'>
                 <Tooltip title={account.address} placement="bottom">
-                  <Typography variant="h2" noWrap className={classes.walletAddress}><a className={ classes.walletLink } target="_blank" rel="noopener noreferrer" href={"https://explorer.xar.network/account/"+account.address}>{ account.address }</a></Typography>
+                  <Typography variant="h2" noWrap className={classes.walletAddress}>
+                    <a id="WalletAddress" className={ classes.walletLink } target="_blank" rel="noopener noreferrer" href={"https://explorer.xar.network/account/"+account.address}>{ account.address }</a>
+                  </Typography>
+                </Tooltip>
+                <Tooltip title={"Scan"} placement="bottom">
+                  <CropFreeIcon className={ classes.walletIcon } onClick={ this.showQRCode } />
+                </Tooltip>
+                <Tooltip title={'Copy'} placement="bottom">
+                  <CopyToClipboard onCopy={this.copyAddress} text={account.address}>
+                    <FileCopyIcon style={{
+                        fill: colors.lightGray,
+                        height: '30px',
+                        cursor: 'pointer',
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        padding: '0px 6px'
+                      }} />
+                  </CopyToClipboard>
                 </Tooltip>
               </Grid>
+              <Popover
+                open={ qrCodeOpen }
+                anchorEl={ anchorEl }
+                onClose={ this.hideQrCode }
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                <QRCode
+                  includeMargin={true}
+                  value={ account.address }
+                  size={ 256 }
+                />
+              </Popover>
             </Grid>
           </Grid>
 

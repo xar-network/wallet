@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { Grid } from '@material-ui/core'
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { colors } from '../theme'
-import Account from '../account'
 import Loader from '../loader'
 
 import ListProposals from './listProposals'
@@ -69,7 +67,7 @@ class Governance extends Component {
   }
 
   render() {
-    const { classes, match, loading } = this.props;
+    const { match, loading } = this.props;
 
     return (
       <React.Fragment>

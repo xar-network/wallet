@@ -140,7 +140,6 @@ class RedelegateCSDT extends Component {
       recipient,
       recipientError,
       source,
-      sourceError,
     } = this.state
 
     const generatedDenom =  csdt && csdt.debt && csdt.debt.length > 0 ? csdt.debt[0].denom : 'Unknown'
@@ -206,7 +205,7 @@ class RedelegateCSDT extends Component {
                 })
               }
             </Select>
-            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
+            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" rel="noopener noreferrer" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
@@ -233,7 +232,7 @@ class RedelegateCSDT extends Component {
                 })
               }
             </Select>
-            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
+            <FormHelperText>{ <a style={{ color: "#9aa3ad" }} target="_blank" rel="noopener noreferrer" href="https://explorer.xar.network/validators">Click here to view the current validator list</a> }</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12} className={ classes.sepperate }>
